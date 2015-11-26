@@ -1,3 +1,5 @@
+
+
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.functions._
@@ -20,13 +22,30 @@ package object dlutil {
     }
   )
 
+  def getCollectType = udf(
+    (enginename: String) => enginename match {
+      case "sabad15034.ad.sys" | "sacch15002.ad.sys" | "sumhg15005.dom1.ad.sys" => "server"
+      case _ => "device"
+    }
+  )
+
   val daypattern: scala.util.matching.Regex = """(\d\d\d\d)-(\d\d)-(\d\d)""".r
   val timepattern: scala.util.matching.Regex = """(\d\d):(\d\d):(\d\d)""".r
+  val iprangepattern: scala.util.matching.Regex = """/(\d\d)""".r
+  val ipinternalpattern: scala.util.matching.Regex = """10\.((([0-9])+)\.)+{2}([0-9]+)""".r
 
 
   def formatSite = udf (
     (site: String) => {
       if (site == null) "nf" else site
+    }
+  )
+
+
+  def regexudf(pattern: scala.util.matching.Regex) = udf(
+    (valeur: String) => pattern.findFirstIn(valeur) match {
+      case Some(res) => true
+      case None => false
     }
   )
 
@@ -99,5 +118,7 @@ package object dlutil {
       buffer.getString(0)
     }
   }
+
+  def retValue(value: String) = udf((colval: String) => value)
 
 }

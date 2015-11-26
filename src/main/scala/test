@@ -1,0 +1,54 @@
+sqlContext.setConf("spark.sql.shuffle.partitions", "10")
+import dlenv._
+import dlutil._
+import dlpipeline._
+import DLRepo._
+
+val D_Root="s3://alstomlezoomerus"
+
+val D_Root_Hadoop="/user/gupinot"
+
+//val D_Root="/user/gupinot"
+//val D_Root=""
+
+val pipe=new dlpipeline(D_Root+"/DATA/Repository")
+val repo = new dlrepo(D_Root+"/DATA/Repository")
+
+
+pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/connection_sabad11478.ad.sys_20151003.tgz.csv.gz", "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/webrequest_sabad11478.ad.sys_20151003.tgz.csv.gz", "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/connection_sabad11478.ad.sys_20151010.tgz.csv.gz", "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/webrequest_sabad11478.ad.sys_20151010.tgz.csv.gz", "/DATA/3-NXFile")
+pipe.pipeline3to4(sqlContext, "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-09-26.parquet", "/DATA/4-NXFile")
+pipe.pipeline3to4(sqlContext, "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-05.parquet", "/DATA/4-NXFile")
+
+repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/MDM-ITC_20151117.csv")
+repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/I-ID_20151101.csv")
+repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/AIP-Application_20151117.csv")
+repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/AIP-Server_20151117.csv")
+repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/AIP-SoftInstance_20151117.csv")
+repo.genAIP(sqlContext)
+
+val dfMDM=repo.readMDM(sqlContext)
+
+val dfAIPServer = repo.readAIPServer(sqlContext)
+val dfAIPSoftInstance = repo.readAIPSoftInstance(sqlContext)
+val dfAIPApplication = repo.readAIPApplication(sqlContext)
+
+val dfAIP = repo.readAIP(sqlContext)
+val ipdup = dfAIP.groupBy("aip_server_ip").agg(count("aip_server_ip") as "count_ip").filter($"count_ip" > 1).select("aip_server_ip").withColumnRenamed("aip_server_ip", "ip")
+
+val df = dfAIP.join(ipdup, dfAIP("aip_server_ip") <=> ipdup("ip"), "inner")
+
+df.sort(asc("aip_server_ip"))
+
+
+pipe.pipeline2to3(sc, sqlContext, D_Root + "/DATA/2-NXFile/connection_sabad11478.ad.sys_20151031.tgz.csv.gz", D_Root + "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, D_Root + "/DATA/2-NXFile/webrequest_sabad11478.ad.sys_20151031.tgz.csv.gz", D_Root + "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, D_Root + "/DATA/2-NXFile/connection_sabad11479.ad.sys_20151031.tgz.csv.gz", D_Root + "/DATA/3-NXFile")
+pipe.pipeline2to3(sc, sqlContext, D_Root + "/DATA/2-NXFile/webrequest_sabad11479.ad.sys_20151031.tgz.csv.gz", D_Root + "/DATA/3-NXFile")
+pipe.pipeline3to4(sqlContext, D_Root + "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-28.parquet", D_Root + "/DATA/4-NXFile")
+pipe.pipeline3to4(sqlContext, D_Root + "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-27.parquet", D_Root + "/DATA/4-NXFile")
+
+
+spark-shell --master yarn --driver-memory 8G --executor-memory 8G --jars ./lib/ALDataLab-assembly-1.0.jar

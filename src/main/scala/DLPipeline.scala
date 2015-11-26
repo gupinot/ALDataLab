@@ -1,5 +1,6 @@
 package dlpipeline
 
+import DLRepo.dlrepo
 import dlenv._
 import dlutil._
 
@@ -20,24 +21,43 @@ import org.joda.time._
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class dlpipeline {
-  def pipeline2to3(filein: String): Boolean = {
+class dlpipeline(RepoDir: String) {
 
-    val filetype = filein.replaceFirst("_.*", "")
-    val fileenginename = filein.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
-    val filedate=filein.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("\\..*", "")
+  /*
+  Arbo : a file is set done by writting file.done file
+    2 : csv file (connection or webrequest type)
+    finale :
+      enddate
+        engine
+          source_sector
+            source_site
+              dest_site
 
-    val sparkenv = new spark_env
-    val sqlContext = sparkenv.init()
+ */
+
+  val repo = new dlrepo(RepoDir)
+
+  def pipeline2to3(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
     import sqlContext.implicits._
 
-    println("DLPipeline() : read filein")
-    val df = sqlContext.read.format("com.databricks.spark.csv").option("header", "true")
-      .option("delimiter",";").option("inferSchema","true").load(D_NX2 + "/in/" + filein)
-    df.cache()
+    val filename = new Path(filein).getName()
+    val filetype = filename.replaceFirst("_.*", "")
+    val fileenginename = filename.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
+    val filedate=filename.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("\\..*", "")
+
+
+    println("pipeline2to3() : read filein")
+    val df = sqlContext.read.format("com.databricks.spark.csv")
+      .option("header", "true")
+      .option("delimiter",";")
+      .option("inferSchema","true")
+      .option("mode", "DROPMALFORMED")
+      //.option("parserLib", "UNIVOCITY")
+      .load(filein)
+
 
     //rename columns
-    println("DLPipeline() : rename column")
+    println("pipeline2to3() : rename column")
     val df2 = {
       if (filetype == "connection") {
         df.withColumnRenamed("NX_con_start_time", "start_time")
@@ -70,166 +90,104 @@ class dlpipeline {
     }
 
     //split start_time and end_time into 2 fields date and time
-    println("DLPipeline() : split start_time and end_time into 2 fields date and time")
+    println("pipeline2to3() : split start_time and end_time into 2 fields date and time")
     val resdf = df2.withColumn("startdate", dlutil.getFirst(daypattern)($"start_time"))
       .withColumn("starttime", dlutil.getFirst(timepattern)($"start_time"))
       .withColumn("enddate", dlutil.getFirst(daypattern)($"end_time"))
       .withColumn("endtime", dlutil.getFirst(timepattern)($"end_time"))
+      .withColumn("engine", lit(fileenginename))
+      .withColumn("fileenginedate", lit(filedate))
+      .withColumn("collecttype", dlutil.getCollectType($"engine"))
       .drop("start_time").drop("end_time")
 
+    resdf.cache()
+
     //split resdf by enddate
-    println("DLPipeline() : split resdf by enddate")
+    println("pipeline2to3() : split resdf by enddate")
     val daylist = resdf.select("enddate").distinct.collect.flatMap(_.toSeq)
     val dfbydaylistArray = daylist.map(day => resdf.where($"enddate" <=> day))
 
-    //store each df in array in parquet file and move source file in Archives directory
-    val hadoopConfig = new hadoop_env
-    val fs = hadoopConfig.init()
-
-
-    if (!fs.exists(new Path(D_NX2 + "/Done"))) {
-      println("Create " + D_NX2 + "/Done directory")
-      fs.mkdirs(new Path(D_NX2 + "/Done"))
-    }
-
-    if (!fs.exists(new Path(D_NX3))) {
-      println("Create " + D_NX3)
-      fs.mkdirs(new Path(D_NX3))
-    }
-
-    if (!fs.exists(new Path(D_NX3 + "/in"))) {
-      println("Create " + D_NX3 + "/in")
-      fs.mkdirs(new Path(D_NX3 + "/in"))
-    }
-
-    println("DLPipeline() : write parquet file")
-    dfbydaylistArray.map(
-      dfday => {
-        val day = dfday.select("enddate").distinct.collect.flatMap(_.toSeq)
-        val parquetfilename = D_NX3+"/in/"+filetype+"_"+fileenginename+"_"+filedate+"_"+day(0).toString()+".parquet"
-        dfday.write.format("parquet").mode("overwrite").save(parquetfilename)
-      }
-    )
-
-    //move filename to Done
-    println("DLPipeline() : move filename to Done")
-    val res = fs.rename(new Path(D_NX2+"/in/"+filein), new Path(D_NX2+"/Done/"+filein))
-
-    return true
-  }
-
-  def pipeline3to4(filein: String): Boolean = {
-
+    val dfdone = sc.parallelize(List("true")).toDF("done")
+    val dfnotdone = sc.parallelize(List("false")).toDF("done")
 
     val JodaTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
 
-    val hadoopConfig = new hadoop_env
-    val fs = hadoopConfig.init()
+    dfbydaylistArray.map(
+      dfday => {
+        val day = dfday.select("enddate").distinct.collect.flatMap(_.toSeq)
 
-    if (!fs.exists(new Path(D_NX4))) {
-      println("Create " + D_NX4)
-      fs.mkdirs(new Path(D_NX4))
-    }
-    if (!fs.exists(new Path(D_NX4+"/in"))) {
-      println("Create " + D_NX4+"/in")
-      fs.mkdirs(new Path(D_NX4+"/in"))
-    }
-    if (!fs.exists(new Path(D_NX3+"/Done"))) {
-      println("Create " + D_NX3+"/Done")
-      fs.mkdirs(new Path(D_NX3+"/Done"))
-    }
-    if (!fs.exists(new Path(D_NX3+"/NoCompleteDay"))) {
-      println("Create " + D_NX3+"/NoCompleteDay")
-      fs.mkdirs(new Path(D_NX3+"/NoCompleteDay"))
-    }
 
-    val filetype = filein.replaceFirst("_.*", "")
-    val fileenginename = filein.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
-    val filedate=filein.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("_.*", "")
-    val fileday=filein.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst(filedate+"_", "").replaceFirst("\\.parquet$", "")
 
-    val sparkenv = new spark_env
-    val sqlContext = sparkenv.init()
-    import sqlContext.implicits._
+        val dftime = dfday.agg(min((dfday("endtime"))), max(dfday("endtime")))
+        val minendtime = dftime.select("min(endtime)").collect.flatMap(_.toSeq)
+        val maxendtime = dftime.select("max(endtime)").collect.flatMap(_.toSeq)
 
-    println("pipeline3to4() : read parquet file. filein : " + filein)
-    val df = sqlContext.read.parquet(D_NX3 +"/in/" + filein)
-    df.cache()
+        if (JodaTimeFormatter.parseDateTime(minendtime(0).toString()).isBefore(JodaTimeFormatter.parseDateTime("03:00:00"))
+          && JodaTimeFormatter.parseDateTime(maxendtime(0).toString()).isAfter(JodaTimeFormatter.parseDateTime("23:00:00")))
+        {
+          println("pipeline2to3() : CompleteDay")
+          //is file with same engine name and same day already exists ?
+          val fileout = dirout + "/" + filetype + "_" + fileenginename + "_" + day(0).toString()+".parquet"
 
-    val dfDay = df.agg(min((df("endtime"))), max(df("endtime")))
-    //val dfDay = df.agg((min(df("endtime"))), max(df("endtime")))
-    val minendtime = dfDay.select("min(endtime)").collect.flatMap(_.toSeq)
-    val maxendtime = dfDay.select("max(endtime)").collect.flatMap(_.toSeq)
-
-    if (JodaTimeFormatter.parseDateTime(minendtime(0).toString()).isBefore(JodaTimeFormatter.parseDateTime("03:00:00")) && JodaTimeFormatter.parseDateTime(maxendtime(0).toString()).isAfter(JodaTimeFormatter.parseDateTime("23:00:00"))) {
-      println("pipeline3to4() : CompleteDay")
-      //is file with same engine name and same day already exists ?
-      if (fs.globStatus(new Path(D_NX4+"/in/"+filetype+"_"+fileenginename+"_*_"+fileday+".parquet")).length == 0 && fs.globStatus(new Path(D_NX4+"/Done/"+filetype+"_"+fileenginename+"_*_"+fileday+".parquet")).length == 0) {
-        //no duplicated (file not already exists) => move to /DATA/4-NXFile/in
-        println("pipeline3to4() : No duplicated")
-        df.write.format("parquet").mode("overwrite").save(D_NX3+"/Done/"+filein)
-        fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX4+"/in/"+filein))
-      }else {
-        // duplicated (file already exists) => delete file input
-        println("pipeline3to4() : Duplicated")
-        fs.delete(new Path(D_NX3+"/in/"+filein))
+          val dfres = {
+            try {
+              sqlContext.read.parquet(fileout)
+            } catch {
+              case e: java.lang.AssertionError => null
+              case _:Throwable => null
+            }
+          }
+          if (dfres == null) {
+            //no duplicated (file not already exists) => move to /DATA/4-NXFile/in
+            println("pipeline2to3() : No duplicated")
+            dfday.write.mode("overwrite").parquet(fileout)
+            dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
+            //fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX4+"/in/"+filein))
+          }else {
+            // duplicated (file already exists) => delete file input
+            println("pipeline2to3() : Duplicated")
+            //fs.delete(new Path(D_NX3+"/in/"+filein))
+          }
+        }else {
+          println("pipeline2to3() : no CompleteDay")
+          //val res = fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX3+"/NoCompleteDay/"+filein))
+        }
       }
-    }else {
-      println("pipeline3to4() : no CompleteDay")
-      val res = fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX3+"/NoCompleteDay/"+filein))
-    }
+    )
+    dfdone.write.format("com.databricks.spark.csv").mode("overwrite").save(filein+".done")
 
     return true
   }
 
-  def pipeline4to5(filein: String): Boolean = {
-    val hadoopConfig = new hadoop_env
-    val fs = hadoopConfig.init()
+  def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
 
-    if (!fs.exists(new Path(D_NX5))) {
-      println("Create " + D_NX5)
-      fs.mkdirs(new Path(D_NX5))
-    }
-    if (!fs.exists(new Path(D_NX5+"/in"))) {
-      println("Create " + D_NX5+"/in")
-      fs.mkdirs(new Path(D_NX5+"/in"))
-    }
-    if (!fs.exists(new Path(D_NX4+"/Done"))) {
-      println("Create " + D_NX4+"/Done")
-      fs.mkdirs(new Path(D_NX4+"/Done"))
-    }
-
-    val sparkenv = new spark_env
-    val sqlContext = sparkenv.init()
     import sqlContext.implicits._
 
-    val filetype = filein.replaceFirst("_.*", "")
-    val fileenginename = filein.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
-    val filedate=filein.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("_.*", "")
-    val fileday=filein.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst(filedate+"_", "").replaceFirst("\\.parquet$", "")
+    val filename = new Path(filein).getName()
+    val filetype = filename.replaceFirst("_.*", "")
+    val fileenginename = filename.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
+    val fileday=filename.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("\\.parquet$", "")
 
-    println("pipeline4to5() : read filein : " + filein)
-    val df = sqlContext.read.parquet(D_NX4 + "/in/" + filein)
-    df.cache()
+    println("pipeline3to4() : read filein : " + filein)
+    val df = sqlContext.read.parquet(filein)
 
-    println("pipeline4to5() : SiteResolution")
+    println("pipeline3to4() : SiteResolution")
     val dfSite = SiteResolutionFromIP(sqlContext, df)
 
-    println("pipeline4to5() : Sector resolution")
+    println("pipeline3to4() : Sector resolution")
     val dfSiteSector = SiteAndSectorResolutionFromI_ID(sqlContext, dfSite)
 
     //Web request resolution
-    println("pipeline4to5() : Web request resolution")
-    val webrequest_filename = D_NX4 + "/in/" + "webrequest_" + fileenginename + "_" + filedate + "_" + fileday + ".parquet"
+    println("pipeline3to4() : Web request resolution")
+    val webrequest_filename = filein.replaceFirst("connection", "webrequest")
     val dfSiteSector4WebRequest = {
-      if (fs.globStatus(new Path(webrequest_filename)).length == 0) {
-        println("Error : corresponding web request file not found : " + webrequest_filename)
-        null
-      }else {
-        //Read web request file
+      try {
         val dfWebRequest = sqlContext.read.parquet(webrequest_filename)
-        val dfres = WebRequestResolution(sqlContext, dfSiteSector, dfWebRequest)
-        dfres
+        WebRequestResolution(sqlContext, dfSiteSector, dfWebRequest)
+      } catch {
+        case e: java.lang.AssertionError => println("pipeline3to4() : ERR : webrequest file (" + webrequest_filename + ") not found")
+          null
+        case _:Throwable => null
       }
     }
     if (dfSiteSector4WebRequest == null) {
@@ -237,15 +195,11 @@ class dlpipeline {
     }
 
     //AIP resolution
-    println("pipeline4to5() : AIP resolution")
+    println("pipeline3to4() : AIP resolution")
     val dfSiteSector4WebRequestAIP = AIPResolution(sqlContext, dfSiteSector4WebRequest)
 
-    println("pipeline4to5() : write result : " + D_NX5+"/in/"+filein)
-    dfSiteSector4WebRequestAIP.write.format("parquet").mode("overwrite").save(D_NX5+"/in/"+filein)
-
-    println("pipeline4to5() : move file :" + D_NX4 + "/in/" + filein + " -> " + D_NX4 + "/Done/" + filein)
-    fs.rename(new Path(D_NX4 + "/in/" + filein), new Path(D_NX4 + "/Done/" + filein))
-    fs.rename(new Path(webrequest_filename), new Path(D_NX4 + "/Done/webrequest_" + fileenginename + "_" + filedate + "_" + fileday + ".parquet"))
+    println("pipeline3to4() : write result : " + dirout)
+    dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector", "source_I_ID_site", "dest_site").parquet(dirout)
 
     return true
   }
@@ -254,10 +208,8 @@ class dlpipeline {
     import sqlContext.implicits._
 
     //Read MDM repository file
-    val dfMDM = sqlContext.read.parquet(MDMRepository)
-      .withColumn("mdm_ip_start_int", ip2Long($"mdm_ip_start"))
-      .withColumn("mdm_ip_end_int", rangeToIP($"mdm_ip_start_int", $"mdm_ip_range"))
-      .drop("mdm_ip_start").drop("mdm_ip_end").drop("mdm_ip_range")
+    val dfMDM = repo.readMDM(sqlContext)
+      .select("mdm_loc_code", "mdm_ip_start_int", "mdm_ip_end_int")
 
     dfMDM.cache()
 
@@ -265,10 +217,12 @@ class dlpipeline {
     val dfIpInt = df
       .withColumn("dest_ip_int", dlutil.ip2Long($"dest_ip"))
       .withColumn("source_ip_int", dlutil.ip2Long($"source_ip"))
+    dfIpInt.cache()
 
     val ListIPToResolve = dfIpInt
       .select("dest_ip_int").withColumnRenamed("dest_ip_int", "IP")
       .unionAll(dfIpInt.select("source_ip_int").withColumnRenamed("source_ip_int", "IP")).distinct
+    ListIPToResolve.cache()
 
     //Resolve Site
     val dfSiteResolved = ListIPToResolve.join(dfMDM, ListIPToResolve("IP") >= dfMDM("mdm_ip_start_int") && ListIPToResolve("IP") <= dfMDM("mdm_ip_end_int"))
@@ -282,9 +236,9 @@ class dlpipeline {
     val ListIPResolved = ListIPToResolve.join(dfSiteResolvedConcat, ListIPToResolve("IP") ===  dfSiteResolvedConcat("IP2"), "left_outer")
       .select("IP", "site")
       .withColumn("site_", formatSite($"site")).drop("site").withColumnRenamed("site_", "site")
+    ListIPResolved.cache()
 
     //suppress result column (source_site, dest_site) in dfIpInt if already exist
-    // drop result columns from dfIpInt (Source_sector, source_I_ID_site) if already exist
     val dfIpIntClean: DataFrame = {
       val dftmp = {
         if (dfIpInt.columns.contains("source_site")) {
@@ -309,7 +263,7 @@ class dlpipeline {
 
   def SiteAndSectorResolutionFromI_ID(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
     import sqlContext.implicits._
-    val dfI_ID = sqlContext.read.parquet(I_IDRepository)
+    val dfI_ID = repo.readI_ID(sqlContext)
       .withColumnRenamed("I_ID", "I_ID2")
       .withColumnRenamed("Sector", "source_sector")
       .withColumnRenamed("siteCode", "source_I_ID_site")
@@ -337,9 +291,85 @@ class dlpipeline {
   def AIPResolution(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
     import sqlContext.implicits._
 
-    //TO DO
+    val dfAIP = repo.readAIP(sqlContext)
+    dfAIP.cache()
 
-    return df
+    val collecttype_ = df.select("collecttype").distinct.collect.flatMap(_.toSeq).map(_.toString())
+    val collecttype = collecttype_(0)
+
+    val dfres1 = {
+      // drop result columns from df (dest_aip...) if already exist
+      val df1: DataFrame = {
+          if (df.columns.contains("dest_aip_server_adminby")) {
+            df.drop("dest_aip_server_adminby")
+              .drop("dest_aip_server_function")
+              .drop("dest_aip_server_subfunction")
+              .drop("dest_aip_app_name")
+              .drop("dest_aip_app_type")
+              .drop("dest_aip_appinstance_type")
+              .drop("dest_aip_app_state")
+              .drop("dest_aip_app_sensitive")
+              .drop("dest_aip_app_criticality")
+              .drop("dest_aip_app_sector")
+              .drop("dest_aip_appinstance_shared_unique_id")
+          } else df
+        }
+
+      df1.join(dfAIP,
+        df1("dest_ip") <=> dfAIP("aip_server_ip"))
+        .drop("aip_server_ip")
+        .withColumnRenamed("aip_server_adminby", "dest_aip_server_adminby")
+        .withColumnRenamed("aip_server_function", "dest_aip_server_function")
+        .withColumnRenamed("aip_server_subfunction", "dest_aip_server_subfunction")
+        .withColumnRenamed("aip_app_name", "dest_aip_app_name")
+        .withColumnRenamed("aip_app_type", "dest_aip_app_type")
+        .withColumnRenamed("aip_appinstance_type", "dest_aip_appinstance_type")
+        .withColumnRenamed("aip_app_state", "dest_aip_app_state")
+        .withColumnRenamed("aip_app_sensitive", "dest_aip_app_sensitive")
+        .withColumnRenamed("aip_app_criticality", "dest_aip_app_criticality")
+        .withColumnRenamed("aip_app_sector", "dest_aip_app_sector")
+        .withColumnRenamed("aip_appinstance_shared_unique_id", "dest_aip_appinstance_shared_unique_id")
+    }
+
+    val dfres2 = {
+      if (collecttype == "server") {
+        // drop result columns from df (source_aip...) if already exist
+        val df1: DataFrame = {
+          if (dfres1.columns.contains("source_aip_server_adminby")) {
+            dfres1.drop("source_aip_server_adminby")
+              .drop("source_aip_server_function")
+              .drop("source_aip_server_subfunction")
+              .drop("source_aip_app_name")
+              .drop("source_aip_app_type")
+              .drop("source_aip_appinstance_type")
+              .drop("source_aip_app_state")
+              .drop("source_aip_app_sensitive")
+              .drop("source_aip_app_criticality")
+              .drop("source_aip_app_sector")
+              .drop("source_aip_appinstance_shared_unique_id")
+          } else dfres1
+        }
+
+        df1.join(dfAIP,
+          df1("source_ip") <=> dfAIP("aip_server_ip"))
+          .drop("aip_server_ip")
+          .withColumnRenamed("aip_server_adminby", "source_aip_server_adminby")
+          .withColumnRenamed("aip_server_function", "source_aip_server_function")
+          .withColumnRenamed("aip_server_subfunction", "source_aip_server_subfunction")
+          .withColumnRenamed("aip_app_name", "source_aip_app_name")
+          .withColumnRenamed("aip_app_type", "source_aip_app_type")
+          .withColumnRenamed("aip_appinstance_type", "source_aip_appinstance_type")
+          .withColumnRenamed("aip_app_state", "source_aip_app_state")
+          .withColumnRenamed("aip_app_sensitive", "source_aip_app_sensitive")
+          .withColumnRenamed("aip_app_criticality", "source_aip_app_criticality")
+          .withColumnRenamed("aip_app_sector", "source_aip_app_sector")
+          .withColumnRenamed("aip_appinstance_shared_unique_id", "source_aip_appinstance_shared_unique_id")
+      }else {
+        dfres1
+      }
+    }
+
+    return dfres2
 
   }
 
