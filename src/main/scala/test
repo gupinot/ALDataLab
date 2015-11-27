@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////////////////
+//pour spark-shell
+/////////////////////////////////////////////////////////////////////////////
+
 sqlContext.setConf("spark.sql.shuffle.partitions", "10")
 import dlenv._
 import dlutil._
@@ -6,21 +10,9 @@ import DLRepo._
 
 val D_Root="s3://alstomlezoomerus"
 
-val D_Root_Hadoop="/user/gupinot"
-
-//val D_Root="/user/gupinot"
-//val D_Root=""
-
 val pipe=new dlpipeline(D_Root+"/DATA/Repository")
 val repo = new dlrepo(D_Root+"/DATA/Repository")
 
-
-pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/connection_sabad11478.ad.sys_20151003.tgz.csv.gz", "/DATA/3-NXFile")
-pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/webrequest_sabad11478.ad.sys_20151003.tgz.csv.gz", "/DATA/3-NXFile")
-pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/connection_sabad11478.ad.sys_20151010.tgz.csv.gz", "/DATA/3-NXFile")
-pipe.pipeline2to3(sc, sqlContext, "/DATA/2-NXFile/in/webrequest_sabad11478.ad.sys_20151010.tgz.csv.gz", "/DATA/3-NXFile")
-pipe.pipeline3to4(sqlContext, "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-09-26.parquet", "/DATA/4-NXFile")
-pipe.pipeline3to4(sqlContext, "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-05.parquet", "/DATA/4-NXFile")
 
 repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/MDM-ITC_20151117.csv")
 repo.ProcessInFile(sqlContext, D_Root + "/DATA/Repository/in/I-ID_20151101.csv")
@@ -51,7 +43,10 @@ pipe.pipeline3to4(sqlContext, D_Root + "/DATA/3-NXFile/connection_sabad11478.ad.
 pipe.pipeline3to4(sqlContext, D_Root + "/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-27.parquet", D_Root + "/DATA/4-NXFile")
 
 
-spark-shell --master yarn --driver-memory 8G --executor-memory 8G --jars ./lib/ALDataLab-assembly-1.0.jar
+spark-shell --master yarn --driver-memory 4G --executor-memory 8G --jars ./lib/ALDataLab-assembly-1.0.jar
 
-spark-submit --master yarn --driver-memory 4G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_Root s3://alstomlezoomerus --method pipeline3to4 /DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet /DATA/4-NXFile
-spark-submit --master yarn --driver-memory 4G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_Root /user/gupinot --method pipeline3to4 hdfs:///DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet /DATA/4-NXFile
+/////////////////////////////////////////////////////////////////////////////
+Commandes spark-submit
+/////////////////////////////////////////////////////////////////////////////
+
+spark-submit --master yarn --driver-memory 2G --executor-memory 10G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO s3://alstomlezoomerus/DATA/Repository --method pipeline3to4 s3://alstomlezoomerus/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet s3://alstomlezoomerus/DATA/4-NXFile false

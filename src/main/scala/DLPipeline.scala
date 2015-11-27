@@ -104,7 +104,7 @@ class dlpipeline(RepoDir: String) {
     //split resdf by enddate
     println("pipeline2to3() : split resdf by enddate")
     val daylist = resdf.select("enddate").distinct.collect.flatMap(_.toSeq)
-    val dfbydaylistArray = daylist.map(day => resdf.where($"enddate" <=> day))
+    val dfbydaylistArray = daylist.map(day => resdf.where($"enddate" === day))
 
     val dfdone = sc.parallelize(List("true")).toDF("done")
     val dfnotdone = sc.parallelize(List("false")).toDF("done")
@@ -328,7 +328,7 @@ class dlpipeline(RepoDir: String) {
         }
 
       df1.join(dfAIP,
-        df1("dest_ip") <=> dfAIP("aip_server_ip"))
+        df1("dest_ip") === dfAIP("aip_server_ip"))
         .drop("aip_server_ip")
         .withColumnRenamed("aip_server_adminby", "dest_aip_server_adminby")
         .withColumnRenamed("aip_server_function", "dest_aip_server_function")
@@ -363,7 +363,7 @@ class dlpipeline(RepoDir: String) {
         }
 
         df1.join(dfAIP,
-          df1("source_ip") <=> dfAIP("aip_server_ip"))
+          df1("source_ip") === dfAIP("aip_server_ip"))
           .drop("aip_server_ip")
           .withColumnRenamed("aip_server_adminby", "source_aip_server_adminby")
           .withColumnRenamed("aip_server_function", "source_aip_server_function")
@@ -403,11 +403,11 @@ class dlpipeline(RepoDir: String) {
     //join with df
     val dfres = df
       .join(df4Web,
-        df("I_ID_D") <=> df4Web("wr_I_ID_D")
-          && df("source_app_name") <=> df4Web("wr_source_app_name")
-          && df("dest_ip") <=> df4Web("wr_dest_ip")
-          && df("dest_port") <=> df4Web("wr_dest_port")
-          && df("enddate") <=> df4Web("wr_enddate"),
+        df("I_ID_D") === df4Web("wr_I_ID_D")
+          && df("source_app_name") === df4Web("wr_source_app_name")
+          && df("dest_ip") === df4Web("wr_dest_ip")
+          && df("dest_port") === df4Web("wr_dest_port")
+          && df("enddate") === df4Web("wr_enddate"),
         "left_outer")
       .drop("wr_I_ID_D")
       .drop("wr_source_app_name")
