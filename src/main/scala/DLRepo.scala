@@ -1,6 +1,5 @@
 package DLRepo
 
-import dlenv._
 import dlutil._
 
 import org.apache.hadoop.conf.Configuration

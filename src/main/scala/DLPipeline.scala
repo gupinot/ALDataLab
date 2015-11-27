@@ -1,7 +1,6 @@
 package dlpipeline
 
 import DLRepo.dlrepo
-import dlenv._
 import dlutil._
 
 import org.apache.hadoop.conf.Configuration
@@ -160,6 +159,9 @@ class dlpipeline(RepoDir: String) {
   }
 
   def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
+    return pipeline3to4(sqlContext, filein, dirout, true)
+  }
+  def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
 
     import sqlContext.implicits._
 
@@ -196,10 +198,17 @@ class dlpipeline(RepoDir: String) {
 
     //AIP resolution
     println("pipeline3to4() : AIP resolution")
-    val dfSiteSector4WebRequestAIP = AIPResolution(sqlContext, dfSiteSector4WebRequest)
+    val dfSiteSector4WebRequestAIP = {
+      if (AIPToResolve) {
+        AIPResolution(sqlContext, dfSiteSector4WebRequest)
+      }else {
+        dfSiteSector4WebRequest
+      }
+    }
+
 
     println("pipeline3to4() : write result : " + dirout)
-    dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector", "source_I_ID_site", "dest_site").parquet(dirout)
+    dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(dirout)
 
     return true
   }
@@ -282,7 +291,10 @@ class dlpipeline(RepoDir: String) {
     }
 
     //join for resolution
-    val dfIID = df1.join(dfI_ID, df("I_ID_U") === dfI_ID("I_ID2"), "left_outer").drop("I_ID2")
+    val dfIID = df1.join(dfI_ID, df("I_ID_U") === dfI_ID("I_ID2"), "left_outer")
+      .drop("I_ID2")
+      .withColumnRenamed("SiteCode", "source_I_ID_site")
+      .withColumn("source_I_ID_site", formatSite($"source_I_ID_site"))
 
     return dfIID
 

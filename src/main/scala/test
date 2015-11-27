@@ -52,3 +52,6 @@ pipe.pipeline3to4(sqlContext, D_Root + "/DATA/3-NXFile/connection_sabad11478.ad.
 
 
 spark-shell --master yarn --driver-memory 8G --executor-memory 8G --jars ./lib/ALDataLab-assembly-1.0.jar
+
+spark-submit --master yarn --driver-memory 4G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_Root s3://alstomlezoomerus --method pipeline3to4 /DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet /DATA/4-NXFile
+spark-submit --master yarn --driver-memory 4G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_Root /user/gupinot --method pipeline3to4 hdfs:///DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet /DATA/4-NXFile
