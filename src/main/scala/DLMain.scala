@@ -14,7 +14,11 @@ object DLMain {
     val usage = """
     Usage: DLMain [--D_REPO string] --method methodname [methodsarg1 [methodarg2]]
                 """
-    if (args.length == 0) println(usage)
+    if (args.length == 0) {
+      println(usage)
+      exit(1)
+    }
+    println("DLMain() : Begin")
     val arglist = args.toList
     type OptionMap = Map[Symbol, Any]
 
@@ -26,7 +30,6 @@ object DLMain {
     var methodarg3 = ""
 
     def nextOption(map : OptionMap, list: List[String]) : OptionMap = {
-      def isSwitch(s : String) = (s(0) == '-')
       list match {
         case Nil => map
         case "--D_REPO" :: value :: tail =>
@@ -57,21 +60,14 @@ object DLMain {
     val options = nextOption(Map(),arglist)
     println(options)
 
-
-
     val pipe=new dlpipeline(D_REPO)
     val repo = new dlrepo(D_REPO)
     val conf = new SparkConf()
-      //        .setMaster("local[2]")
       .setAppName("DataLab-"+methodname)
-    //        .set("spark.executor.memory", "3g")
-    //        .set("spark.rdd.compress", "true")
-    //        .set("spark.storage.memoryFraction", "1")
 
     val sc = new SparkContext(conf)
     val sqlContext = new org.apache.spark.sql.SQLContext(sc) //
     sqlContext.setConf("spark.sql.shuffle.partitions", "10")
-
 
     methodname match {
       case "pipeline3to4" => if (methodarg3 != "") {
@@ -82,6 +78,7 @@ object DLMain {
       case "pipeline2to3" => pipe.pipeline2to3(sc, sqlContext, methodarg1, methodarg2)
       case "RepoProcessInFile" => repo.ProcessInFile(sqlContext, methodarg1)
     }
+
 
   }
 }

@@ -49,4 +49,13 @@ spark-shell --master yarn --driver-memory 4G --executor-memory 8G --jars ./lib/A
 Commandes spark-submit
 /////////////////////////////////////////////////////////////////////////////
 
-spark-submit --master yarn --driver-memory 2G --executor-memory 10G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO s3://alstomlezoomerus/DATA/Repository --method pipeline3to4 s3://alstomlezoomerus/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-29.parquet s3://alstomlezoomerus/DATA/4-NXFile false
+spark-submit --master yarn-cluster --driver-memory 2G --executor-memory 10G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO s3://alstomlezoomerus/DATA/Repository --method pipeline3to4 s3://alstomlezoomerus/DATA/3-NXFile/connection_sabad11478.ad.sys_2015-10-30.parquet s3://alstomlezoomerus/DATA/4-NXFile
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+Commandes shell (appelées en cron)
+/////////////////////////////////////////////////////////////////////////////
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/Repository/in/" "s3" ".todo" "RepoProcessInFile"
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/2-NXFile" "s3" ".todo" "pipeline2to3" "s3://alstomlezoomerus/DATA/3-NXFile"
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/3-NXFile" "s3" ".todo" "pipeline3to4" "s3://alstomlezoomerus/DATA/4-NXFile"

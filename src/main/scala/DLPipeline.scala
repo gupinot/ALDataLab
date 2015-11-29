@@ -106,8 +106,7 @@ class dlpipeline(RepoDir: String) {
     val daylist = resdf.select("enddate").distinct.collect.flatMap(_.toSeq)
     val dfbydaylistArray = daylist.map(day => resdf.where($"enddate" === day))
 
-    val dfdone = sc.parallelize(List("true")).toDF("done")
-    val dfnotdone = sc.parallelize(List("false")).toDF("done")
+    val dfnotdone = sc.parallelize(List("false")).toDF("notdone")
 
     val JodaTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
 
@@ -141,20 +140,14 @@ class dlpipeline(RepoDir: String) {
             println("pipeline2to3() : No duplicated")
             dfday.write.mode("overwrite").parquet(fileout)
             dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
-            //fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX4+"/in/"+filein))
           }else {
-            // duplicated (file already exists) => delete file input
             println("pipeline2to3() : Duplicated")
-            //fs.delete(new Path(D_NX3+"/in/"+filein))
           }
         }else {
           println("pipeline2to3() : no CompleteDay")
-          //val res = fs.rename(new Path(D_NX3+"/in/"+filein), new Path(D_NX3+"/NoCompleteDay/"+filein))
         }
       }
     )
-    dfdone.write.format("com.databricks.spark.csv").mode("overwrite").save(filein+".done")
-
     return true
   }
 

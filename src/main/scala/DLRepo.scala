@@ -83,8 +83,8 @@ class dlrepo(RepoDir: String) {
             .withColumnRenamed("Criticality", "aip_app_criticality")
             .withColumnRenamed("Sector", "aip_app_sector")
           case "AIP-SoftInstance" => res
-            .select("Application Name", "Shared Unique ID", "Type", "Host name", "IP address", "filedate")
-            .withColumnRenamed("Application Name", "aip_appinstance_name")
+            .select("Application name", "Shared Unique ID", "Type", "Host name", "IP address", "filedate")
+            .withColumnRenamed("Application name", "aip_appinstance_name")
             .withColumnRenamed("Shared Unique ID", "aip_appinstance_shared_unique_id")
             .withColumnRenamed("Type", "aip_appinstance_type")
             .withColumnRenamed("Host name", "aip_appinstance_hostname")
