@@ -56,6 +56,9 @@ spark-submit --master yarn-cluster --driver-memory 2G --executor-memory 10G --cl
 /////////////////////////////////////////////////////////////////////////////
 Commandes shell (appelées en cron)
 /////////////////////////////////////////////////////////////////////////////
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/Repository/in/" "s3" ".todo" "RepoProcessInFile"
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/2-NXFile" "s3" ".todo" "pipeline2to3" "s3://alstomlezoomerus/DATA/3-NXFile"
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/3-NXFile" "s3" ".todo" "pipeline3to4" "s3://alstomlezoomerus/DATA/4-NXFile"
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/Repository/in/" "csv" "s3" ".todo" "RepoProcessInFile"
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/2-NXFile" "sabad11478" "s3" ".todo" "pipeline2to3" "s3://alstomlezoomerus/DATA/3-NXFile"
+/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/3-NXFile" "sabad11478" "s3" ".todo" "pipeline3to4" "s3://alstomlezoomerus/DATA/4-NXFile"
+
+#uniq engine list to compute
+enginelist = $(aws s3 ls s3://alstomlezoomerus/DATA/2-NXFile/ | awk '{print $4}' | grep -v "^$" | grep -v todo | awk -F'_' '{print $2}' | sort | uniq | wc -l)
