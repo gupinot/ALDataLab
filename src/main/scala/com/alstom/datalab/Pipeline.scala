@@ -143,15 +143,26 @@ class Pipeline(RepoDir: String) {
     return true
   }
 
-  def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
-    return pipeline3to4(sqlContext, filein, dirout, true)
+  def pipeline3to4(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
+    return pipeline3to4(sc, sqlContext, filein, dirout, true)
   }
-  def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
+  def pipeline3to4(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
+
+    import sqlContext.implicits._
 
     val filename = new Path(filein).getName()
     val filetype = filename.replaceFirst("_.*", "")
     val fileenginename = filename.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
     val fileday=filename.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("\\.parquet$", "")
+
+    val fileout = dirout + "/" + filename
+
+    if (filetype == "webrequest") {
+      println("pipeline3to4() : webrequest file : nothing to do (will be compute with connection file)")
+      return true
+    }
+
+    val dfnotdone = sc.parallelize(List("false")).toDF("notdone")
 
     println("pipeline3to4() : read filein : " + filein)
     val df = sqlContext.read.parquet(filein)
@@ -189,14 +200,27 @@ class Pipeline(RepoDir: String) {
       }
     }
 
+    println("pipeline3to4() : write result : " + fileout)
+    dfSiteSector4WebRequestAIP.write.mode("overwrite").parquet(fileout)
+    dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
 
-    println("pipeline3to4() : write result : " + dirout)
-    dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(dirout)
+    //println("pipeline3to4() : write partitionBy result : " + diroutByPartition)
+    //dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(diroutByPartition)
+
 
     return true
   }
 
-  def SiteResolutionFromIP(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
+  def pipeline4to5(sqlContext: org.apache.spark.sql.SQLContext, filein: String, diroutByPartition: String): Boolean = {
+
+    import sqlContext.implicits._
+
+    val df = sqlContext.read.parquet(filein)
+    df.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(diroutByPartition)
+    return true
+  }
+
+    def SiteResolutionFromIP(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
     import sqlContext.implicits._
 
     //Read MDM repository file
@@ -310,7 +334,7 @@ class Pipeline(RepoDir: String) {
         }
 
       df1.join(dfAIP,
-        df1("dest_ip") === dfAIP("aip_server_ip"))
+        df1("dest_ip") === dfAIP("aip_server_ip"), "left_outer")
         .drop("aip_server_ip")
         .withColumnRenamed("aip_server_adminby", "dest_aip_server_adminby")
         .withColumnRenamed("aip_server_function", "dest_aip_server_function")
@@ -322,13 +346,13 @@ class Pipeline(RepoDir: String) {
         .withColumnRenamed("aip_app_sensitive", "dest_aip_app_sensitive")
         .withColumnRenamed("aip_app_criticality", "dest_aip_app_criticality")
         .withColumnRenamed("aip_app_sector", "dest_aip_app_sector")
-        .withColumnRenamed("aip_appinstance_shared_unique_id", "dest_aip_appinstance_shared_unique_id")
+        .withColumnRenamed("aip_app_shared_unique_id", "dest_aip_app_shared_unique_id")
     }
 
     val dfres2 = {
       if (collecttype == "server") {
         // drop result columns from df (source_aip...) if already exist
-        val df1: DataFrame = {
+        val df2: DataFrame = {
           if (dfres1.columns.contains("source_aip_server_adminby")) {
             dfres1.drop("source_aip_server_adminby")
               .drop("source_aip_server_function")
@@ -344,8 +368,8 @@ class Pipeline(RepoDir: String) {
           } else dfres1
         }
 
-        df1.join(dfAIP,
-          df1("source_ip") === dfAIP("aip_server_ip"))
+        df2.join(dfAIP,
+          df2("source_ip") === dfAIP("aip_server_ip"), "left_outer")
           .drop("aip_server_ip")
           .withColumnRenamed("aip_server_adminby", "source_aip_server_adminby")
           .withColumnRenamed("aip_server_function", "source_aip_server_function")
@@ -357,7 +381,7 @@ class Pipeline(RepoDir: String) {
           .withColumnRenamed("aip_app_sensitive", "source_aip_app_sensitive")
           .withColumnRenamed("aip_app_criticality", "source_aip_app_criticality")
           .withColumnRenamed("aip_app_sector", "source_aip_app_sector")
-          .withColumnRenamed("aip_appinstance_shared_unique_id", "source_aip_appinstance_shared_unique_id")
+          .withColumnRenamed("aip_app_shared_unique_id", "source_aip_app_shared_unique_id")
       }else {
         dfres1
       }

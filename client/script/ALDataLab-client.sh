@@ -24,19 +24,19 @@ echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName) : Begin"
 
 
 case $# in
-    6) MethodArg1=$8
+    8) MethodArg1=$8
        ;;
-    7) MethodArg1=$8
+    9) MethodArg1=$8
        MethodArg2=$9
        ;;
-    8) MethodArg1=$8
+    10) MethodArg1=$8
        MethodArg2=$9
        MethodArg3=$10
        ;;
 esac
 
 case $D_FS_TYPE in
-    "s3") FileList=$(aws s3 ls $DirInput | grep "$EngineName" | grep $ExtToDeal | awk '{print $4}')
+    "s3") FileList=$(aws s3 ls $DirInput | grep "$EngineName" | grep $ExtToDeal | grep -v folder | awk '{if ($1 == "PRE") {print $2} else {print $4}}')
         ;;
     "hdfs") FileList=$(hadoop fs -ls $DirInput | grep "$EngineName" | grep $ExtToDeal | awk '{print $8}')
         ;;
@@ -55,24 +55,37 @@ else
     echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName)" > $LckFile
 fi
 
+trap "rm -f $LckFile" EXIT
+
+StopFile=/tmp/$$.stop
 for filein in $FileList
 do
     fileintodeal="$(basename -s $ExtToDeal $filein)"
     echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName) : spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO ${D_REPO} --method ${MethodName} ${DirInput}${fileintodeal} ${MethodArg1} ${MethodArg2} ${MethodArg3}..."
-    spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO ${D_REPO} --method ${MethodName} ${DirInput}${fileintodeal} ${MethodArg1} ${MethodArg2} ${MethodArg3}
+    spark-submit --master yarn --driver-memory 2G --executor-memory 8G --executor-cores 2 --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO ${D_REPO} --method ${MethodName} ${DirInput}${fileintodeal} ${MethodArg1} ${MethodArg2} ${MethodArg3}
     ret=$?
     if [[ $ret -eq 0 ]]
     then
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName) : spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO ${D_REPO} --method ${MethodName} ${DirInput}${fileintodeal} ${MethodArg1} ${MethodArg2} ${MethodArg3} : Done"
         #filein rm (todo file)
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") : ${MethodName} ${DirInput}${fileintodeal} : OK"
         case $D_FS_TYPE in
-            "s3") aws s3 rm ${DirInput}${fileintodeal}${ExtToDeal}
+            "s3")
+                aws s3 rm ${DirInput}${fileintodeal}${ExtToDeal} --recursive
+                aws s3 rm ${DirInput}${fileintodeal}${ExtToDeal}
                 ;;
             "hdfs") hadoop fs -rm -f -r ${DirInput}${fileintodeal}${ExtToDeal}
                 ;;
         esac
     else
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName) : spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMain.DLMain file:///home/hadoop/lib/ALDataLab-assembly-1.0.jar --D_REPO ${D_REPO} --method ${MethodName} ${DirInput}${fileintodeal} ${MethodArg1} ${MethodArg2} ${MethodArg3} : ERR"
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") : ${MethodName} ${DirInput}${fileintodeal} : KO"
+    fi
+    if [[ -f $StopFile ]]
+    then
+        echo "Stop required. Stopping"
+        rm $StopFile
+        break
     fi
 done
 rm -f $LckFile

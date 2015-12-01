@@ -31,6 +31,19 @@ do
 	ServerPID[$i]=""
 done
 
+function exitkill {
+    for ((i=1; i<=${#ServerPID[@]}; i++))
+	do
+	    if [[ "${ServerPID[$i]}" != "" ]]
+	    then
+	        echo "kill" > /tmp/${ServerPID[$i]}.stop
+	    fi
+	done
+	exit 0
+}
+
+trap "exitkill" SIGINT SIGTERM
+
 function waitServerIdle {
 	ServerIdle=0
 	while [[ $ServerIdle -eq 0 ]]
@@ -69,6 +82,7 @@ function runscript {
 	ServerPID[$ServerID]=$!
 }
 
+#for enginename in $(aws s3 ls s3://alstomlezoomerus/DATA/2-NXFile/ | awk '{print $4}' | grep -v "^$" | grep -v todo | awk -F'_' '{print $2}' | sort | uniq | grep -v sabad15034.ad.sys | grep -v sacch15002 | grep -v sumhg15005)
 for enginename in $(aws s3 ls s3://alstomlezoomerus/DATA/2-NXFile/ | awk '{print $4}' | grep -v "^$" | grep -v todo | awk -F'_' '{print $2}' | sort | uniq)
 do
 	runscript $enginename

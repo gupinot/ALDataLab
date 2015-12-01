@@ -10,7 +10,7 @@ object Main {
 
   def main(args: Array[String]) {
     val usage = """
-    Usage: DLMain [--D_REPO string] --method methodname [methodsarg1 [methodarg2]]
+    Usage: DLMain [--D_REPO string] --method RepoProcessInFile|pipeline2to3|pipeline3to4|pipeline4to5 [methodsarg1 [methodarg2]]
                 """
     if (args.length == 0) {
       println(usage)
@@ -69,11 +69,12 @@ object Main {
 
     methodname match {
       case "pipeline3to4" => if (methodarg3 != "") {
-        pipe.pipeline3to4(sqlContext, methodarg1, methodarg2, methodarg3.toBoolean)
+        pipe.pipeline3to4(sc, sqlContext, methodarg1, methodarg2, methodarg3.toBoolean)
       } else {
-        pipe.pipeline3to4(sqlContext, methodarg1, methodarg2)
+        pipe.pipeline3to4(sc, sqlContext, methodarg1, methodarg2)
       }
       case "pipeline2to3" => pipe.pipeline2to3(sc, sqlContext, methodarg1, methodarg2)
+      case "pipeline4to5" => pipe.pipeline4to5(sqlContext, methodarg1, methodarg2)
       case "RepoProcessInFile" => repo.ProcessInFile(sqlContext, methodarg1)
     }
   }
