@@ -1,17 +1,14 @@
-
+package com.alstom.datalab
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{DataType, StringType, StructType}
 
-
 /**
-  * Created by guillaumepinot on 05/11/2015.
+  * Created by raphael on 01/12/2015.
   */
-package object dlutil {
-
-
+object Util {
   ///////////////////////////////////////////////////////////////////////////
   //////////////////////////////  UDF //////////////////////////////
 
@@ -120,5 +117,4 @@ package object dlutil {
   }
 
   def retValue(value: String) = udf((colval: String) => value)
-
 }

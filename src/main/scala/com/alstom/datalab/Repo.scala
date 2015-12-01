@@ -1,23 +1,16 @@
-package DLRepo
+package com.alstom.datalab
 
-import dlutil._
-
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs._
 import org.apache.hadoop.fs.Path
-import org.apache.commons.io.FilenameUtils
-import com.databricks.spark.csv._
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.catalyst.expressions.CurrentDate
 import org.apache.spark.sql.functions._
-import org.apache.spark.{SparkConf, SparkContext}
+import Util._
 
 
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class dlrepo(RepoDir: String) {
+class Repo(RepoDir: String) {
 
 
   val MDMRepository = RepoDir + "/MDM-ITC"
@@ -31,10 +24,6 @@ class dlrepo(RepoDir: String) {
     //Read csv files from /DATA/Repository/in and convert to parquet format
 
     import sqlContext.implicits._
-
-
-
-
 
       val filename = new Path(filein).getName()
       val filetype = filename.replaceFirst("_.*", "")
@@ -205,7 +194,6 @@ class dlrepo(RepoDir: String) {
   }
 
   def readMDM(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import org.apache.spark.sql.functions._
     import sqlContext.implicits._
 
     val df = sqlContext.read.parquet(MDMRepository)

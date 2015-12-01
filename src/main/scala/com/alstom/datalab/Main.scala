@@ -1,14 +1,12 @@
-package DLMain
-import org.apache.spark.{SparkContext, SparkConf}
-import dlutil._
-import dlpipeline._
-import DLRepo._
+package com.alstom.datalab
+
+import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   * Created by guillaumepinot on 10/11/2015.
   */
 
-object DLMain {
+object Main {
 
   def main(args: Array[String]) {
     val usage = """
@@ -60,13 +58,13 @@ object DLMain {
     val options = nextOption(Map(),arglist)
     println(options)
 
-    val pipe=new dlpipeline(D_REPO)
-    val repo = new dlrepo(D_REPO)
+    val pipe=new Pipeline(D_REPO)
+    val repo = new Repo(D_REPO)
     val conf = new SparkConf()
       .setAppName("DataLab-"+methodname)
 
     val sc = new SparkContext(conf)
-    val sqlContext = new org.apache.spark.sql.SQLContext(sc) //
+    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     sqlContext.setConf("spark.sql.shuffle.partitions", "10")
 
     methodname match {
@@ -78,7 +76,5 @@ object DLMain {
       case "pipeline2to3" => pipe.pipeline2to3(sc, sqlContext, methodarg1, methodarg2)
       case "RepoProcessInFile" => repo.ProcessInFile(sqlContext, methodarg1)
     }
-
-
   }
 }

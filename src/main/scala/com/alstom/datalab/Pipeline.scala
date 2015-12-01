@@ -1,18 +1,10 @@
-package dlpipeline
+package com.alstom.datalab
 
-import DLRepo.dlrepo
-import dlutil._
-
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.FileSystem
+import com.alstom.datalab.Util._
 import org.apache.hadoop.fs.Path
-import org.apache.spark.{SparkContext, SparkConf}
-import com.databricks.spark.csv._
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
-
 import org.joda.time.format._
-import org.joda.time._
 
 
 
@@ -20,7 +12,7 @@ import org.joda.time._
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class dlpipeline(RepoDir: String) {
+class Pipeline(RepoDir: String) {
 
   /*
   Arbo : a file is set done by writting file.done file
@@ -34,7 +26,7 @@ class dlpipeline(RepoDir: String) {
 
  */
 
-  val repo = new dlrepo(RepoDir)
+  val repo = new Repo(RepoDir)
 
   def pipeline2to3(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
     import sqlContext.implicits._
@@ -90,13 +82,13 @@ class dlpipeline(RepoDir: String) {
 
     //split start_time and end_time into 2 fields date and time
     println("pipeline2to3() : split start_time and end_time into 2 fields date and time")
-    val resdf = df2.withColumn("startdate", dlutil.getFirst(daypattern)($"start_time"))
-      .withColumn("starttime", dlutil.getFirst(timepattern)($"start_time"))
-      .withColumn("enddate", dlutil.getFirst(daypattern)($"end_time"))
-      .withColumn("endtime", dlutil.getFirst(timepattern)($"end_time"))
+    val resdf = df2.withColumn("startdate", getFirst(daypattern)($"start_time"))
+      .withColumn("starttime", getFirst(timepattern)($"start_time"))
+      .withColumn("enddate", getFirst(daypattern)($"end_time"))
+      .withColumn("endtime", getFirst(timepattern)($"end_time"))
       .withColumn("engine", lit(fileenginename))
       .withColumn("fileenginedate", lit(filedate))
-      .withColumn("collecttype", dlutil.getCollectType($"engine"))
+      .withColumn("collecttype", getCollectType($"engine"))
       .drop("start_time").drop("end_time")
 
     resdf.cache()
@@ -155,8 +147,6 @@ class dlpipeline(RepoDir: String) {
     return pipeline3to4(sqlContext, filein, dirout, true)
   }
   def pipeline3to4(sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
-
-    import sqlContext.implicits._
 
     val filename = new Path(filein).getName()
     val filetype = filename.replaceFirst("_.*", "")
@@ -217,8 +207,8 @@ class dlpipeline(RepoDir: String) {
 
     //extract IP to resolve
     val dfIpInt = df
-      .withColumn("dest_ip_int", dlutil.ip2Long($"dest_ip"))
-      .withColumn("source_ip_int", dlutil.ip2Long($"source_ip"))
+      .withColumn("dest_ip_int", ip2Long($"dest_ip"))
+      .withColumn("source_ip_int", ip2Long($"source_ip"))
     dfIpInt.cache()
 
     val ListIPToResolve = dfIpInt
@@ -294,7 +284,6 @@ class dlpipeline(RepoDir: String) {
   }
 
   def AIPResolution(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
-    import sqlContext.implicits._
 
     val dfAIP = repo.readAIP(sqlContext)
     dfAIP.cache()
