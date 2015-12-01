@@ -31,7 +31,10 @@ class Pipeline(repo: Repo)(implicit val sc: SparkContext, implicit val sqlContex
   def pipeline2to3(filein: String, dirout: String): Boolean = {
 
     val filename = new Path(filein).getName
-    val Array(filetype,fileenginename,filedate) = filename.substring(0,filename.lastIndexOf('.')).split("_")
+    val parts:Array[String] = filename.substring(0,filename.lastIndexOf('.')).split("_")
+    val filetype = parts(0)
+    val fileenginename = parts(1)
+    val filedate = parts(2)
 
     println("pipeline2to3() : read filein")
     val df = sqlContext.read.format("com.databricks.spark.csv")
@@ -92,13 +95,11 @@ class Pipeline(repo: Repo)(implicit val sc: SparkContext, implicit val sqlContex
     //split resdf by enddate
     println("pipeline2to3() : split resdf by enddate")
 
-    val dfnotdone = sc.parallelize(List("false")).toDF("notdone")
-
     val days = sqlContext.sql(
       """
         |select enddate,max(endtime) as max_endtime,min(endtime) as min_endtime
         |from df
-        |group by endate
+        |group by enddate
         |having max(endtime) >= 23 and min(endtime) <= 3
       """.stripMargin)
 
@@ -109,7 +110,7 @@ class Pipeline(repo: Repo)(implicit val sc: SparkContext, implicit val sqlContex
       try {
         resdf.where($"enddate" === day).write.parquet(fileout)
         println("pipeline2to3() : No duplicated")
-        dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
+        sc.parallelize(List("false")).toDF().write.mode("overwrite").parquet(fileout+".todo")
       } catch {
         case e: Exception => {
           println("pipeline2to3() : Duplicated")
