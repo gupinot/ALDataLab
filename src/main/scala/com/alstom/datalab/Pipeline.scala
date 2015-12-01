@@ -2,7 +2,8 @@ package com.alstom.datalab
 
 import com.alstom.datalab.Util._
 import org.apache.hadoop.fs.Path
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.{SQLContext, DataFrame}
 import org.apache.spark.sql.functions._
 import org.joda.time.format._
 
@@ -12,7 +13,8 @@ import org.joda.time.format._
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class Pipeline(RepoDir: String) {
+class Pipeline(repo: Repo)(implicit val sc: SparkContext, implicit val sqlContext: SQLContext) {
+  import sqlContext.implicits._
 
   /*
   Arbo : a file is set done by writting file.done file
@@ -26,16 +28,10 @@ class Pipeline(RepoDir: String) {
 
  */
 
-  val repo = new Repo(RepoDir)
+  def pipeline2to3(filein: String, dirout: String): Boolean = {
 
-  def pipeline2to3(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
-    import sqlContext.implicits._
-
-    val filename = new Path(filein).getName()
-    val filetype = filename.replaceFirst("_.*", "")
-    val fileenginename = filename.replaceFirst(filetype+"_", "").replaceFirst("_.*", "")
-    val filedate=filename.replaceFirst(filetype+"_", "").replaceFirst(fileenginename+"_", "").replaceFirst("\\..*", "")
-
+    val filename = new Path(filein).getName
+    val Array(filetype,fileenginename,filedate) = filename.substring(0,filename.lastIndexOf('.')).split("_")
 
     println("pipeline2to3() : read filein")
     val df = sqlContext.read.format("com.databricks.spark.csv")
@@ -45,7 +41,6 @@ class Pipeline(RepoDir: String) {
       .option("mode", "DROPMALFORMED")
       //.option("parserLib", "UNIVOCITY")
       .load(filein)
-
 
     //rename columns
     println("pipeline2to3() : rename column")
@@ -82,73 +77,54 @@ class Pipeline(RepoDir: String) {
 
     //split start_time and end_time into 2 fields date and time
     println("pipeline2to3() : split start_time and end_time into 2 fields date and time")
-    val resdf = df2.withColumn("startdate", getFirst(daypattern)($"start_time"))
-      .withColumn("starttime", getFirst(timepattern)($"start_time"))
-      .withColumn("enddate", getFirst(daypattern)($"end_time"))
-      .withColumn("endtime", getFirst(timepattern)($"end_time"))
+    val resdf = df2
+      .withColumn("startdate", to_date($"start_time"))
+      .withColumn("starttime", hour($"start_time"))
+      .withColumn("enddate", to_date($"end_time"))
+      .withColumn("endtime", hour($"end_time"))
       .withColumn("engine", lit(fileenginename))
       .withColumn("fileenginedate", lit(filedate))
       .withColumn("collecttype", getCollectType($"engine"))
       .drop("start_time").drop("end_time")
 
-    resdf.cache()
+    resdf.registerTempTable("df")
 
     //split resdf by enddate
     println("pipeline2to3() : split resdf by enddate")
-    val daylist = resdf.select("enddate").distinct.collect.flatMap(_.toSeq)
-    val dfbydaylistArray = daylist.map(day => resdf.where($"enddate" === day))
 
     val dfnotdone = sc.parallelize(List("false")).toDF("notdone")
 
-    val JodaTimeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
+    val days = sqlContext.sql(
+      """
+        |select enddate,max(endtime) as max_endtime,min(endtime) as min_endtime
+        |from df
+        |group by endate
+        |having max(endtime) >= 23 and min(endtime) <= 3
+      """.stripMargin)
 
-    dfbydaylistArray.map(
-      dfday => {
-        val day = dfday.select("enddate").distinct.collect.flatMap(_.toSeq)
+    days.foreach( row => {
+      val day = row.getDate(0)
+      val fileout = s"$dirout/${filetype}_${fileenginename}_$day.parquet"
 
-
-
-        val dftime = dfday.agg(min((dfday("endtime"))), max(dfday("endtime")))
-        val minendtime = dftime.select("min(endtime)").collect.flatMap(_.toSeq)
-        val maxendtime = dftime.select("max(endtime)").collect.flatMap(_.toSeq)
-
-        if (JodaTimeFormatter.parseDateTime(minendtime(0).toString()).isBefore(JodaTimeFormatter.parseDateTime("03:00:00"))
-          && JodaTimeFormatter.parseDateTime(maxendtime(0).toString()).isAfter(JodaTimeFormatter.parseDateTime("23:00:00")))
-        {
-          println("pipeline2to3() : CompleteDay")
-          //is file with same engine name and same day already exists ?
-          val fileout = dirout + "/" + filetype + "_" + fileenginename + "_" + day(0).toString()+".parquet"
-
-          val dfres = {
-            try {
-              sqlContext.read.parquet(fileout)
-            } catch {
-              case e: java.lang.AssertionError => null
-              case _:Throwable => null
-            }
-          }
-          if (dfres == null) {
-            //no duplicated (file not already exists) => move to /DATA/4-NXFile/in
-            println("pipeline2to3() : No duplicated")
-            dfday.write.mode("overwrite").parquet(fileout)
-            dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
-          }else {
-            println("pipeline2to3() : Duplicated")
-          }
-        }else {
-          println("pipeline2to3() : no CompleteDay")
+      try {
+        resdf.where($"enddate" === day).write.parquet(fileout)
+        println("pipeline2to3() : No duplicated")
+        dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
+      } catch {
+        case e: Exception => {
+          println("pipeline2to3() : Duplicated")
         }
       }
-    )
-    return true
+      println(s"pipeline2to3() : CompleteDay $day")
+    })
+    true
   }
 
-  def pipeline3to4(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String): Boolean = {
-    return pipeline3to4(sc, sqlContext, filein, dirout, true)
+  def pipeline3to4(filein: String, dirout: String): Boolean = {
+    pipeline3to4(filein, dirout, true)
   }
-  def pipeline3to4(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
 
-    import sqlContext.implicits._
+  def pipeline3to4(filein: String, dirout: String, AIPToResolve: Boolean): Boolean = {
 
     val filename = new Path(filein).getName()
     val filetype = filename.replaceFirst("_.*", "")
@@ -168,10 +144,10 @@ class Pipeline(RepoDir: String) {
     val df = sqlContext.read.parquet(filein)
 
     println("pipeline3to4() : SiteResolution")
-    val dfSite = SiteResolutionFromIP(sqlContext, df)
+    val dfSite = SiteResolutionFromIP(df)
 
     println("pipeline3to4() : Sector resolution")
-    val dfSiteSector = SiteAndSectorResolutionFromI_ID(sqlContext, dfSite)
+    val dfSiteSector = SiteAndSectorResolutionFromI_ID(dfSite)
 
     //Web request resolution
     println("pipeline3to4() : Web request resolution")
@@ -179,7 +155,7 @@ class Pipeline(RepoDir: String) {
     val dfSiteSector4WebRequest = {
       try {
         val dfWebRequest = sqlContext.read.parquet(webrequest_filename)
-        WebRequestResolution(sqlContext, dfSiteSector, dfWebRequest)
+        WebRequestResolution(dfSiteSector, dfWebRequest)
       } catch {
         case e: java.lang.AssertionError => println("pipeline3to4() : ERR : webrequest file (" + webrequest_filename + ") not found")
           null
@@ -194,7 +170,7 @@ class Pipeline(RepoDir: String) {
     println("pipeline3to4() : AIP resolution")
     val dfSiteSector4WebRequestAIP = {
       if (AIPToResolve) {
-        AIPResolution(sqlContext, dfSiteSector4WebRequest)
+        AIPResolution(dfSiteSector4WebRequest)
       }else {
         dfSiteSector4WebRequest
       }
@@ -204,27 +180,20 @@ class Pipeline(RepoDir: String) {
     dfSiteSector4WebRequestAIP.write.mode("overwrite").parquet(fileout)
     dfnotdone.write.mode("overwrite").parquet(fileout+".todo")
 
-    //println("pipeline3to4() : write partitionBy result : " + diroutByPartition)
-    //dfSiteSector4WebRequestAIP.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(diroutByPartition)
-
-
-    return true
+    true
   }
 
-  def pipeline4to5(sqlContext: org.apache.spark.sql.SQLContext, filein: String, diroutByPartition: String): Boolean = {
-
-    import sqlContext.implicits._
+  def pipeline4to5(filein: String, diroutByPartition: String): Boolean = {
 
     val df = sqlContext.read.parquet(filein)
     df.write.mode("append").partitionBy("collecttype", "enddate", "engine", "source_sector").parquet(diroutByPartition)
-    return true
+    true
   }
 
-    def SiteResolutionFromIP(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
-    import sqlContext.implicits._
+  def SiteResolutionFromIP(df: DataFrame): DataFrame = {
 
     //Read MDM repository file
-    val dfMDM = repo.readMDM(sqlContext)
+    val dfMDM = repo.readMDM()
       .select("mdm_loc_code", "mdm_ip_start_int", "mdm_ip_end_int")
 
     dfMDM.cache()
@@ -277,9 +246,8 @@ class Pipeline(RepoDir: String) {
     return df4IPSite
   }
 
-  def SiteAndSectorResolutionFromI_ID(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
-    import sqlContext.implicits._
-    val dfI_ID = repo.readI_ID(sqlContext)
+  def SiteAndSectorResolutionFromI_ID(df: DataFrame): DataFrame = {
+    val dfI_ID = repo.readI_ID()
       .withColumnRenamed("I_ID", "I_ID2")
       .withColumnRenamed("Sector", "source_sector")
       .withColumnRenamed("siteCode", "source_I_ID_site")
@@ -307,9 +275,9 @@ class Pipeline(RepoDir: String) {
 
   }
 
-  def AIPResolution(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame): DataFrame = {
+  def AIPResolution(df: DataFrame): DataFrame = {
 
-    val dfAIP = repo.readAIP(sqlContext)
+    val dfAIP = repo.readAIP()
     dfAIP.cache()
 
     val collecttype_ = df.select("collecttype").distinct.collect.flatMap(_.toSeq).map(_.toString())
@@ -318,20 +286,20 @@ class Pipeline(RepoDir: String) {
     val dfres1 = {
       // drop result columns from df (dest_aip...) if already exist
       val df1: DataFrame = {
-          if (df.columns.contains("dest_aip_server_adminby")) {
-            df.drop("dest_aip_server_adminby")
-              .drop("dest_aip_server_function")
-              .drop("dest_aip_server_subfunction")
-              .drop("dest_aip_app_name")
-              .drop("dest_aip_app_type")
-              .drop("dest_aip_appinstance_type")
-              .drop("dest_aip_app_state")
-              .drop("dest_aip_app_sensitive")
-              .drop("dest_aip_app_criticality")
-              .drop("dest_aip_app_sector")
-              .drop("dest_aip_appinstance_shared_unique_id")
-          } else df
-        }
+        if (df.columns.contains("dest_aip_server_adminby")) {
+          df.drop("dest_aip_server_adminby")
+            .drop("dest_aip_server_function")
+            .drop("dest_aip_server_subfunction")
+            .drop("dest_aip_app_name")
+            .drop("dest_aip_app_type")
+            .drop("dest_aip_appinstance_type")
+            .drop("dest_aip_app_state")
+            .drop("dest_aip_app_sensitive")
+            .drop("dest_aip_app_criticality")
+            .drop("dest_aip_app_sector")
+            .drop("dest_aip_appinstance_shared_unique_id")
+        } else df
+      }
 
       df1.join(dfAIP,
         df1("dest_ip") === dfAIP("aip_server_ip"), "left_outer")
@@ -391,8 +359,7 @@ class Pipeline(RepoDir: String) {
 
   }
 
-  def WebRequestResolution(sqlContext: org.apache.spark.sql.SQLContext, df: DataFrame, dfWebRequest: DataFrame): DataFrame = {
-    import sqlContext.implicits._
+  def WebRequestResolution(df: DataFrame, dfWebRequest: DataFrame): DataFrame = {
 
     val myConcat = new ConcatString("|")
 
@@ -422,6 +389,5 @@ class Pipeline(RepoDir: String) {
       .drop("wr_enddate")
 
     return dfres
-
   }
 }

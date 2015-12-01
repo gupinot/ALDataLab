@@ -1,7 +1,7 @@
 package com.alstom.datalab
 
 import org.apache.hadoop.fs.Path
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{SQLContext, DataFrame}
 import org.apache.spark.sql.functions._
 import Util._
 
@@ -10,8 +10,8 @@ import Util._
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class Repo(RepoDir: String) {
-
+class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) {
+  import sqlContext.implicits._
 
   val MDMRepository = RepoDir + "/MDM-ITC"
   val I_IDRepository = RepoDir + "/I-ID"
@@ -20,10 +20,9 @@ class Repo(RepoDir: String) {
   val AIPApplication = RepoDir + "/AIP-Application"
   val AIP = RepoDir + "/AIP"
 
-  def ProcessInFile(sqlContext: org.apache.spark.sql.SQLContext, filein: String): Boolean = {
+  def ProcessInFile(filein: String): Boolean = {
     //Read csv files from /DATA/Repository/in and convert to parquet format
 
-    import sqlContext.implicits._
 
       val filename = new Path(filein).getName()
       val filetype = filename.replaceFirst("_.*", "")
@@ -88,12 +87,9 @@ class Repo(RepoDir: String) {
     return true
   }
 
-  def readAIPServer(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return readAIPServer(sqlContext, true, "")
-  }
+  def readAIPServer(): DataFrame = readAIPServer(true, "")
 
-  def readAIPServer(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import sqlContext.implicits._
+  def readAIPServer(lastDate: Boolean, currentDate: String): DataFrame = {
 
     val df = sqlContext.read.parquet(AIPServer)
     val datemax = {
@@ -107,12 +103,9 @@ class Repo(RepoDir: String) {
 
   }
 
-  def readAIPSoftInstance(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return readAIPSoftInstance(sqlContext, true, "")
-  }
+  def readAIPSoftInstance(): DataFrame = readAIPSoftInstance(true, "")
 
-  def readAIPSoftInstance(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import sqlContext.implicits._
+  def readAIPSoftInstance(lastDate: Boolean, currentDate: String): DataFrame = {
 
     val df = sqlContext.read.parquet(AIPSoftInstance)
     val datemax = {
@@ -126,12 +119,9 @@ class Repo(RepoDir: String) {
 
   }
 
-  def readAIPApplication(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return readAIPApplication(sqlContext, true, "")
-  }
+  def readAIPApplication(): DataFrame = readAIPApplication(true, "")
 
-  def readAIPApplication(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import sqlContext.implicits._
+  def readAIPApplication(lastDate: Boolean, currentDate: String): DataFrame = {
 
     val df = sqlContext.read.parquet(AIPApplication)
     val datemax = {
@@ -145,16 +135,13 @@ class Repo(RepoDir: String) {
 
   }
 
-  def genAIP(sqlContext: org.apache.spark.sql.SQLContext): Boolean = {
-    return genAIP(sqlContext, true, "")
-  }
+  def genAIP(): Boolean = genAIP(true, "")
 
-  def genAIP(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): Boolean = {
-    import sqlContext.implicits._
+  def genAIP(lastDate: Boolean, currentDate: String): Boolean = {
 
-    val dfAIPServer = readAIPServer(sqlContext, lastDate, currentDate)
-    val dfAIPSoftInstance = readAIPSoftInstance(sqlContext, lastDate, currentDate)
-    val dfAIPApplication = readAIPApplication(sqlContext, lastDate, currentDate)
+    val dfAIPServer = readAIPServer(lastDate, currentDate)
+    val dfAIPSoftInstance = readAIPSoftInstance(lastDate, currentDate)
+    val dfAIPApplication = readAIPApplication(lastDate, currentDate)
 
     val dfres1 = dfAIPServer
       .join(dfAIPSoftInstance,
@@ -185,16 +172,11 @@ class Repo(RepoDir: String) {
     return true
   }
 
-  def readAIP(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return sqlContext.read.parquet(AIP)
-  }
+  def readAIP(): DataFrame = sqlContext.read.parquet(AIP)
 
-  def readMDM(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return readMDM(sqlContext, true, "")
-  }
+  def readMDM(): DataFrame = readMDM(true, "")
 
-  def readMDM(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import sqlContext.implicits._
+  def readMDM(lastDate: Boolean, currentDate: String): DataFrame = {
 
     val df = sqlContext.read.parquet(MDMRepository)
     df.cache()
@@ -209,12 +191,9 @@ class Repo(RepoDir: String) {
     return df.filter($"filedate" === datemax.toString()).drop("filedate")
   }
 
-  def readI_ID(sqlContext: org.apache.spark.sql.SQLContext): DataFrame = {
-    return readI_ID(sqlContext, true, "")
-  }
+  def readI_ID(): DataFrame = readI_ID(true, "")
 
-  def readI_ID(sqlContext: org.apache.spark.sql.SQLContext, lastDate: Boolean, currentDate: String): DataFrame = {
-    import sqlContext.implicits._
+  def readI_ID(lastDate: Boolean, currentDate: String): DataFrame = {
 
     val df = sqlContext.read.parquet(I_IDRepository)
     df.cache()

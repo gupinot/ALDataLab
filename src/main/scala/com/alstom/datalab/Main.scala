@@ -58,24 +58,26 @@ object Main {
     val options = nextOption(Map(),arglist)
     println(options)
 
-    val pipe=new Pipeline(D_REPO)
-    val repo = new Repo(D_REPO)
     val conf = new SparkConf()
       .setAppName("DataLab-"+methodname)
+      .set("spark.serializer","org.apache.spark.serializer.KryoSerializer")
 
-    val sc = new SparkContext(conf)
-    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+    implicit val sc = new SparkContext(conf)
+    implicit val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     sqlContext.setConf("spark.sql.shuffle.partitions", "10")
+
+    val repo = new Repo(D_REPO)
+    val pipe = new Pipeline(repo)
 
     methodname match {
       case "pipeline3to4" => if (methodarg3 != "") {
-        pipe.pipeline3to4(sc, sqlContext, methodarg1, methodarg2, methodarg3.toBoolean)
+        pipe.pipeline3to4(methodarg1, methodarg2, methodarg3.toBoolean)
       } else {
-        pipe.pipeline3to4(sc, sqlContext, methodarg1, methodarg2)
+        pipe.pipeline3to4(methodarg1, methodarg2)
       }
-      case "pipeline2to3" => pipe.pipeline2to3(sc, sqlContext, methodarg1, methodarg2)
-      case "pipeline4to5" => pipe.pipeline4to5(sqlContext, methodarg1, methodarg2)
-      case "RepoProcessInFile" => repo.ProcessInFile(sqlContext, methodarg1)
+      case "pipeline2to3" => pipe.pipeline2to3(methodarg1, methodarg2)
+      case "pipeline4to5" => pipe.pipeline4to5(methodarg1, methodarg2)
+      case "RepoProcessInFile" => repo.ProcessInFile(methodarg1)
     }
   }
 }
