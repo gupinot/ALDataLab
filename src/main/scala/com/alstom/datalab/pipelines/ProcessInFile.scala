@@ -13,9 +13,9 @@ class ProcessInFile(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
-    sqlContext.sparkContext.parallelize(this.inputFiles).foreach((filein)=> {
+    this.inputFiles.foreach((filein)=> {
       val filename = new Path(filein).getName
-      val Array(filetype, filedate) = filename.substring(0, filename.lastIndexOf('.')).split("_")
+      val Array(filetype, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
 
       println("ProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"$dirout/$filetype"

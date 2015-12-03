@@ -15,9 +15,9 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   var AIPToResolve = true
 
   def execute(): Unit = {
-    sqlContext.sparkContext.parallelize(this.inputFiles).foreach((filein)=> {
+    this.inputFiles.foreach((filein)=> {
       val filename = new Path(filein).getName
-      val Array(filetype, fileenginename, filedate) = filename.substring(0, filename.lastIndexOf('.')).split("_")
+      val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
       val webrequest_filename = filein.replaceFirst("connection", "webrequest")
       val fileout = s"$dirout/$filename"
 

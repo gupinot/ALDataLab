@@ -13,7 +13,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
-    sqlContext.sparkContext.parallelize(this.inputFiles).foreach((filein) => {
+    this.inputFiles.foreach((filein) => {
       val filename = new Path(filein).getName
       val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
       val engine_type = collect_type(fileenginename)
@@ -54,7 +54,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           $"NX_bin_version" as "source_app_version",
           $"NX_device_last_ip" as "source_ip",
           lit(fileenginename) as "engine",
-          lit(filedate) as "fileenginedate",
+          lit(filedate) as "filedate",
           lit(engine_type) as "collecttype"
         )
         case "webrequest" => df.select(
@@ -68,7 +68,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           $"wr_destination_ip" as "dest_ip",
           $"wr_application_name" as "source_app_name",
           lit(fileenginename) as "engine",
-          lit(filedate) as "fileenginedate",
+          lit(filedate) as "filedate",
           lit(engine_type) as "collecttype"
         )
         case _ => df
@@ -81,12 +81,16 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
       println("pipeline2to3() : split resdf by enddate")
 
       val days = sqlContext
-        .sql("select enddate from df group by enddate having max(endtime) >= 23 and min(endtime) <= 3")
+        .sql(
+          """select enddate, max(endtime) as maxtime, min(endtime) as mintime
+            |from df
+            |group by enddate
+            |having maxtime >= 23 and mintime <= 3""".stripMargin)
         .map(_.getDate(0))
         .collect
 
       days.foreach(day => {
-        val fileout = s"$dirout/${filetype}_${fileenginename}_$day.parquet"
+        val fileout = s"$dirout/$filetype/collecttype=$engine_type/enddate=$day/engine=$fileenginename/"
 
         try {
           resdf.where($"enddate" === day).write.parquet(fileout)
