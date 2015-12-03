@@ -1,6 +1,6 @@
 package com.alstom.datalab
 
-import org.apache.spark.sql.{SQLContext, Row}
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{DataType, StringType, StructType}
@@ -11,6 +11,11 @@ import org.apache.spark.sql.types.{DataType, StringType, StructType}
 object Util {
   ///////////////////////////////////////////////////////////////////////////
   //////////////////////////////  UDF //////////////////////////////
+
+  def basename(filepath: String):String = {
+    val stripped = if (filepath.charAt(filepath.length-1)=='/') filepath.substring(0,filepath.length-1) else filepath
+    stripped.substring(Math.max(0,stripped.lastIndexOf("/")),stripped.length)
+  }
 
   def getFirst(pattern: scala.util.matching.Regex) = udf(
     (datetime: String) => pattern.findFirstIn(datetime) match {

@@ -2,9 +2,9 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
-import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.storage.StorageLevel
 
 /**
   * Created by guillaumepinot on 05/11/2015.
@@ -14,7 +14,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
 
   override def execute(): Unit = {
     this.inputFiles.foreach((filein) => {
-      val filename = new Path(filein).getName
+      val filename = basename(filein)
       val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
       val engine_type = collect_type(fileenginename)
 
@@ -52,10 +52,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           $"NX_bin_exec_name" as "source_app_exec",
           $"NX_bin_paths" as "source_app_paths",
           $"NX_bin_version" as "source_app_version",
-          $"NX_device_last_ip" as "source_ip",
-          lit(fileenginename) as "engine",
-          lit(filedate) as "filedate",
-          lit(engine_type) as "collecttype"
+          $"NX_device_last_ip" as "source_ip"
         )
         case "webrequest" => df.select(
           $"I_ID_D",
@@ -66,15 +63,12 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           $"wr_url" as "url",
           $"wr_destination_port" cast "int" as "dest_port",
           $"wr_destination_ip" as "dest_ip",
-          $"wr_application_name" as "source_app_name",
-          lit(fileenginename) as "engine",
-          lit(filedate) as "filedate",
-          lit(engine_type) as "collecttype"
+          $"wr_application_name" as "source_app_name"
         )
         case _ => df
       }
 
-      val resdf = df2
+      val resdf = df2.persist(StorageLevel.MEMORY_AND_DISK)
 
       //split resdf by enddate
       println("pipeline2to3() : split resdf by enddate")
@@ -87,7 +81,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         .collect
 
       days.foreach(day => {
-        val fileout = s"$dirout/$filetype/collecttype=$engine_type/enddate=$day/engine=$fileenginename/"
+        val fileout = s"$dirout/$filetype/collecttype=$engine_type/dt=$day/engine=$fileenginename/filedt=$filedate"
 
         try {
           resdf.where($"enddate" === day).write.parquet(fileout)
@@ -100,6 +94,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         println(s"pipeline2to3() : CompleteDay $day")
       })
 
+      resdf.unpersist()
     })
   }
 }
