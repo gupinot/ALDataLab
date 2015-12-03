@@ -19,12 +19,12 @@ object Util {
     }
   )
 
-  def getCollectType = udf(
-    (enginename: String) => enginename match {
-      case "sabad15034.ad.sys" | "sacch15002.ad.sys" | "sumhg15005.dom1.ad.sys" => "server"
-      case _ => "device"
-    }
-  )
+  def collect_type(enginename: String) = enginename match {
+    case "sabad15034.ad.sys" | "sacch15002.ad.sys" | "sumhg15005.dom1.ad.sys" => "server"
+    case _ => "device"
+  }
+
+  def getCollectType = udf((enginename: String) => collect_type(enginename))
 
   val daypattern: scala.util.matching.Regex = """(\d\d\d\d)-(\d\d)-(\d\d)""".r
   val timepattern: scala.util.matching.Regex = """(\d\d):(\d\d):(\d\d)""".r
@@ -38,13 +38,14 @@ object Util {
     }
   )
 
-
   def regexudf(pattern: scala.util.matching.Regex) = udf(
     (valeur: String) => pattern.findFirstIn(valeur) match {
       case Some(res) => true
       case None => false
     }
   )
+
+  def aton = udf ((ip: String) => ip.split("\\.").map(_.toInt).foldLeft(0)((acc,b)=>(acc << 8) + b))
 
   //convert IP to integer
   def ip2Long = udf (
