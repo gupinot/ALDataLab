@@ -22,7 +22,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
       val df = sqlContext.read.format("com.databricks.spark.csv")
         .option("header", "true")
         .option("delimiter", ";")
-        .option("inferSchema", "true")
+        //.option("inferSchema", "true")
         .option("mode", "DROPMALFORMED")
         //.option("parserLib", "UNIVOCITY")
         .load(filein)
@@ -38,14 +38,14 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           hour($"NX_con_start_time") as "starttime",
           to_date($"NX_con_end_time") as "enddate",
           hour($"NX_con_end_time") as "endtime",
-          $"NX_con_duration" as "con_duration",
-          $"NX_con_cardinality" as "con_number",
+          $"NX_con_duration" cast "int" as "con_duration",
+          $"NX_con_cardinality" cast "int" as "con_number",
           $"NX_con_destination_ip" as "dest_ip",
-          $"NX_con_out_traffic" as "con_traffic_out",
-          $"NX_con_in_traffic" as "con_traffic_in",
+          $"NX_con_out_traffic" cast "long" as "con_traffic_out",
+          $"NX_con_in_traffic" cast "long" as "con_traffic_in",
           $"NX_con_type" as "con_protocol",
           $"NX_con_status" as "con_status",
-          $"NX_con_port" as "dest_port",
+          $"NX_con_port" cast "int" as "dest_port",
           $"NX_bin_app_category" as "source_app_category",
           $"NX_bin_app_company" as "source_app_company",
           $"NX_bin_app_name" as "source_app_name",
@@ -64,7 +64,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           to_date($"wr_end_time") as "enddate",
           hour($"wr_end_time") as "endtime",
           $"wr_url" as "url",
-          $"wr_destination_port" as "dest_port",
+          $"wr_destination_port" cast "int" as "dest_port",
           $"wr_destination_ip" as "dest_ip",
           $"wr_application_name" as "source_app_name",
           lit(fileenginename) as "engine",
@@ -74,18 +74,15 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         case _ => df
       }
 
-      val resdf = df2.cache()
-      resdf.registerTempTable("df")
+      val resdf = df2
 
       //split resdf by enddate
       println("pipeline2to3() : split resdf by enddate")
 
-      val days = sqlContext
-        .sql(
-          """select enddate, max(endtime) as maxtime, min(endtime) as mintime
-            |from df
-            |group by enddate
-            |having maxtime >= 23 and mintime <= 3""".stripMargin)
+      val days= resdf.groupBy("enddate")
+        .agg(max($"endtime").as("maxtime"),min($"endtime").as("mintime"))
+        .filter($"mintime" <= 3 and $"maxtime" >= 23)
+        .select($"enddate")
         .map(_.getDate(0))
         .collect
 
@@ -97,7 +94,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           println("pipeline2to3() : No duplicated")
         } catch {
           case e: Exception => {
-            println("pipeline2to3() : Duplicated")
+            println("pipeline2to3() : Duplicated "+e.getMessage)
           }
         }
         println(s"pipeline2to3() : CompleteDay $day")
