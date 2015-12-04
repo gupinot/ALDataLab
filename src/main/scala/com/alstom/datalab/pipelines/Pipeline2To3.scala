@@ -2,7 +2,7 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{DataFrame, SQLContext}
 import org.apache.spark.sql.functions._
 import org.apache.spark.storage.StorageLevel
 
@@ -13,6 +13,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
+
     this.inputFiles.foreach((filein) => {
       val filename = basename(filein)
       val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
@@ -86,6 +87,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         try {
           resdf.where($"enddate" === day).write.parquet(fileout)
           println("pipeline2to3() : No duplicated")
+          //mark as control
         } catch {
           case e: Exception => {
             println("pipeline2to3() : Duplicated "+e.getMessage)
@@ -96,5 +98,11 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
 
       resdf.unpersist()
     })
+    this.inputFiles.map( filein => {
+      val filename = basename(filein)
+      val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
+      val engine_type = collect_type(fileenginename)
+      sqlContext.sparkContext.parallelize(Map("collecttype" -> engine_type, "engine" -> fileenginename, "filedt" -> filedate).toList)
+    }).reduce(_.union(_)).coalesce(1).saveAsTextFile(this.dircontrol)
   }
 }

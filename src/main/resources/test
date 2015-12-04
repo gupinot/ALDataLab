@@ -83,3 +83,5 @@ function lstpipegap {
     done
 
 }
+
+~/script/distributeByBatch.sh 2 20 "s3://aldatalabtest/DATA/2-NXFile/.*\.gz.todo$" .todo ~/script/ALDataLab-client.sh s3://aldatalabtest/DATA/Repository .todo pipeline2to3 s3://aldatalabtest/DATA/3-NXFile

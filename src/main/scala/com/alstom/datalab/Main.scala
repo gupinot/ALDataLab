@@ -49,7 +49,7 @@ object Main {
 
     pipeline match {
       case Some(pipe) => {
-        pipe.input(options.filein).output(options.dirout).execute()
+        pipe.input(options.filein).output(options.dirout).control(options.control).execute()
       }
       case None => println(s"Method ${options.methodname} not found")
     }

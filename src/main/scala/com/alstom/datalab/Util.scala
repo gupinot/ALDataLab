@@ -14,7 +14,7 @@ object Util {
 
   def basename(filepath: String):String = {
     val stripped = if (filepath.charAt(filepath.length-1)=='/') filepath.substring(0,filepath.length-1) else filepath
-    stripped.substring(Math.max(0,stripped.lastIndexOf("/")),stripped.length)
+    stripped.substring(Math.max(0,stripped.lastIndexOf("/")+1),stripped.length)
   }
 
   def getFirst(pattern: scala.util.matching.Regex) = udf(
