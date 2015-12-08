@@ -12,7 +12,7 @@ import org.apache.spark.sql.functions._
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
-class Pipeline3To4(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
+class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   var AIPToResolve = true
@@ -21,6 +21,7 @@ class Pipeline3To4(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
   def execute(): Unit = {
 
     val jobid:Long = System.currentTimeMillis/1000
+    val sc = sqlContext.sparkContext
 
     //read control files from inputFiles and filter on connection filetype)
     val dfControl: DataFrame = this.inputFiles.map(filein => {sc.textFile(filein)})

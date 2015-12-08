@@ -11,7 +11,7 @@ import org.apache.spark.storage.StorageLevel
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
-class Pipeline2To3(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
+class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
@@ -104,14 +104,6 @@ class Pipeline2To3(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
       controlres
 
     })
-    sc.makeRDD(controlres, 1).saveAsTextFile(s"${this.dircontrol}/$jobid.csv")
-
-    //old solution
-    /*this.inputFiles.map( filein => {
-      val filename = basename(filein)
-      val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
-      val engine_type = collect_type(fileenginename)
-      sqlContext.sparkContext.parallelize(List(s"$filetype;$engine_type;$fileenginename;$filedate"))
-    }).reduce(_.union(_)).coalesce(1).saveAsTextFile(this.dircontrol)*/
+    sqlContext.sparkContext.makeRDD(controlres, 1).saveAsTextFile(s"${this.dircontrol}/$jobid.csv")
   }
 }
