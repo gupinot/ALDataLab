@@ -16,6 +16,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   var AIPToResolve = true
+  val STAGE_NAME = "pipe3to4"
 
 
   def execute(): Unit = {
@@ -37,7 +38,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         to_date($"day" as "ctl_day"),
         to_date($"filedt") as "ctl_filedt")
 
-    val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/connection")
+    val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/connection/")
 
     //select correct filedt from dfdriin
     val dfdirinconnectionCorrect = dfdirinconnection.groupBy("collecttype", "dt", "engine")

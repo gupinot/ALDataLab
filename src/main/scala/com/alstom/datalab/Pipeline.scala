@@ -25,7 +25,9 @@ trait Pipeline extends Serializable {
   def output(dirout: String):Pipeline = { this.dirout = dirout; this }
   def control(dircontrol: String):Pipeline = { this.dircontrol = dircontrol; this}
 
-  case class ControlFile(stage: String, jobid: String, filetype: String, collecttype: String, engine: String, filedt: String, status:String, day:String)
+  case class ControlFile(stage: String, jobid: String, filetype: String, collecttype: String, engine: String, filedt: String, status:String, day:String) {
+    override def toString = s"$stage;$jobid;$filetype,$collecttype,$engine,$filedt,$status,$day"
+  }
 
   def execute():Unit
 }
