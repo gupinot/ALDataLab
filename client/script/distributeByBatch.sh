@@ -3,15 +3,15 @@
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : Start"
 if [[ $# -lt 5 ]]
 then
-        echo "$0 : ERROR : $0 BatchSize BatchFilesSize filesPattern exttodofile ScriptToCall [ArgListOfScriptCalled]"
+        echo "$0 : ERROR : $0 BatchSize BatchFilesSize filesPattern ScriptToCall [ArgListOfScriptCalled]"
         exit 1
 fi
 BatchSize=$1
 BatchFilesSize=$2
 filesPattern="$3"
-exttodofile="$4"
-ScriptToCall="$5"
-ArgListOfScriptCalled="$6"
+ScriptToCall="$4"
+ArgListOfScriptCalled="${@:5}"
+exttodofile=".todo"
 
 if [[ ! -f $ScriptToCall ]]
 then
@@ -62,7 +62,7 @@ function waitServerIdle {
 function runscript {
 	waitServerIdle
 	ServerID=$?
-	CMD="$ScriptToCall ${Server[$ServerID]} \"$ArgListOfScriptCalled\" \"$*\""
+	CMD="$ScriptToCall ${Server[$ServerID]} $ArgListOfScriptCalled $*"
 	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : execute $CMD & ..."
 	$CMD &
 	ServerPID[$ServerID]=$!

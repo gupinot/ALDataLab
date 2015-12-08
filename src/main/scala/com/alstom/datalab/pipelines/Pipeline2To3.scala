@@ -2,6 +2,8 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
+import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, SQLContext}
 import org.apache.spark.sql.functions._
 import org.apache.spark.storage.StorageLevel
@@ -9,12 +11,13 @@ import org.apache.spark.storage.StorageLevel
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
-class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
+class Pipeline2To3(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
-
-    this.inputFiles.foreach((filein) => {
+    val jobid:Long = System.currentTimeMillis/1000
+    val stage = "pipe2to3"
+    val controlres: List[ControlFile] = this.inputFiles.flatMap((filein) => {
       val filename = basename(filein)
       val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
       val engine_type = collect_type(fileenginename)
@@ -81,28 +84,34 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         .map(_.getDate(0))
         .collect
 
-      days.foreach(day => {
+      val controlres = days.map(day => {
         val fileout = s"$dirout/$filetype/collecttype=$engine_type/dt=$day/engine=$fileenginename/filedt=$filedate"
 
         try {
-          resdf.where($"enddate" === day).write.parquet(fileout)
+          val tmp = resdf.where($"enddate" === day).write.parquet(fileout)
           println("pipeline2to3() : No duplicated")
-          //mark as control
+          ControlFile(stage, jobid.toString, filetype, engine_type, fileenginename, filedate, "OK", day.toString)
         } catch {
           case e: Exception => {
-            println("pipeline2to3() : Duplicated "+e.getMessage)
+            //println("pipeline2to3() : Duplicated "+e.getMessage)
+            ControlFile(stage, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO", day.toString)
           }
         }
-        println(s"pipeline2to3() : CompleteDay $day")
+        //println(s"pipeline2to3() : CompleteDay $day")
       })
 
       resdf.unpersist()
+      controlres
+
     })
-    this.inputFiles.map( filein => {
+    sc.makeRDD(controlres, 1).saveAsTextFile(s"${this.dircontrol}/$jobid.csv")
+
+    //old solution
+    /*this.inputFiles.map( filein => {
       val filename = basename(filein)
       val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
       val engine_type = collect_type(fileenginename)
-      sqlContext.sparkContext.parallelize(Map("collecttype" -> engine_type, "engine" -> fileenginename, "filedt" -> filedate).toList)
-    }).reduce(_.union(_)).coalesce(1).saveAsTextFile(this.dircontrol)
+      sqlContext.sparkContext.parallelize(List(s"$filetype;$engine_type;$fileenginename;$filedate"))
+    }).reduce(_.union(_)).coalesce(1).saveAsTextFile(this.dircontrol)*/
   }
 }

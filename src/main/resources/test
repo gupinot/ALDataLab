@@ -57,18 +57,24 @@ spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMai
 /////////////////////////////////////////////////////////////////////////////
 Commandes shell (appelées en cron)
 /////////////////////////////////////////////////////////////////////////////
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/Repository/in/" "csv" "s3" ".todo" "RepoProcessInFile"
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/2-NXFile" "sabad11478" "s3" ".todo" "pipeline2to3" "s3://alstomlezoomerus/DATA/3-NXFile"
-/home/hadoop/script/ALDataLab-client.sh "s3://alstomlezoomerus/DATA/Repository" "s3://alstomlezoomerus/DATA/3-NXFile" "sabad11478" "s3" ".todo" "pipeline3to4" "s3://alstomlezoomerus/DATA/4-NXFile"
 
-
+~/script/distributeByBatch.sh 2 10 "s3://alstomelezoomerus/DATA/2-NXFile/.*201510.*\.gz.todo$" .todo ~/script/ALDataLab-client.sh s3://alstomlezoomerus/DATA/Repository/ .todo pipeline2to3 s3://alstomelezoomerus/DATA/3-NXFile s3://alstomelezoomerus/DATA/2-control
 
 
 
 #divers shell
 function lstpipegap {
-    filedone=$(aws s3 ls s3://alstomlezoomerus/DATA/3-NXFile/ | grep -v folder | grep -v todo| awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\/$//" )
-    filetodo=$(aws s3 ls s3://alstomlezoomerus/DATA/3-NXFile/ | grep -v folder | grep todo| awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\.todo\/$//" | sed "s/\.todo$//")
+    DIRROOT="s3://alstomlezoomerus"
+    DIRIN="$DIRROOT/DATA/2-NXFile/"
+    DIRCONTROL="$DIRROOT/DATA/2-control/"
+    DIROUT="$DIRROOT/DATA/2-out/"
+
+
+    filein=$(aws s3 ls $DIRIN | grep -v folder | grep -v todo | grep -v done | grep -v going | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\/$//" )
+    filetodo=$(aws s3 ls $DIRIN | grep -v folder | grep todo| awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\.todo\/$//" | sed "s/\.todo$//")
+    fileongoing=$(aws s3 ls $DIRIN | grep -v folder | grep ongoing | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\.ongoing\/$//" | sed "s/\.ongoing$//")
+    filedone=$(aws s3 ls $DIRIN | grep -v folder | grep done | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\.done\/$//" | sed "s/\.done$//")
+    filecontrol=$(aws s3 ls $DIRCONTROL | grep -v folder | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\/$//")
 
     ResFileDone=""
     ResFileNotTodo=""
@@ -84,4 +90,3 @@ function lstpipegap {
 
 }
 
-~/script/distributeByBatch.sh 2 20 "s3://aldatalabtest/DATA/2-NXFile/.*\.gz.todo$" .todo ~/script/ALDataLab-client.sh s3://aldatalabtest/DATA/Repository .todo pipeline2to3 s3://aldatalabtest/DATA/3-NXFile

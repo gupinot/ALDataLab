@@ -3,34 +3,88 @@ package com.alstom.datalab.pipelines
 import com.alstom.datalab.exception.MissingWebRequestException
 import com.alstom.datalab.{Pipeline, Repo}
 import com.alstom.datalab.Util._
-import org.apache.hadoop.fs.Path
-import org.apache.spark.sql.{DataFrame, SQLContext}
+import org.apache.spark.sql.{SaveMode, DataFrame, SQLContext}
+import org.apache.spark.SparkContext
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.sql.functions._
+
 
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
-class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
+class Pipeline3To4(sc: SparkContext, sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   var AIPToResolve = true
 
+
   def execute(): Unit = {
-    this.inputFiles.foreach((filein)=> {
-      val filename = new Path(filein).getName
-      val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
-      val webrequest_filename = filein.replaceFirst("connection", "webrequest")
-      val fileout = s"$dirout/$filename"
 
-      if (filetype == "webrequest") {
-        println("pipeline3to4() : webrequest file : nothing to do (will be compute with connection file)")
-        return
-      }
+    val jobid:Long = System.currentTimeMillis/1000
 
-      println("pipeline3to4() : read filein : " + filein)
-      val df = sqlContext.read.parquet(filein).cache()
+    //read control files from inputFiles and filter on connection filetype)
+    val dfControl: DataFrame = this.inputFiles.map(filein => {sc.textFile(filein)})
+      .reduce(_.union(_))
+      .map(_.split(";"))
+      .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
+      .toDF()
+
+    val dfControlConnection = dfControl
+      .filter($"filetype" === "connection")
+      .select($"collecttype" as "ctl_collecttype",
+        $"engine" as "ctl_engine",
+        to_date($"day" as "ctl_day"),
+        to_date($"filedt") as "ctl_filedt")
+
+    val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/connection")
+
+    //select correct filedt from dfdriin
+    val dfdirinconnectionCorrect = dfdirinconnection.groupBy("collecttype", "dt", "engine")
+    .agg(min(to_date($"filedt")) as "minfiledt")
+
+    //select correct filedt from dfControlConnection
+    val dfControlConnectionToDo = dfdirinconnectionCorrect.join(dfControlConnection,
+      dfdirinconnectionCorrect("collecttype") === dfControlConnection("ctl_collectype")
+      && dfdirinconnectionCorrect("engine") === dfControlConnection("ctl_engine")
+      && dfdirinconnectionCorrect("dt") === dfControlConnection("ctl_day")
+      && dfdirinconnectionCorrect("minfiledt") === dfControlConnection("ctl_filedt"),
+      "inner")
+
+    dfControlConnectionToDo.persist(StorageLevel.MEMORY_AND_DISK)
+
+    // load corresponding webrequest
+    val dfwr = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/webrequest/")
+
+    dfwr.persist(StorageLevel.MEMORY_AND_DISK)
+
+    //verify existence of all webrequest files corresponding to connection files in dfControlConnectionToDo
+    val dfwrnotexists = dfControlConnectionToDo.join(dfwr.select("collectype", "engine", "filedt", "dt")
+      .withColumnRenamed("collectype", "wrcollectype").withColumnRenamed("engine", "wrengine").withColumnRenamed("filedt", "wrfiledt").withColumnRenamed("dt", "wrdt"),
+      dfControlConnectionToDo("collecttype") === dfwr("wrcollecttype")
+        && dfControlConnectionToDo("engine") === dfwr("wrengine")
+        && dfControlConnectionToDo("minfiledt") === dfwr("wrfiledt")
+        && dfControlConnectionToDo("dt") === dfwr("wrdt"),
+      "left_outer")
+      .filter($"wrfiledt" === null)
+    if (dfwrnotexists .count() != 0) {
+      println("following webrequest files not found :")
+      dfwrnotexists.select("collecttype", "engine", "minfiledt", "dt").write.format("com.databricks.spark.csv")
+        .option("header", "true")
+        .option("delimiter", ";").save(direrr)
+
+    }
+
+    //Read and resolve
+    val dfdirinconnection2 = dfdirinconnection
+      .join(dfControlConnectionToDo, dfdirinconnection("collecttype") === dfControlConnectionToDo("collecttype")
+        && dfdirinconnection("engine") === dfControlConnectionToDo("engine")
+        && dfdirinconnection("filedt") === dfControlConnectionToDo("minfiledt")
+        && dfdirinconnection("dt") === dfControlConnectionToDo("dt"),
+        "inner")
+      .select(dfdirinconnection.columns.map(dfdirinconnection.col):_*)
 
       println("pipeline3to4() : SiteResolution")
-      val dfSite = SiteResolutionFromIP(df)
+      val dfSite = SiteResolutionFromIP(dfdirinconnection2)
 
       println("pipeline3to4() : Sector resolution")
       val dfSiteSector = SiteAndSectorResolutionFromI_ID(dfSite)
@@ -40,37 +94,33 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       val dfResolved = if (AIPToResolve) AIPResolution(dfSiteSector) else dfSiteSector
       dfResolved.registerTempTable("connections")
 
-      //Web request resolution
-      println("pipeline3to4() : Web request join")
-      val dfWebRequest = try {
-        sqlContext.read.parquet(webrequest_filename).cache()
-      } catch {
-        case e: java.lang.AssertionError => println("pipeline3to4() : ERR : webrequest file (" + webrequest_filename + ") not found")
-          throw new MissingWebRequestException(webrequest_filename)
-      }
-      dfWebRequest.registerTempTable("webrequest")
+      dfwr.registerTempTable("webrequest")
 
       //join with df
       val dfres = sqlContext.sql(
         """
           |with weburl as (
-          |   select I_ID_D,source_app_name,dest_ip,dest_port,enddate,concat_ws('|',collect_set(url)) as url
+          |   select collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port,concat_ws('|',collect_set(url)) as url
           |   from webrequest
-          |   group by I_ID_D,source_app_name,dest_ip,dest_port,enddate
+          |   group by collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port
           |)
           |select c.*,w.url
           |from connections c
           |left outer join weburl w on (
+          |  c.collecttype=w.collecttype
+          |  c.dt=w.dt
+          |  c.engine=w.engine
+          |  c.filedt=w.filedt
           |  c.I_ID_D=w.I_ID_D
           |  and c.source_app_name=w.source_app_name
           |  and c.dest_port=w.dest_port
-          |  and c.enddate = w.enddate
           |)
         """.stripMargin)
 
-      println("pipeline3to4() : write result : " + fileout)
-      dfres.write.mode("overwrite").parquet(fileout)
-    })
+    dfres.persist(StorageLevel.MEMORY_AND_DISK)
+
+    dfres.withColumn("jobid", lit(jobid))
+      .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobid").parquet(dirout)
   }
 
   def SiteResolutionFromIP(df: DataFrame): DataFrame = {

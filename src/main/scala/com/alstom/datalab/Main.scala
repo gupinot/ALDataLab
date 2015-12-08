@@ -9,11 +9,13 @@ import org.apache.spark.{SparkConf, SparkContext}
 object Main {
 
   val DEFAULT_REPO="s3://alstomlezoomerus/DATA/Repository"
-  val DEFAULT_DIROUT="s3://alstomlezoomerus/DATA"
+  val DEFAULT_DIROUT="s3://alstomlezoomerus/DATA/2-out"
+  val DEFAULT_DIRIN="s3://alstomlezoomerus/DATA/2-in"
+  val DEFAULT_DIRERR="s3://alstomlezoomerus/DATA/2-err"
   val DEFAULT_METHOD="pipeline2to3"
   val DEFAULT_CONTROL=DEFAULT_DIROUT+"/control"
 
-  case class OptionMap(repo: String, methodname: String, control: String, dirout: String, filein: List[String])
+  case class OptionMap(repo: String, methodname: String, control: String, dirin: String, dirout: String, direrr: String, filein: List[String])
 
   def main(args: Array[String]) {
     val usage = s"""
@@ -21,6 +23,8 @@ object Main {
     Default values:
         REPO: ${DEFAULT_REPO}
         DIROUT: ${DEFAULT_DIROUT}
+        DIRIN: ${DEFAULT_DIRIN}
+        DIRERR: ${DEFAULT_DIRERR}
         CONTROL: ${DEFAULT_CONTROL}
         METHOD: ${DEFAULT_METHOD}
     """
@@ -30,7 +34,7 @@ object Main {
     }
     println("DLMain() : Begin")
 
-    val options = nextOption(OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIROUT,List()),args.toList)
+    val options = nextOption(OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIRIN, DEFAULT_DIRERR, DEFAULT_DIROUT,List()),args.toList)
     println(options)
 
     val conf = new SparkConf()
@@ -49,7 +53,7 @@ object Main {
 
     pipeline match {
       case Some(pipe) => {
-        pipe.input(options.filein).output(options.dirout).control(options.control).execute()
+        pipe.input(options.filein).output(options.dirout).control(options.control).context(new Repo(options.repo)).error(options.direrr).execute()
       }
       case None => println(s"Method ${options.methodname} not found")
     }
@@ -60,19 +64,23 @@ object Main {
     list match {
       case Nil => map
       case "--repo" :: value :: tail =>
-        nextOption(OptionMap(value,map.methodname,map.control,map.dirout,map.filein), tail)
+        nextOption(OptionMap(value,map.methodname,map.control,map.dirin,map.dirout,map.direrr, map.filein), tail)
       case "--method" :: value :: tail =>
-        nextOption(OptionMap(map.repo,value,map.control,map.dirout,map.filein),tail)
+        nextOption(OptionMap(map.repo,value,map.control,map.dirin,map.dirout,map.direrr, map.filein),tail)
+      case "--dirin" :: value :: tail =>
+        nextOption(OptionMap(map.repo,map.methodname,map.control,value,map.dirout,map.direrr, map.filein),tail)
+      case "--direrr" :: value :: tail =>
+        nextOption(OptionMap(map.repo,map.methodname,map.control,value,map.dirout, value,map.filein),tail)
       case "--dirout" :: value :: tail =>
-        nextOption(OptionMap(map.repo,map.methodname,map.control,value,map.filein),tail)
+        nextOption(OptionMap(map.repo,map.methodname,map.control,map.dirin,value,map.direrr,map.filein),tail)
       case "--control" :: value :: tail =>
-        nextOption(OptionMap(map.repo,map.methodname,value,map.dirout,map.filein),tail)
+        nextOption(OptionMap(map.repo,map.methodname,value,map.dirin,map.dirout,map.direrr, map.filein),tail)
       case optPattern(opt) :: tail => {
         println("Unknown option " + opt)
         sys.exit(1)
       }
       case arg :: tail =>
-        nextOption(OptionMap(map.repo,map.methodname,map.control,map.dirout,map.filein ++ List(arg)), tail)
+        nextOption(OptionMap(map.repo,map.methodname,map.control,map.dirin,map.dirout,map.direrr, map.filein ++ List(arg)), tail)
     }
   }
 

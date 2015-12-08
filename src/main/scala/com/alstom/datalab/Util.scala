@@ -36,7 +36,6 @@ object Util {
   val iprangepattern: scala.util.matching.Regex = """/(\d\d)""".r
   val ipinternalpattern: scala.util.matching.Regex = """10\.((([0-9])+)\.)+{2}([0-9]+)""".r
 
-
   def formatSite = udf (
     (site: String) => {
       if (site == null) "nf" else site
@@ -63,8 +62,8 @@ object Util {
 
   //convert /XX to IP
   def rangeToIP = udf (
-    (ipstartint: Int, range: String) => {
-      ipstartint + math.pow(2,32-range.replaceFirst("/", "").toLong).toInt -1
+    (ipstartint: Int, range: Int) => {
+      ipstartint + math.pow(2,32-range.toInt).toInt -1
     })
 
   //UDAF to concatenate multiple row in agg()

@@ -1,9 +1,8 @@
 package com.alstom.datalab
 
-import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.{SQLContext, DataFrame}
 import org.apache.spark.sql.functions._
-import Util._
+import com.alstom.datalab.Util._
 
 
 /**

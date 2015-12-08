@@ -2,24 +2,23 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.{Repo, Pipeline}
 import com.alstom.datalab.Util._
-import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
 
 /**
   * Created by raphael on 02/12/2015.
   */
-class ProcessInFile(sqlContext: SQLContext) extends Pipeline {
+class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
     this.inputFiles.foreach((filein)=> {
-      val filename = new Path(filein).getName
+      val filename = basename(filein)
       val Array(filetype, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
 
-      println("ProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
+      println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"$dirout/$filetype"
-      println("ProcessInFile() : respath = " + respath)
+      println("RepoProcessInFile() : respath = " + respath)
 
       val res = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").option("delimiter", ";")
         .option("inferSchema", "true").option("mode", "DROPMALFORMED").option("parserLib", "UNIVOCITY")
@@ -32,7 +31,7 @@ class ProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .select(
             $"Location Code".as("mdm_loc_code"),
             regexp_replace($"IP Address", "[^0-9.]", "").as("mdm_ip_start"),
-            regexp_replace($"Mask", "[^0-9]", "").cast("int").as("mdm_ip_range"),
+            regexp_replace($"Mask", "[^0-9]", "").as("mdm_ip_range"),
             lit(filedate).as("filedate")
           )
           .filter(regexudf(iprangepattern)($"mdm_ip_range"))
@@ -70,12 +69,18 @@ class ProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"IP address".as("aip_appinstance_ip"),
           lit(filedate).as("filedate")
         )
-
-        case _ => res // any other case is passthrough
+        case "I-ID" => res.select(
+          $"I_ID",
+          $"siteCode",
+          $"Sector",
+          lit(filedate).as("filedate")
+        )
+        case _ => println(s"RepoProcessInFile() : filetype ($filetype) not match")
+          sys.exit(1)
       }
 
       res2.write.mode("append").partitionBy("filedate").parquet(respath)
-      println("ProcessInFile() : load.write done")
+      println("RepoProcessInFile() : load.write done")
     })
   }
 }
