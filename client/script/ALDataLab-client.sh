@@ -38,9 +38,8 @@ function mvFileList {
 trap "mvFileList .ongoing .todo" SIGINT SIGTERM
 
 mvFileList .todo .ongoing
-controlfile="$dircontrol/$(date +"%Y%m%d-%H%M%S")-$InstanceName.txt"
 
-CMD="$SPARKSUBMIT --class $MAINCLASS $JARFILE --repo $D_REPO --dirout $dirout --control $controlfile --method ${MethodName} $FileList"
+CMD="$SPARKSUBMIT --class $MAINCLASS $JARFILE --repo $D_REPO --dirout $dirout --control $dircontrol --method ${MethodName} $FileList"
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 ($InstanceName) : $CMD"
 $CMD
 ret=$?

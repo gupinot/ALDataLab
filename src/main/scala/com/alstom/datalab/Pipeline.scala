@@ -17,6 +17,10 @@ trait Pipeline extends Serializable {
   var inputFiles:List[String] = List()
   var repo:Repo = null
 
+  val dateformat = new java.text.SimpleDateFormat("yyyyMMdd")
+  val dateformat2 = new java.text.SimpleDateFormat("yyyy-MM-dd")
+
+
   def context(repo: Repo):Pipeline = {this.repo =repo; this}
   def input(filein: String):Pipeline = input(List(filein))
   def error(direrr: String):Pipeline = {this.direrr = direrr; this }
@@ -26,7 +30,7 @@ trait Pipeline extends Serializable {
   def control(dircontrol: String):Pipeline = { this.dircontrol = dircontrol; this}
 
   case class ControlFile(stage: String, jobid: String, filetype: String, collecttype: String, engine: String, filedt: String, status:String, day:String) {
-    override def toString = s"$stage;$jobid;$filetype,$collecttype,$engine,$filedt,$status,$day"
+    override def toString = s"$stage;$jobid;$filetype;$collecttype;$engine;$filedt;$status;$day"
   }
 
   def execute():Unit

@@ -1,0 +1,15 @@
+When creating new EMR cluster :
+EMRMASTER="ec2-54-209-81-97.compute-1.amazonaws.com"
+ALDATALABDIR="/Users/guillaumepinot/Dev/Alstom/V2/script/spark/IdeaProjects/ALDataLab"
+
+ssh -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem hadoop@$EMRMASTER "if [[ ! -d script ]]; then mkdir script;fi;if [[ ! -d lib ]]; then mkdir lib;fi"
+scp -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem $ALDATALABDIR/target/scala-2.10/ALDataLab-assembly-1.1.jar hadoop@$EMRMASTER:~/lib
+scp -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem ALDATALABDIR/client/script/ALDataLab-client.sh hadoop@$EMRMASTER:~/script
+scp -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem ALDATALABDIR/client/script/distributeByBatch.sh hadoop@$EMRMASTER:~/script
+ssh -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem hadoop@$EMRMASTER "chmod +x script/*.sh"
+
+Patch /etc/zeppelin/conf/zeppelin-env.sh :
+export CLASSPATH="/usr/share/aws/aws-java-sdk/*:/usr/lib/hadoop-lzo/lib/*:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/*:/usr/share/aws/emr/emrfs/auxlib/*"
+
+Add following line in /etc/spark/conf/spark-defaults.conf
+spark.dynamicAllocation.enabled true

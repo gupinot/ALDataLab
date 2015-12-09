@@ -1,5 +1,7 @@
 package com.alstom.datalab
 
+import java.sql.Date
+
 import org.apache.spark.sql.{SQLContext, DataFrame}
 import org.apache.spark.sql.functions._
 import com.alstom.datalab.Util._
@@ -20,7 +22,7 @@ class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) extends Seriali
   val AIPApplication = RepoDir + "/AIP-Application"
   val AIP = RepoDir + "/AIP"
 
-  def genAIP(currentDate:String=""): Unit = {
+  def genAIP(currentDate:Date=null): Unit = {
 
     val aip_server = readAIPServer(currentDate)
     val aip_soft_instance = readAIPSoftInstance(currentDate)
@@ -30,9 +32,9 @@ class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) extends Seriali
 
     val dfres = aip_server
       .join(aip_soft_instance,
-        aip_server("aip_server_hostname") <=> aip_soft_instance("aip_appinstance_hostname"), "left_outer")
+        aip_server("aip_server_hostname") === aip_soft_instance("aip_appinstance_hostname"), "left_outer")
       .join(aip_application,
-        aip_server("aip_appinstance_shared_unique_id") <=> aip_application("aip_app_shared_unique_id"), "left_outer")
+        aip_soft_instance("aip_appinstance_shared_unique_id") === aip_application("aip_app_shared_unique_id"), "left_outer")
       .groupBy("aip_server_ip", "aip_server_adminby", "aip_server_function", "aip_server_subfunction")
       .agg(myConcat($"aip_appinstance_name").as("aip_app_name"),
         myConcat($"aip_appinstance_type").as("aip_appinstance_type"),
@@ -51,28 +53,28 @@ class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) extends Seriali
 
   def readAIP(): DataFrame = sqlContext.read.parquet(AIP)
 
-  def readAIPServer(currentDate:String=""): DataFrame = readRepo(AIPServer,currentDate)
+  def readAIPServer(currentDate:Date=null): DataFrame = readRepo(AIPServer,currentDate)
 
-  def readAIPSoftInstance(currentDate:String=""): DataFrame = readRepo(AIPSoftInstance,currentDate)
+  def readAIPSoftInstance(currentDate:Date=null): DataFrame = readRepo(AIPSoftInstance,currentDate)
 
-  def readAIPApplication(currentDate:String=""): DataFrame = readRepo(AIPApplication,currentDate)
+  def readAIPApplication(currentDate:Date=null): DataFrame = readRepo(AIPApplication,currentDate)
 
-  def readMDM(currentDate:String=""): DataFrame = readRepo(MDMRepository,currentDate)
+  def readMDM(currentDate:Date=null): DataFrame = readRepo(MDMRepository,currentDate)
 
-  def readI_ID(currentDate:String=""): DataFrame = readRepo(I_IDRepository,currentDate)
+  def readI_ID(currentDate:Date=null): DataFrame = readRepo(I_IDRepository,currentDate)
 
-  def readRepo(reponame: String, currentDate:String): DataFrame = {
+  def readRepo(reponame: String, currentDate:Date): DataFrame = {
 
     val df = sqlContext.read.parquet(reponame)
 
-    val maxDf = if (currentDate == null || currentDate.length == 0) {
-      df.select(max($"filedate"))
+    val maxDf = if (currentDate == null) {
+      df.select(max(to_date($"filedate")).as("maxdate")).withColumn("maxDate", date_format($"maxDate", "yyyyMMdd"))
     } else {
-      df.select(max($"filedate")).filter($"filedate" <= currentDate)
+      df.filter(to_date($"filedate") <= currentDate).select(max(to_date($"filedate")).as("maxdate"))
+        .withColumn("maxDate", date_format($"maxDate", "yyyyMMdd"))
     }
-    val datemax  = maxDf.collect.map(_.toString.toInt).head
 
-    df.filter($"filedate" === datemax.toString).drop("filedate")
+    df.join(maxDf, df("filedate") === maxDf("maxdate"), "inner").drop("maxdate")
   }
 }
 

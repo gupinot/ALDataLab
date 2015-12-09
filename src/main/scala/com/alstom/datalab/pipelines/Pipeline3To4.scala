@@ -15,7 +15,6 @@ import org.apache.spark.sql.functions._
 class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
-  var AIPToResolve = true
   val STAGE_NAME = "pipe3to4"
 
 
@@ -35,10 +34,11 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .filter($"filetype" === "connection")
       .select($"collecttype" as "ctl_collecttype",
         $"engine" as "ctl_engine",
-        to_date($"day" as "ctl_day"),
+        to_date($"day") as "ctl_day",
         to_date($"filedt") as "ctl_filedt")
 
     val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/connection/")
+    dfdirinconnection.persist(StorageLevel.MEMORY_AND_DISK)
 
     //select correct filedt from dfdriin
     val dfdirinconnectionCorrect = dfdirinconnection.groupBy("collecttype", "dt", "engine")
@@ -46,7 +46,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
     //select correct filedt from dfControlConnection
     val dfControlConnectionToDo = dfdirinconnectionCorrect.join(dfControlConnection,
-      dfdirinconnectionCorrect("collecttype") === dfControlConnection("ctl_collectype")
+      dfdirinconnectionCorrect("collecttype") === dfControlConnection("ctl_collecttype")
       && dfdirinconnectionCorrect("engine") === dfControlConnection("ctl_engine")
       && dfdirinconnectionCorrect("dt") === dfControlConnection("ctl_day")
       && dfdirinconnectionCorrect("minfiledt") === dfControlConnection("ctl_filedt"),
@@ -56,32 +56,42 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
     // load corresponding webrequest
     val dfwr = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/webrequest/")
-
     dfwr.persist(StorageLevel.MEMORY_AND_DISK)
 
-    //verify existence of all webrequest files corresponding to connection files in dfControlConnectionToDo
-    val dfwrnotexists = dfControlConnectionToDo.join(dfwr.select("collectype", "engine", "filedt", "dt")
-      .withColumnRenamed("collectype", "wrcollectype").withColumnRenamed("engine", "wrengine").withColumnRenamed("filedt", "wrfiledt").withColumnRenamed("dt", "wrdt"),
-      dfControlConnectionToDo("collecttype") === dfwr("wrcollecttype")
-        && dfControlConnectionToDo("engine") === dfwr("wrengine")
-        && dfControlConnectionToDo("minfiledt") === dfwr("wrfiledt")
-        && dfControlConnectionToDo("dt") === dfwr("wrdt"),
-      "left_outer")
-      .filter($"wrfiledt" === null)
-    if (dfwrnotexists .count() != 0) {
-      println("following webrequest files not found :")
-      dfwrnotexists.select("collecttype", "engine", "minfiledt", "dt").write.format("com.databricks.spark.csv")
-        .option("header", "true")
-        .option("delimiter", ";").save(direrr)
 
+    //verify existence of all webrequest files corresponding to connection files in dfControlConnectionToDo
+    val dfwrRenammed = dfwr
+      .select("collecttype", "engine", "filedt", "dt")
+      .withColumnRenamed("collecttype", "wrcollecttype")
+      .withColumnRenamed("engine", "wrengine")
+      .withColumnRenamed("filedt", "wrfiledt")
+      .withColumnRenamed("dt", "wrdt")
+
+    val dfControlConnectionToDOWithWR = dfControlConnectionToDo.join(dfwrRenammed,
+      dfControlConnectionToDo("collecttype") === dfwrRenammed("wrcollecttype")
+        && dfControlConnectionToDo("engine") === dfwrRenammed("wrengine")
+        && dfControlConnectionToDo("minfiledt") === dfwrRenammed("wrfiledt")
+        && dfControlConnectionToDo("dt") === dfwrRenammed("wrdt"),
+      "left_outer")
+    val dfwrnotexists =  dfControlConnectionToDOWithWR.filter($"wrfiledt" === null)
+    val dfControlConnectionToDoFinal = {
+      if (dfwrnotexists .count() != 0) {
+        println("following webrequest files not found :")
+        dfwrnotexists.select("collecttype", "engine", "minfiledt", "dt").withColumn("Status", lit("webrequest not found")).write.format("com.databricks.spark.csv")
+          .option("header", "true")
+          .option("delimiter", ";").save(direrr)
+        dfControlConnectionToDOWithWR.filter($"wrfiledt" !== null)
+      }else {
+        dfControlConnectionToDOWithWR
+      }
     }
 
     //Read and resolve
     val dfdirinconnection2 = dfdirinconnection
-      .join(dfControlConnectionToDo, dfdirinconnection("collecttype") === dfControlConnectionToDo("collecttype")
-        && dfdirinconnection("engine") === dfControlConnectionToDo("engine")
-        && dfdirinconnection("filedt") === dfControlConnectionToDo("minfiledt")
-        && dfdirinconnection("dt") === dfControlConnectionToDo("dt"),
+      .join(dfControlConnectionToDoFinal, dfdirinconnection("collecttype") === dfControlConnectionToDoFinal("collecttype")
+        && dfdirinconnection("engine") === dfControlConnectionToDoFinal("engine")
+        && dfdirinconnection("filedt") === dfControlConnectionToDoFinal("minfiledt")
+        && dfdirinconnection("dt") === dfControlConnectionToDoFinal("dt"),
         "inner")
       .select(dfdirinconnection.columns.map(dfdirinconnection.col):_*)
 
@@ -93,7 +103,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
       //AIP resolution
       println("pipeline3to4() : AIP resolution")
-      val dfResolved = if (AIPToResolve) AIPResolution(dfSiteSector) else dfSiteSector
+      val dfResolved = AIPResolution(dfSiteSector)
       dfResolved.registerTempTable("connections")
 
       dfwr.registerTempTable("webrequest")
@@ -110,16 +120,15 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
           |from connections c
           |left outer join weburl w on (
           |  c.collecttype=w.collecttype
-          |  c.dt=w.dt
-          |  c.engine=w.engine
-          |  c.filedt=w.filedt
-          |  c.I_ID_D=w.I_ID_D
+          |  and c.dt=w.dt
+          |  and c.engine=w.engine
+          |  and c.filedt=w.filedt
+          |  and c.I_ID_D=w.I_ID_D
           |  and c.source_app_name=w.source_app_name
           |  and c.dest_port=w.dest_port
+          |  and c.dest_ip=w.dest_ip
           |)
         """.stripMargin)
-
-    dfres.persist(StorageLevel.MEMORY_AND_DISK)
 
     dfres.withColumn("jobid", lit(jobid))
       .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobid").parquet(dirout)
@@ -128,18 +137,18 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   def SiteResolutionFromIP(df: DataFrame): DataFrame = {
 
     //Read MDM repository file
-    val dfMDM = repo.readMDM().select("mdm_loc_code", "mdm_ip_start_int", "mdm_ip_end_int").cache()
+    val dfMDM = repo.readMDM().select("mdm_loc_code", "mdm_ip_start_int", "mdm_ip_end_int").persist(StorageLevel.MEMORY_AND_DISK)
 
     //extract IP to resolve
     val dfIpInt = df
       .withColumn("dest_ip_int", ip2Long($"dest_ip"))
       .withColumn("source_ip_int", ip2Long($"source_ip"))
-      .cache()
+      .persist(StorageLevel.MEMORY_AND_DISK)
 
     val ListIPToResolve = dfIpInt
       .select("dest_ip_int").withColumnRenamed("dest_ip_int", "IP")
       .unionAll(dfIpInt.select("source_ip_int").withColumnRenamed("source_ip_int", "IP")).distinct
-    ListIPToResolve.cache()
+    ListIPToResolve.persist(StorageLevel.MEMORY_AND_DISK)
 
     //Resolve Site
     val dfSiteResolved = ListIPToResolve.join(dfMDM, ListIPToResolve("IP") >= dfMDM("mdm_ip_start_int") && ListIPToResolve("IP") <= dfMDM("mdm_ip_end_int"))
@@ -153,7 +162,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     val ListIPResolved = ListIPToResolve.join(dfSiteResolvedConcat, ListIPToResolve("IP") ===  dfSiteResolvedConcat("IP2"), "left_outer")
       .select("IP", "site")
       .withColumn("site_", formatSite($"site")).drop("site").withColumnRenamed("site_", "site")
-    ListIPResolved.cache()
+    ListIPResolved.persist(StorageLevel.MEMORY_AND_DISK)
 
     //suppress result column (source_site, dest_site) in dfIpInt if already exist
     val dfIpIntClean: DataFrame = {
@@ -181,7 +190,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .withColumnRenamed("I_ID", "I_ID2")
       .withColumnRenamed("Sector", "source_sector")
       .withColumnRenamed("siteCode", "source_I_ID_site")
-    dfI_ID.cache()
+    dfI_ID.persist(StorageLevel.MEMORY_AND_DISK)
 
     // drop result columns from df (Source_sector, source_I_ID_site) if already exist
     val df1: DataFrame = {
@@ -204,12 +213,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
   def AIPResolution(df: DataFrame): DataFrame = {
 
-    val dfAIP = repo.readAIP().cache()
+    val dfAIP = repo.readAIP().persist(StorageLevel.MEMORY_AND_DISK)
 
-    val collecttype_ = df.select("collecttype").distinct.collect.flatMap(_.toSeq).map(_.toString())
-    val collecttype = collecttype_(0)
-
-    val dfres1 = {
       // drop result columns from df (dest_aip...) if already exist
       val df1: DataFrame = {
         if (df.columns.contains("dest_aip_server_adminby")) {
@@ -227,8 +232,25 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         } else df
       }
 
-      df1.join(dfAIP,
-        df1("dest_ip") === dfAIP("aip_server_ip"), "left_outer")
+      val df2: DataFrame = {
+        if (df1.columns.contains("source_aip_server_adminby")) {
+          df1.drop("source_aip_server_adminby")
+            .drop("source_aip_server_function")
+            .drop("source_aip_server_subfunction")
+            .drop("source_aip_app_name")
+            .drop("source_aip_app_type")
+            .drop("source_aip_appinstance_type")
+            .drop("source_aip_app_state")
+            .drop("source_aip_app_sensitive")
+            .drop("source_aip_app_criticality")
+            .drop("source_aip_app_sector")
+            .drop("source_aip_appinstance_shared_unique_id")
+        } else df1
+      }
+
+
+      df2.join(dfAIP,
+        df2("dest_ip") === dfAIP("aip_server_ip"), "left_outer")
         .drop("aip_server_ip")
         .withColumnRenamed("aip_server_adminby", "dest_aip_server_adminby")
         .withColumnRenamed("aip_server_function", "dest_aip_server_function")
@@ -241,28 +263,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         .withColumnRenamed("aip_app_criticality", "dest_aip_app_criticality")
         .withColumnRenamed("aip_app_sector", "dest_aip_app_sector")
         .withColumnRenamed("aip_app_shared_unique_id", "dest_aip_app_shared_unique_id")
-    }
-
-    if (collecttype == "server") {
-      // drop result columns from df (source_aip...) if already exist
-      val df2: DataFrame = {
-        if (dfres1.columns.contains("source_aip_server_adminby")) {
-          dfres1.drop("source_aip_server_adminby")
-            .drop("source_aip_server_function")
-            .drop("source_aip_server_subfunction")
-            .drop("source_aip_app_name")
-            .drop("source_aip_app_type")
-            .drop("source_aip_appinstance_type")
-            .drop("source_aip_app_state")
-            .drop("source_aip_app_sensitive")
-            .drop("source_aip_app_criticality")
-            .drop("source_aip_app_sector")
-            .drop("source_aip_appinstance_shared_unique_id")
-        } else dfres1
-      }
-
-      df2.join(dfAIP,
-        df2("source_ip") === dfAIP("aip_server_ip"), "left_outer")
+        .join(dfAIP,
+          df2("source_ip") === dfAIP("aip_server_ip"), "left_outer")
         .drop("aip_server_ip")
         .withColumnRenamed("aip_server_adminby", "source_aip_server_adminby")
         .withColumnRenamed("aip_server_function", "source_aip_server_function")
@@ -275,8 +277,5 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         .withColumnRenamed("aip_app_criticality", "source_aip_app_criticality")
         .withColumnRenamed("aip_app_sector", "source_aip_app_sector")
         .withColumnRenamed("aip_app_shared_unique_id", "source_aip_app_shared_unique_id")
-    }else {
-      dfres1
     }
-  }
 }

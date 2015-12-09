@@ -33,7 +33,7 @@ object Util {
 
   val daypattern: scala.util.matching.Regex = """(\d\d\d\d)-(\d\d)-(\d\d)""".r
   val timepattern: scala.util.matching.Regex = """(\d\d):(\d\d):(\d\d)""".r
-  val iprangepattern: scala.util.matching.Regex = """/(\d\d)""".r
+  val iprangepattern: scala.util.matching.Regex = """(\d\d)""".r
   val ipinternalpattern: scala.util.matching.Regex = """10\.((([0-9])+)\.)+{2}([0-9]+)""".r
 
   def formatSite = udf (
@@ -58,7 +58,7 @@ object Util {
       val result: Long = (3 to 0 by -1).foldLeft(0L)(
         (result, position) => result | (atoms(3 - position) << position * 8))
       result & 0xFFFFFFFF
-    })
+    }.toInt)
 
   //convert /XX to IP
   def rangeToIP = udf (

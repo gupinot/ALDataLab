@@ -24,16 +24,14 @@ val sqlContext = new SQLContext(sc)
   .load("data/Repository/in/MDM-ITC_20151117.csv")
 */
 
+val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"data/2-out/connection/")
+dfdirinconnection.show()
 
-val rdd = sc.textFile("data/test/*").collect.map(println)
-rdd.size
 
   //.format("com.databricks.spark.csv").option("header", "true").option("delimiter", ";").option("inferSchema", "true").option("mode", "DROPMALFORMED")
   //.load("data/test/*.csv")
 
 //df.count()
 //df.collect.map(println)
-
-
 
 

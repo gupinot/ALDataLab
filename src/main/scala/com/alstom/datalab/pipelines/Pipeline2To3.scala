@@ -19,9 +19,11 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   override def execute(): Unit = {
     val jobid:Long = System.currentTimeMillis/1000
 
+
     val controlres: List[ControlFile] = this.inputFiles.flatMap((filein) => {
       val filename = basename(filein)
-      val Array(filetype, fileenginename, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
+      val Array(filetype, fileenginename, file_date) = filename.replaceAll("\\.[^_]+$","").split("_")
+      val filedate = dateformat2.format(dateformat.parse(file_date))
       val engine_type = collect_type(fileenginename)
 
       println("pipeline2to3() : read filein")

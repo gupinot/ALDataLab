@@ -58,9 +58,9 @@ spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMai
 Commandes shell (appelées en cron)
 /////////////////////////////////////////////////////////////////////////////
 
-~/script/distributeByBatch.sh 2 10 "s3://alstomelezoomerus/DATA/2-NXFile/.*201510.*\.gz.todo$" .todo ~/script/ALDataLab-client.sh s3://alstomlezoomerus/DATA/Repository/ .todo pipeline2to3 s3://alstomelezoomerus/DATA/3-NXFile s3://alstomelezoomerus/DATA/2-control
+~/script/distributeByBatch.sh 1 10 "s3://alstomlezoomerus/DATA/2-NXFile/.*201511.*\.gz.todo$" ~/script/ALDataLab-client.sh s3://alstomlezoomerus/DATA/Repository pipeline2to3 s3://alstomlezoomerus/DATA/3-NXFile s3://alstomlezoomerus/DATA/2-control
 
-
+~/script/ALDataLab-client.sh 1 s3://alstomlezoomerus/DATA/Repository RepoProcessInFile s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/Repository/control s3://alstomlezoomerus/DATA/Repository/in/MDM-ITC_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Application_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Server_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-SoftInstance_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/I-ID_20151207.csv
 
 #divers shell
 function lstpipegap {
@@ -78,13 +78,13 @@ function lstpipegap {
 
     ResFileDone=""
     ResFileNotTodo=""
-    for filein in $filedone
+    for file in $filein
     do
-        if echo $filetodo | grep -q $filein; then
-            ResFileTodo="$ResFileNotTodo $filein"
+        if echo $filetodo | grep -q $file; then
+            ResFileTodo="$ResFileNotTodo $file"
         else
-            echo "$filein done"
-            ResFileDone="$ResFileDone $filein"
+            echo "$file done"
+            ResFileDone="$ResFileDone $file"
         fi
     done
 

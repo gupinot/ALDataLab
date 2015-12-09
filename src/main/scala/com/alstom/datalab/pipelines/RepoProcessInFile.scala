@@ -12,9 +12,10 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
-    this.inputFiles.foreach((filein)=> {
+    this.inputFiles.foreach(f = (filein) => {
       val filename = basename(filein)
-      val Array(filetype, filedate) = filename.replaceAll("\\.[^_]+$","").split("_")
+      val Array(filetype, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
+      val filedate = dateformat2.format(dateformat.parse(file_date))
 
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"$dirout/$filetype"
@@ -63,7 +64,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-SoftInstance" => res.select(
           $"Application name".as("aip_appinstance_name"),
-          $"Shared Unique ID".as("aip_appinstance_unique_id"),
+          $"Shared Unique ID".as("aip_appinstance_shared_unique_id"),
           $"Type".as("aip_appinstance_type"),
           $"Host name".as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
@@ -82,5 +83,6 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
       res2.write.mode("append").partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
+    repo.genAIP()
   }
 }

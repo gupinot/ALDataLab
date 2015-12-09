@@ -53,7 +53,7 @@ object Main {
 
     pipeline match {
       case Some(pipe) => {
-        pipe.input(options.filein).output(options.dirout).control(options.control).context(new Repo(options.repo)).error(options.direrr).execute()
+        pipe.inputdir(options.dirin).input(options.filein).output(options.dirout).control(options.control).context(new Repo(options.repo)).error(options.direrr).execute()
       }
       case None => println(s"Method ${options.methodname} not found")
     }
