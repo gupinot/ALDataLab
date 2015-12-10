@@ -153,8 +153,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     //Resolve Site
     df.withColumn("source_ip_int",aton($"source_ip"))
       .withColumn("dest_ip_int",aton($"dest_ip"))
-      .join(broadcast(dfIP).as("sourceIP"), $"source_ip_int" === $"mdm_ip","left_outer")
-      .join(broadcast(dfIP).as("destIP"), $"dest_ip_int" === $"mdm_ip","left_outer")
+      .join(broadcast(dfIP).as("sourceIP"), $"source_ip_int" === $"sourceIP.mdm_ip","left_outer")
+      .join(broadcast(dfIP).as("destIP"), $"dest_ip_int" === $"destIP.mdm_ip","left_outer")
       .select($"df.*",formatSite($"sourceIP.site").as("source_site"),formatSite($"destIP.site").as("dest_site"))
   }
 
