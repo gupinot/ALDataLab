@@ -68,10 +68,9 @@ class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) extends Seriali
     val df = sqlContext.read.parquet(reponame)
 
     val maxDf = if (currentDate == null) {
-      df.select(max(to_date($"filedate")).as("maxdate")).withColumn("maxDate", date_format($"maxDate", "yyyyMMdd"))
+      df.select(max(to_date($"filedate")).as("maxdate"))
     } else {
       df.filter(to_date($"filedate") <= currentDate).select(max(to_date($"filedate")).as("maxdate"))
-        .withColumn("maxDate", date_format($"maxDate", "yyyyMMdd"))
     }
 
     df.join(maxDf, df("filedate") === maxDf("maxdate"), "inner").drop("maxdate")
