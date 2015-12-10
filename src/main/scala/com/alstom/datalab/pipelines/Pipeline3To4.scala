@@ -62,7 +62,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     dfControlConnectionToDo.persist(StorageLevel.MEMORY_AND_DISK)
 
     // load corresponding webrequest
-    val dfwr = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/webrequest/")
+
+    val dfwr = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/webrequest/")
     dfwr.persist(StorageLevel.MEMORY_AND_DISK).registerTempTable("webrequest")
 
     //verify existence of all webrequest files corresponding to connection files in dfControlConnectionToDo
