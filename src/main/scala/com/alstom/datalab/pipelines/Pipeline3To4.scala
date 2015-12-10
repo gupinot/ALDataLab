@@ -47,16 +47,16 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
     //select correct filedt from dfdriin
     val dfdirinconnectionCorrect = dfdirinconnection
-        //.select("filedt","collecttype","dt","engine")
-        .groupBy("collecttype", "dt", "engine")
-        .agg(min(to_date($"filedt")) as "minfiledt")
+      //.select("filedt","collecttype","dt","engine")
+      .groupBy("collecttype", "dt", "engine")
+      .agg(min(to_date($"filedt")) as "minfiledt")
 
     //select correct filedt from dfControlConnection
     val dfControlConnectionToDo = dfdirinconnectionCorrect.join(dfControlConnection,
       dfdirinconnectionCorrect("collecttype") === dfControlConnection("ctl_collecttype")
-      && dfdirinconnectionCorrect("engine") === dfControlConnection("ctl_engine")
-      && dfdirinconnectionCorrect("dt") === dfControlConnection("ctl_day")
-      && dfdirinconnectionCorrect("minfiledt") === dfControlConnection("ctl_filedt"),
+        && dfdirinconnectionCorrect("engine") === dfControlConnection("ctl_engine")
+        && dfdirinconnectionCorrect("dt") === dfControlConnection("ctl_day")
+        && dfdirinconnectionCorrect("minfiledt") === dfControlConnection("ctl_filedt"),
       "inner")
 
     dfControlConnectionToDo.persist(StorageLevel.MEMORY_AND_DISK)
@@ -102,38 +102,38 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         "inner")
       .select(dfdirinconnection.columns.map(dfdirinconnection.col):_*)
 
-      println("pipeline3to4() : SiteResolution")
-      val dfSite = SiteResolutionFromIP(dfdirinconnection2)
+    println("pipeline3to4() : SiteResolution")
+    val dfSite = SiteResolutionFromIP(dfdirinconnection2)
 
-      println("pipeline3to4() : Sector resolution")
-      val dfSiteSector = SiteAndSectorResolutionFromI_ID(dfSite)
+    println("pipeline3to4() : Sector resolution")
+    val dfSiteSector = SiteAndSectorResolutionFromI_ID(dfSite)
 
-      //AIP resolution
-      println("pipeline3to4() : AIP resolution")
-      val dfResolved = AIPResolution(dfSiteSector)
-      dfResolved.registerTempTable("connections")
+    //AIP resolution
+    println("pipeline3to4() : AIP resolution")
+    val dfResolved = AIPResolution(dfSiteSector)
+    dfResolved.registerTempTable("connections")
 
-      //join with df
-      val dfres = sqlContext.sql(
-        """
-          |with weburl as (
-          |   select collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port,concat_ws('|',collect_set(url)) as url
-          |   from webrequest
-          |   group by collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port
-          |)
-          |select c.*,w.url
-          |from connections c
-          |left outer join weburl w on (
-          |  c.collecttype=w.collecttype
-          |  and c.dt=w.dt
-          |  and c.engine=w.engine
-          |  and c.filedt=w.filedt
-          |  and c.I_ID_D=w.I_ID_D
-          |  and c.source_app_name=w.source_app_name
-          |  and c.dest_port=w.dest_port
-          |  and c.dest_ip=w.dest_ip
-          |)
-        """.stripMargin)
+    //join with df
+    val dfres = sqlContext.sql(
+      """
+        |with weburl as (
+        |   select collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port,concat_ws('|',collect_set(url)) as url
+        |   from webrequest
+        |   group by collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port
+        |)
+        |select c.*,w.url
+        |from connections c
+        |left outer join weburl w on (
+        |  c.collecttype=w.collecttype
+        |  and c.dt=w.dt
+        |  and c.engine=w.engine
+        |  and c.filedt=w.filedt
+        |  and c.I_ID_D=w.I_ID_D
+        |  and c.source_app_name=w.source_app_name
+        |  and c.dest_port=w.dest_port
+        |  and c.dest_ip=w.dest_ip
+        |)
+      """.stripMargin)
 
     dfres.withColumn("jobid", lit(jobidcur)).withColumn("jobidorig", lit(jobidorig))
       .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobidorig", "jobid").parquet(dirout)
@@ -142,7 +142,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   def buildIpLookupTable(): DataFrame = {
     val ip = repo.readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
     ip.registerTempTable("ip")
-    sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip""")
+    broadcast(sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip"""))
   }
 
   def SiteResolutionFromIP(df: DataFrame): DataFrame = {
@@ -153,101 +153,50 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     //Resolve Site
     df.withColumn("source_ip_int",aton($"source_ip"))
       .withColumn("dest_ip_int",aton($"dest_ip"))
-      .join(broadcast(dfIP).as("sourceIP"), $"source_ip_int" === $"sourceIP.mdm_ip","left_outer")
-      .join(broadcast(dfIP).as("destIP"), $"dest_ip_int" === $"destIP.mdm_ip","left_outer")
-      .select($"df.*",formatSite($"sourceIP.site").as("source_site"),formatSite($"destIP.site").as("dest_site"))
+      .join(dfIP.as("sourceIP"), $"source_ip_int" === $"sourceIP.mdm_ip","left_outer")
+      .join(dfIP.as("destIP"), $"dest_ip_int" === $"destIP.mdm_ip","left_outer")
+      .select((df.columns.toList.map(df.col)
+        ++ List(formatSite($"sourceIP.site").as("source_site"),formatSite($"destIP.site").as("dest_site"))):_*)
   }
 
   def SiteAndSectorResolutionFromI_ID(df: DataFrame): DataFrame = {
-    val dfI_ID = repo.readI_ID()
-      .withColumnRenamed("I_ID", "I_ID2")
-      .withColumnRenamed("Sector", "source_sector")
-      .withColumnRenamed("siteCode", "source_I_ID_site")
-
-    // drop result columns from df (Source_sector, source_I_ID_site) if already exist
-    val df1: DataFrame = {
-      val dftmp = {
-        if (df.columns.contains("source_sector")) {
-          df.drop("source_sector")
-        } else df
-      }
-      if (df.columns.contains("source_I_ID_site")) {
-        dftmp .drop("source_I_ID_site")
-      } else dftmp
-    }
+    val dfI_ID = repo.readI_ID().select("I_ID","Sector","SiteCode")
 
     //join for resolution
-    df1.join(dfI_ID, df("I_ID_U") === dfI_ID("I_ID2"), "left_outer")
-      .drop("I_ID2")
-      .withColumnRenamed("SiteCode", "source_I_ID_site")
-      .withColumn("source_I_ID_site", formatSite($"source_I_ID_site"))
+    df.join(broadcast(dfI_ID).as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
+      .select((df.columns.toList.map(df.col)
+        ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SideCode").as("source_I_ID_site"))):_*)
   }
 
   def AIPResolution(df: DataFrame): DataFrame = {
 
-    val dfAIP = repo.readAIP().persist(StorageLevel.MEMORY_AND_DISK)
+    val dfAIP = broadcast(repo.readAIP().persist(StorageLevel.MEMORY_AND_DISK))
 
-      // drop result columns from df (dest_aip...) if already exist
-      val df1: DataFrame = {
-        if (df.columns.contains("dest_aip_server_adminby")) {
-          df.drop("dest_aip_server_adminby")
-            .drop("dest_aip_server_function")
-            .drop("dest_aip_server_subfunction")
-            .drop("dest_aip_app_name")
-            .drop("dest_aip_app_type")
-            .drop("dest_aip_appinstance_type")
-            .drop("dest_aip_app_state")
-            .drop("dest_aip_app_sensitive")
-            .drop("dest_aip_app_criticality")
-            .drop("dest_aip_app_sector")
-            .drop("dest_aip_appinstance_shared_unique_id")
-        } else df
-      }
-
-      val df2: DataFrame = {
-        if (df1.columns.contains("source_aip_server_adminby")) {
-          df1.drop("source_aip_server_adminby")
-            .drop("source_aip_server_function")
-            .drop("source_aip_server_subfunction")
-            .drop("source_aip_app_name")
-            .drop("source_aip_app_type")
-            .drop("source_aip_appinstance_type")
-            .drop("source_aip_app_state")
-            .drop("source_aip_app_sensitive")
-            .drop("source_aip_app_criticality")
-            .drop("source_aip_app_sector")
-            .drop("source_aip_appinstance_shared_unique_id")
-        } else df1
-      }
-
-
-      df2.join(dfAIP,
-        df2("dest_ip") === dfAIP("aip_server_ip"), "left_outer")
-        .drop("aip_server_ip")
-        .withColumnRenamed("aip_server_adminby", "dest_aip_server_adminby")
-        .withColumnRenamed("aip_server_function", "dest_aip_server_function")
-        .withColumnRenamed("aip_server_subfunction", "dest_aip_server_subfunction")
-        .withColumnRenamed("aip_app_name", "dest_aip_app_name")
-        .withColumnRenamed("aip_app_type", "dest_aip_app_type")
-        .withColumnRenamed("aip_appinstance_type", "dest_aip_appinstance_type")
-        .withColumnRenamed("aip_app_state", "dest_aip_app_state")
-        .withColumnRenamed("aip_app_sensitive", "dest_aip_app_sensitive")
-        .withColumnRenamed("aip_app_criticality", "dest_aip_app_criticality")
-        .withColumnRenamed("aip_app_sector", "dest_aip_app_sector")
-        .withColumnRenamed("aip_app_shared_unique_id", "dest_aip_app_shared_unique_id")
-        .join(dfAIP,
-          df2("source_ip") === dfAIP("aip_server_ip"), "left_outer")
-        .drop("aip_server_ip")
-        .withColumnRenamed("aip_server_adminby", "source_aip_server_adminby")
-        .withColumnRenamed("aip_server_function", "source_aip_server_function")
-        .withColumnRenamed("aip_server_subfunction", "source_aip_server_subfunction")
-        .withColumnRenamed("aip_app_name", "source_aip_app_name")
-        .withColumnRenamed("aip_app_type", "source_aip_app_type")
-        .withColumnRenamed("aip_appinstance_type", "source_aip_appinstance_type")
-        .withColumnRenamed("aip_app_state", "source_aip_app_state")
-        .withColumnRenamed("aip_app_sensitive", "source_aip_app_sensitive")
-        .withColumnRenamed("aip_app_criticality", "source_aip_app_criticality")
-        .withColumnRenamed("aip_app_sector", "source_aip_app_sector")
-        .withColumnRenamed("aip_app_shared_unique_id", "source_aip_app_shared_unique_id")
-    }
+    df.join(dfAIP.as("destAip"), $"df.dest_ip" === $"destAip.aip_server_ip", "left_outer")
+      .join(dfAIP.as("sourceAip"), $"df.source_ip" === $"sourceAip.aip_server_ip", "left_outer")
+      .select((df.columns.toList.map(df.col) ++
+        List($"destAip.aip_server_adminby" as "dest_aip_server_adminby",
+        $"destAip.aip_server_function" as "dest_aip_server_function",
+        $"destAip.aip_server_subfunction" as "dest_aip_server_subfunction",
+        $"destAip.aip_app_name" as "dest_aip_app_name",
+        $"destAip.aip_app_type" as "dest_aip_app_type",
+        $"destAip.aip_appinstance_type" as "dest_aip_appinstance_type",
+        $"destAip.aip_app_state" as "dest_aip_app_state",
+        $"destAip.aip_app_sensitive" as "dest_aip_app_sensitive",
+        $"destAip.aip_app_criticality" as "dest_aip_app_criticality",
+        $"destAip.aip_app_sector" as "dest_aip_app_sector",
+        $"destAip.aip_app_shared_unique_id" as "dest_aip_app_shared_unique_id",
+        $"sourceAip.aip_server_adminby" as "source_aip_server_adminby",
+        $"sourceAip.aip_server_function" as "source_aip_server_function",
+        $"sourceAip.aip_server_subfunction" as "source_aip_server_subfunction",
+        $"sourceAip.aip_app_name" as "source_aip_app_name",
+        $"sourceAip.aip_app_type" as "source_aip_app_type",
+        $"sourceAip.aip_appinstance_type" as "source_aip_appinstance_type",
+        $"sourceAip.aip_app_state" as "source_aip_app_state",
+        $"sourceAip.aip_app_sensitive" as "source_aip_app_sensitive",
+        $"sourceAip.aip_app_criticality" as "source_aip_app_criticality",
+        $"sourceAip.aip_app_sector" as "source_aip_app_sector",
+        $"sourceAip.aip_app_shared_unique_id" as "source_aip_app_shared_unique_id")):_*
+      )
+  }
 }
