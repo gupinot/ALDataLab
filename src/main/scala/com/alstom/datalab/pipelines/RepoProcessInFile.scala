@@ -32,13 +32,14 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
         case "MDM-ITC" => res
           .filter($"Status" === "Live" or $"Status" === "New").filter($"Active / Inactive" === "ON")
           .select(
+            monotonicallyIncreasingId().as("mdm_id"),
             $"Location Code".as("mdm_loc_code"),
             regexp_replace($"IP Address", "[^0-9.]", "").as("mdm_ip_start"),
-            regexp_replace($"Mask", "[^0-9]", "").as("mdm_ip_range"),
+            regexp_replace($"Mask", "[^0-9]", "").cast("int").as("mdm_ip_range"),
             lit(filedate).as("filedate")
           )
-          .filter(regexudf(iprangepattern)($"mdm_ip_range"))
-          .withColumn("mdm_ip_start_int", ip2Long($"mdm_ip_start"))
+          .filter($"mdm_ip_range" > 0)
+          .withColumn("mdm_ip_start_int", aton($"mdm_ip_start"))
           .withColumn("mdm_ip_end_int", rangeToIP($"mdm_ip_start_int", $"mdm_ip_range"))
 
         case "AIP-Server" => res.select(
