@@ -12,11 +12,15 @@ import org.apache.spark.sql.functions._
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
+
+object Pipeline3To4 {
+  val STAGE_NAME = "pipe3to4"
+}
+
 class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
-  val STAGE_NAME = "pipe3to4"
-
+  var AIPToResolve = true
 
   def execute(): Unit = {
 

@@ -11,14 +11,15 @@ import org.apache.spark.storage.StorageLevel
 /**
   * Created by guillaumepinot on 05/11/2015.
   */
+object Pipeline2To3 {
+  val STAGE_NAME = "pipe2to3"
+}
+
 class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
-  val STAGE_NAME = "pipe2to3"
-
   override def execute(): Unit = {
     val jobid:Long = System.currentTimeMillis/1000
-
 
     val controlres: List[ControlFile] = this.inputFiles.flatMap((filein) => {
       val filename = basename(filein)
@@ -96,11 +97,11 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         try {
           val tmp = resdf.where($"enddate" === day).write.parquet(fileout)
           println("pipeline2to3() : No duplicated")
-          ControlFile(STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "OK", day.toString)
+          ControlFile(Pipeline2To3.STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "OK", day.toString)
         } catch {
           case e: Exception => {
             //println("pipeline2to3() : Duplicated "+e.getMessage)
-            ControlFile(STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO - duplicated", day.toString)
+            ControlFile(Pipeline2To3.STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO", day.toString)
           }
         }
         //println(s"pipeline2to3() : CompleteDay $day")
