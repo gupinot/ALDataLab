@@ -31,14 +31,15 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/webrequest/")
 
     // metadata view on main dataframes
-    val cnx_meta = cnx_parquet.select($"collecttype" as "type",$"engine",$"dt",$"filedt")
-    val wr_meta = wr.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct()
+    val cnx_meta = cnx_parquet.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct().repartition(1)
+    val wr_meta = wr.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct().repartition(1)
 
     //read control files from inputFiles and filter on connection filetype)
     val control: DataFrame = this.inputFiles.map(filein => {sc.textFile(filein)})
       .reduce(_.union(_))
       .map(_.split(";"))
       .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
+      .repartition(1)
       .toDF()
 
     val jobidorig=control.select("jobid").distinct().head.getString(0)
@@ -58,10 +59,10 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .join(wr_meta.as("wr"),
       ($"cnx_best.type" === $"wr.type") && ($"cnx_best.engine" === $"wr.engine")
         && ($"cnx_best.filedt" === $"wr.filedt") && ($"cnx_best.dt" === $"wr.dt"), "left_outer")
-    .select($"cnx_best.dt", $"ctl.filedt", $"ctl.type", $"ctl.engine", $"wr.filedt" as "wr_filedt")
+    .select($"cnx_best.dt", $"ctl.filedt", $"ctl.type", $"ctl.engine", $"wr.filedt" as "wr_filedt").cache()
 
     // save incomplete connections data to reject file
-    val cnx_no_wr = cnx_all.filter($"wr_filedt" === null)
+    val cnx_no_wr = cnx_all.filter("wr_filedt is null")
     if (cnx_no_wr .count() != 0) {
         println("following webrequest files not found :")
         cnx_no_wr.select($"type", $"engine", $"filedt", $"dt",lit("webrequest not found") as "Status")
@@ -71,7 +72,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     }
 
     // process all other lines
-    val cnx = cnx_all //.filter($"wr_filedt" !== null)
+    val cnx = broadcast(cnx_all.filter("wr_filedt is not null"))
     val all_dt = cnx.select($"dt").distinct().collect().map(_.getString(0))
 
     //Read and resolve
@@ -86,7 +87,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .select(wr.columns.map(wr.col):_*)
 
     println("pipeline3to4() : data resolutions")
-    val cnx_resolved = resolveAIP(resolveSector(resolveSite(cnx_filtered)))
+    val cnx_resolved = resolveSite(resolveAIP(resolveSector((cnx_filtered))))
 
     wr_filtered.registerTempTable("webrequests")
     cnx_resolved.registerTempTable("connections")
@@ -137,17 +138,17 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   }
 
   def resolveSector(df: DataFrame): DataFrame = {
-    val dfI_ID = repo.readI_ID().select("I_ID","Sector","SiteCode")
+    val dfI_ID = repo.readI_ID().select("I_ID","Sector","SiteCode").cache()
 
     //join for resolution
-    df.join(broadcast(dfI_ID).as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
+    df.join(dfI_ID.as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
       .select((df.columns.toList.map(df.col)
         ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SiteCode").as("source_I_ID_site"))):_*)
   }
 
   def resolveAIP(df: DataFrame): DataFrame = {
 
-    val dfAIP = broadcast(repo.readAIP().persist(StorageLevel.MEMORY_AND_DISK))
+    val dfAIP = repo.readAIP().cache()
 
     df.join(dfAIP.as("destAip"), $"dest_ip" === $"destAip.aip_server_ip", "left_outer")
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")
