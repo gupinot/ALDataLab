@@ -62,7 +62,10 @@ Commandes shell (appelées en cron)
 
 ~/script/ALDataLab-client.sh 1 s3://alstomlezoomerus/DATA/Repository RepoProcessInFile s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/Repository/control s3://alstomlezoomerus/DATA/Repository/in/MDM-ITC_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Application_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Server_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-SoftInstance_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/I-ID_20151207.csv
 
-spark-submit --master yarn --driver-memory 1G --executor-memory 8G --executor-cores 3 --num-executors 15 --class com.alstom.datalab.Main file:///home/hadoop/lib/ALDataLab-assembly-1.1.jar --method pipeline3to4 --dirin s3://alstomlezoomerus/DATA/3-NXFile --control s3://alstomlezoomerus/DATA/3-control --direrr s3://alstomlezoomerus/DATA/3-err --dirout s3://alstomlezoomerus/DATA/4-NXFile --repo s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/2-control/1449687290.csv
+nohup spark-submit --master yarn --driver-memory 4G --executor-memory 5G --executor-cores 2 --num-executors 30 --class com.alstom.datalab.Main file:///home/hadoop/lib/ALDataLab-assembly-1.1.jar --method pipeline3to4 --dirin s3://alstomlezoomerus/DATA/3-NXFile --control s3://alstomlezoomerus/DATA/3-control --direrr s3://alstomlezoomerus/DATA/3-err --dirout s3://alstomlezoomerus/DATA/4-NXFile --repo s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/2-control/1449687290.csv&
+
+spark-submit --master yarn --driver-memory 1G --executor-memory 8G --executor-cores 3 --class com.alstom.datalab.Main file:///home/hadoop/lib/ALDataLab-assembly-1.1.jar --method RepoProcessInFile --dirin s3://alstomlezoomerus/DATA/Repository/in --control s3://alstomlezoomerus/DATA/Repository/control --direrr s3://alstomlezoomerus/DATA/Repository/err --dirout s3://alstomlezoomerus/DATA/Repository --repo s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/Repository/in/MDM-ITC_20151117.csv
+
 
 #divers shell
 function lstpipegap {

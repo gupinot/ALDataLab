@@ -32,7 +32,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
     // metadata view on main dataframes
     val cnx_meta = cnx_parquet.select($"collecttype" as "type",$"engine",$"dt",$"filedt")
-    val wr_meta = wr.select($"collecttype" as "type",$"engine",$"dt",$"filedt")
+    val wr_meta = wr.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct()
 
     //read control files from inputFiles and filter on connection filetype)
     val control: DataFrame = this.inputFiles.map(filein => {sc.textFile(filein)})
@@ -48,19 +48,20 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .select($"collecttype" as "type", $"engine" as "engine", to_date($"day") as "dt", to_date($"filedt") as "filedt")
 
     //select correct filedt from cn-onnections
-    val cnx_best = cnx_meta.groupBy("collecttype", "dt", "engine").agg(min(to_date($"filedt")) as "filedt")
+    val cnx_best = cnx_meta.groupBy("type", "dt", "engine").agg(min(to_date($"filedt")) as "filedt")
 
     //select correct filedt from dfControlConnection
     val cnx_all = cnx_best.as("cnx_best")
       .join(ctl_cnx_only.as("ctl"),
       ($"cnx_best.type" === $"ctl.type") && ($"cnx_best.engine" === $"ctl.engine")
-        && ($"cnx_best.dt" === $"ctl.dt") && ($"cnx_best.filedt" === $"ctl.filedt"), "inner").as("cnx")
+        && ($"cnx_best.dt" === $"ctl.dt") && ($"cnx_best.filedt" === $"ctl.filedt"), "inner")
       .join(wr_meta.as("wr"),
-      ($"cnx.type" === $"wr.type") && ($"cnx.engine" === $"wr.engine")
-        && ($"cnx.filedt" === $"wr.filedt") && ($"cnx.dt" === $"wr.dt"), "left_outer")
+      ($"cnx_best.type" === $"wr.type") && ($"cnx_best.engine" === $"wr.engine")
+        && ($"cnx_best.filedt" === $"wr.filedt") && ($"cnx_best.dt" === $"wr.dt"), "left_outer")
+    .select($"cnx_best.dt", $"ctl.filedt", $"ctl.type", $"ctl.engine", $"wr.filedt" as "wr_filedt")
 
     // save incomplete connections data to reject file
-    val cnx_no_wr = cnx_all.filter($"wr.filedt" === null)
+    val cnx_no_wr = cnx_all.filter($"wr_filedt" === null)
     if (cnx_no_wr .count() != 0) {
         println("following webrequest files not found :")
         cnx_no_wr.select($"type", $"engine", $"filedt", $"dt",lit("webrequest not found") as "Status")
@@ -70,19 +71,19 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     }
 
     // process all other lines
-    val cnx = cnx_all.filter($"wr.filedt" !== null)
-    val all_dt = cnx.select($"ctl.dt").distinct().collectAsList()
+    val cnx = cnx_all //.filter($"wr_filedt" !== null)
+    val all_dt = cnx.select($"dt").distinct().collect().map(_.getString(0))
 
     //Read and resolve
-    val cnx_filtered = cnx_parquet.filter($"dt" isin all_dt)
+    val cnx_filtered = cnx_parquet.filter($"dt".isin(all_dt:_*))
       .join(cnx, cnx_parquet("collecttype") === cnx("type") && cnx_parquet("engine") === cnx("engine")
-        && cnx_parquet("filedt") === cnx("minfiledt") && cnx_parquet("dt") === cnx("dt"), "inner")
+        && cnx_parquet("filedt") === cnx("filedt") && cnx_parquet("dt") === cnx("dt"), "inner")
       .select(cnx_parquet.columns.map(cnx_parquet.col):_*)
 
-    val wr_filtered = wr.filter($"dt" isin all_dt)
+    val wr_filtered = wr.filter($"dt".isin(all_dt:_*))
       .join(cnx, wr("collecttype") === cnx("type") && wr("engine") === cnx("engine")
-        && wr("filedt") === cnx("minfiledt") && wr("dt") === cnx("dt"), "inner")
-      .select(wr.columns.map(cnx_parquet.col):_*)
+        && wr("filedt") === cnx("filedt") && wr("dt") === cnx("dt"), "inner")
+      .select(wr.columns.map(wr.col):_*)
 
     println("pipeline3to4() : data resolutions")
     val cnx_resolved = resolveAIP(resolveSector(resolveSite(cnx_filtered)))
@@ -141,7 +142,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     //join for resolution
     df.join(broadcast(dfI_ID).as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
       .select((df.columns.toList.map(df.col)
-        ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SideCode").as("source_I_ID_site"))):_*)
+        ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SiteCode").as("source_I_ID_site"))):_*)
   }
 
   def resolveAIP(df: DataFrame): DataFrame = {

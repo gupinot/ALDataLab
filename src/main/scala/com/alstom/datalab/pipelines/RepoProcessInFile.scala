@@ -75,7 +75,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
         )
         case "I-ID" => res.select(
           $"I_ID",
-          $"siteCode",
+          $"SiteCode",
           $"Sector",
           lit(filedate).as("filedate")
         )

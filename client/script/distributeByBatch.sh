@@ -22,14 +22,8 @@ fi
 for ((i=1; i<=$BatchSize; i++))
 do
 	Server[$i]=$i
-done
-
-#init ServerPID
-for ((i=1; i<=$BatchSize;i++))
-do
 	ServerPID[$i]=""
 done
-
 
 function waitServerIdle {
 	ServerIdle=0

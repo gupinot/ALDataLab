@@ -40,10 +40,13 @@ object Main {
     val conf = new SparkConf()
       .setAppName("DataLab-"+options.methodname)
       .set("spark.serializer","org.apache.spark.serializer.KryoSerializer")
+      .set("spark.KryoSerializer.buffer.max", "128m")
+      .set("spark.storage.memoryFraction", "0.2")
+      .set("spark.shuffle.memoryFraction", "0.4")
 
     implicit val sc = new SparkContext(conf)
     implicit val sqlContext = new HiveContext(sc)
-    sqlContext.setConf("spark.sql.shuffle.partitions", "10")
+    sqlContext.setConf("spark.sql.shuffle.partitions", "50")
     sqlContext.setConf("spark.sql.parquet.cacheMetadata", "false")
     sqlContext.setConf("spark.sql.autoBroadcastJoinThreshold", (50*1024*1024).toString)
 
