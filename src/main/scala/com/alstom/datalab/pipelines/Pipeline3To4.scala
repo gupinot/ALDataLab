@@ -63,8 +63,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
     // load corresponding webrequest
     val dfwr = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/webrequest/")
-    dfwr.persist(StorageLevel.MEMORY_AND_DISK)
-
+    dfwr.persist(StorageLevel.MEMORY_AND_DISK).registerTempTable("webrequest")
 
     //verify existence of all webrequest files corresponding to connection files in dfControlConnectionToDo
     val dfwrRenammed = dfwr
@@ -113,8 +112,6 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       val dfResolved = AIPResolution(dfSiteSector)
       dfResolved.registerTempTable("connections")
 
-      dfwr.registerTempTable("webrequest")
-
       //join with df
       val dfres = sqlContext.sql(
         """
@@ -141,54 +138,23 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobidorig", "jobid").parquet(dirout)
   }
 
+  def buildIpLookupTable(): DataFrame = {
+    val ip = repo.readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
+    ip.registerTempTable("ip")
+    sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip""")
+  }
+
   def SiteResolutionFromIP(df: DataFrame): DataFrame = {
 
     //Read MDM repository file
-    val dfMDM = repo.readMDM().select("mdm_loc_code", "mdm_ip_start_int", "mdm_ip_end_int").persist(StorageLevel.MEMORY_AND_DISK)
-
-    //extract IP to resolve
-    val dfIpInt = df
-      .withColumn("dest_ip_int", ip2Long($"dest_ip"))
-      .withColumn("source_ip_int", ip2Long($"source_ip"))
-
-    val ListIPToResolve = dfIpInt
-      .select("dest_ip_int").withColumnRenamed("dest_ip_int", "IP")
-      .unionAll(dfIpInt.select("source_ip_int").withColumnRenamed("source_ip_int", "IP")).distinct
-
+    val dfIP = buildIpLookupTable()
 
     //Resolve Site
-    val dfSiteResolved = ListIPToResolve.join(dfMDM, ListIPToResolve("IP") >= dfMDM("mdm_ip_start_int") && ListIPToResolve("IP") <= dfMDM("mdm_ip_end_int"))
-      .drop("mdm_ip_start_int")
-      .drop("mdm_ip_end_int").distinct
-
-    val myConcat = new ConcatString("_")
-
-    val dfSiteResolvedConcat = dfSiteResolved.groupBy($"IP").agg(myConcat($"mdm_loc_code").as("site")).withColumnRenamed("IP", "IP2")
-
-    val ListIPResolved = ListIPToResolve.join(dfSiteResolvedConcat, ListIPToResolve("IP") ===  dfSiteResolvedConcat("IP2"), "left_outer")
-      .select("IP", "site")
-      .withColumn("site_", formatSite($"site")).drop("site").withColumnRenamed("site_", "site")
-
-
-    //suppress result column (source_site, dest_site) in dfIpInt if already exist
-    val dfIpIntClean: DataFrame = {
-      val dftmp = {
-        if (dfIpInt.columns.contains("source_site")) {
-          dfIpInt.drop("source_site")
-        } else dfIpInt
-      }
-      if (dfIpInt.columns.contains("dest_site")) {
-        dftmp .drop("dest_site")
-      } else dftmp
-    }
-
-    //join with dfIpIntClean
-    dfIpIntClean
-      .join(ListIPResolved, dfIpIntClean("source_ip_int") === ListIPResolved("IP"), "left_outer")
-      .withColumnRenamed("site", "source_site").drop("IP")
-      .join(ListIPResolved, dfIpIntClean("dest_ip_int") === ListIPResolved("IP"), "left_outer")
-      .withColumnRenamed("site", "dest_site").drop("IP")
-      .drop("source_ip_int").drop("dest_ip_int")
+    df.withColumn("source_ip_int",aton($"source_ip"))
+      .withColumn("dest_ip_int",aton($"dest_ip"))
+      .join(broadcast(dfIP).as("sourceIP"), $"source_ip_int" === $"mdm_ip","left_outer")
+      .join(broadcast(dfIP).as("destIP"), $"dest_ip_int" === $"mdm_ip","left_outer")
+      .select($"df.*",formatSite($"sourceIP.site").as("source_site"),formatSite($"destIP.site").as("dest_site"))
   }
 
   def SiteAndSectorResolutionFromI_ID(df: DataFrame): DataFrame = {

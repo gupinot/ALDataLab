@@ -51,6 +51,8 @@ object Util {
 
   def aton = udf ((ip: String) => ip.split("\\.").map(_.toInt).foldLeft(0)((acc,b)=>(acc << 8) + b))
 
+  def range = udf ((start: Int, stop: Int) => (start+1 until stop).toArray)
+
   //convert IP to integer
   def ip2Long = udf (
     (ip: String) => {
