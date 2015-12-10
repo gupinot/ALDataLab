@@ -13,7 +13,7 @@ object Main {
   val DEFAULT_DIRIN="s3://alstomlezoomerus/DATA/2-in"
   val DEFAULT_DIRERR="s3://alstomlezoomerus/DATA/2-err"
   val DEFAULT_METHOD="pipeline2to3"
-  val DEFAULT_CONTROL=DEFAULT_DIROUT+"/control"
+  val DEFAULT_CONTROL="s3://alstomlezoomerus/DATA/2-control"
 
   case class OptionMap(repo: String, methodname: String, control: String, dirin: String, dirout: String, direrr: String, filein: List[String])
 
@@ -34,7 +34,7 @@ object Main {
     }
     println("DLMain() : Begin")
 
-    val options = nextOption(OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIRIN, DEFAULT_DIRERR, DEFAULT_DIROUT,List()),args.toList)
+    val options = nextOption(OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIRIN, DEFAULT_DIROUT, DEFAULT_DIRERR,List()),args.toList)
     println(options)
 
     val conf = new SparkConf()
@@ -70,7 +70,7 @@ object Main {
       case "--dirin" :: value :: tail =>
         nextOption(OptionMap(map.repo,map.methodname,map.control,value,map.dirout,map.direrr, map.filein),tail)
       case "--direrr" :: value :: tail =>
-        nextOption(OptionMap(map.repo,map.methodname,map.control,value,map.dirout, value,map.filein),tail)
+        nextOption(OptionMap(map.repo,map.methodname,map.control,map.dirin,map.dirout, value,map.filein),tail)
       case "--dirout" :: value :: tail =>
         nextOption(OptionMap(map.repo,map.methodname,map.control,map.dirin,value,map.direrr,map.filein),tail)
       case "--control" :: value :: tail =>

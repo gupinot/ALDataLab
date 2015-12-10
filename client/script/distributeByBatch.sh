@@ -70,7 +70,7 @@ function runscript {
 
 fileList=$(aws s3 ls $(dirname $filesPattern)/ | grep $(basename $filesPattern) | grep -v folder | grep $exttodofile | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | xargs basename -s "$exttodofile" | awk -v dir=$(dirname $filesPattern) '{print dir "/" $1}')
 
-for batchfile in $(echo $fileList | xargs -n 10 | tr " " ";")
+for batchfile in $(echo $fileList | xargs -n $BatchFilesSize | tr " " ";")
 do
 	runscript $(echo $batchfile | tr ";" " ")
 done

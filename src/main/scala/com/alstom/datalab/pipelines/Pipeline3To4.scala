@@ -20,7 +20,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
   def execute(): Unit = {
 
-    val jobid:Long = System.currentTimeMillis/1000
+    val jobidcur:Long = System.currentTimeMillis/1000
     val sc = sqlContext.sparkContext
 
     //read control files from inputFiles and filter on connection filetype)
@@ -29,6 +29,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .map(_.split(";"))
       .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
       .toDF()
+    val jobidorig=dfControl.select("jobid").distinct().head.getString(0)
 
     val dfControlConnection = dfControl
       .filter($"filetype" === "connection")
@@ -130,8 +131,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
           |)
         """.stripMargin)
 
-    dfres.withColumn("jobid", lit(jobid))
-      .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobid").parquet(dirout)
+    dfres.withColumn("jobid", lit(jobidcur)).withColumn("jobidorig", lit(jobidorig))
+      .write.mode(SaveMode.Append).partitionBy("collecttype", "dt", "engine", "filedt", "jobidorig", "jobid").parquet(dirout)
   }
 
   def SiteResolutionFromIP(df: DataFrame): DataFrame = {
@@ -143,12 +144,11 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     val dfIpInt = df
       .withColumn("dest_ip_int", ip2Long($"dest_ip"))
       .withColumn("source_ip_int", ip2Long($"source_ip"))
-      .persist(StorageLevel.MEMORY_AND_DISK)
 
     val ListIPToResolve = dfIpInt
       .select("dest_ip_int").withColumnRenamed("dest_ip_int", "IP")
       .unionAll(dfIpInt.select("source_ip_int").withColumnRenamed("source_ip_int", "IP")).distinct
-    ListIPToResolve.persist(StorageLevel.MEMORY_AND_DISK)
+
 
     //Resolve Site
     val dfSiteResolved = ListIPToResolve.join(dfMDM, ListIPToResolve("IP") >= dfMDM("mdm_ip_start_int") && ListIPToResolve("IP") <= dfMDM("mdm_ip_end_int"))
@@ -162,7 +162,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     val ListIPResolved = ListIPToResolve.join(dfSiteResolvedConcat, ListIPToResolve("IP") ===  dfSiteResolvedConcat("IP2"), "left_outer")
       .select("IP", "site")
       .withColumn("site_", formatSite($"site")).drop("site").withColumnRenamed("site_", "site")
-    ListIPResolved.persist(StorageLevel.MEMORY_AND_DISK)
+
 
     //suppress result column (source_site, dest_site) in dfIpInt if already exist
     val dfIpIntClean: DataFrame = {
@@ -190,7 +190,6 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
       .withColumnRenamed("I_ID", "I_ID2")
       .withColumnRenamed("Sector", "source_sector")
       .withColumnRenamed("siteCode", "source_I_ID_site")
-    dfI_ID.persist(StorageLevel.MEMORY_AND_DISK)
 
     // drop result columns from df (Source_sector, source_I_ID_site) if already exist
     val df1: DataFrame = {

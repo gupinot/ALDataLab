@@ -1,7 +1,5 @@
 package com.alstom.datalab
 
-import java.util.Date
-
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
 
@@ -17,9 +15,6 @@ trait Pipeline extends Serializable {
   var inputFiles:List[String] = List()
   var repo:Repo = null
 
-  val dateformat = new java.text.SimpleDateFormat("yyyyMMdd")
-  val dateformat2 = new java.text.SimpleDateFormat("yyyy-MM-dd")
-
 
   def context(repo: Repo):Pipeline = {this.repo =repo; this}
   def input(filein: String):Pipeline = input(List(filein))
@@ -29,7 +24,7 @@ trait Pipeline extends Serializable {
   def output(dirout: String):Pipeline = { this.dirout = dirout; this }
   def control(dircontrol: String):Pipeline = { this.dircontrol = dircontrol; this}
 
-  case class ControlFile(stage: String, jobid: String, filetype: String, collecttype: String, engine: String, filedt: String, status:String, day:String) {
+  case class ControlFile(stage: String, jobid: String, filetype: String, collecttype: String, engine: String, filedt: String, status:String, day:String) extends Serializable {
     override def toString = s"$stage;$jobid;$filetype;$collecttype;$engine;$filedt;$status;$day"
   }
 

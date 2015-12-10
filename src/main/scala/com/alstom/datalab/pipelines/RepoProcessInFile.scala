@@ -15,7 +15,9 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
     this.inputFiles.foreach(f = (filein) => {
       val filename = basename(filein)
       val Array(filetype, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
-      val filedate = dateformat2.format(dateformat.parse(file_date))
+      val (year, month_day) = file_date.splitAt(4)
+      val (month, day) = month_day.splitAt(2)
+      val filedate = s"$year-$month-$day"
 
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"$dirout/$filetype"

@@ -23,7 +23,9 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
     val controlres: List[ControlFile] = this.inputFiles.flatMap((filein) => {
       val filename = basename(filein)
       val Array(filetype, fileenginename, file_date) = filename.replaceAll("\\.[^_]+$","").split("_")
-      val filedate = dateformat2.format(dateformat.parse(file_date))
+      val (year, month_day) = file_date.splitAt(4)
+      val (month, day) = month_day.splitAt(2)
+      val filedate = s"$year-$month-$day"
       val engine_type = collect_type(fileenginename)
 
       println("pipeline2to3() : read filein")
@@ -98,7 +100,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         } catch {
           case e: Exception => {
             //println("pipeline2to3() : Duplicated "+e.getMessage)
-            ControlFile(STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO", day.toString)
+            ControlFile(STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO - duplicated", day.toString)
           }
         }
         //println(s"pipeline2to3() : CompleteDay $day")

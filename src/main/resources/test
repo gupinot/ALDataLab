@@ -58,16 +58,18 @@ spark-submit --master yarn --driver-memory 2G --executor-memory 8G --class DLMai
 Commandes shell (appelées en cron)
 /////////////////////////////////////////////////////////////////////////////
 
-~/script/distributeByBatch.sh 1 10 "s3://alstomlezoomerus/DATA/2-NXFile/.*201511.*\.gz.todo$" ~/script/ALDataLab-client.sh s3://alstomlezoomerus/DATA/Repository pipeline2to3 s3://alstomlezoomerus/DATA/3-NXFile s3://alstomlezoomerus/DATA/2-control
+~/script/distributeByBatch.sh 7 20 "s3://alstomlezoomerus/DATA/2-NXFile/.*201511.*\.gz.todo$" ~/script/ALDataLab-client.sh s3://alstomlezoomerus/DATA/Repository pipeline2to3 s3://alstomlezoomerus/DATA/3-NXFile s3://alstomlezoomerus/DATA/2-control
 
 ~/script/ALDataLab-client.sh 1 s3://alstomlezoomerus/DATA/Repository RepoProcessInFile s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/Repository/control s3://alstomlezoomerus/DATA/Repository/in/MDM-ITC_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Application_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-Server_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/AIP-SoftInstance_20151117.csv s3://alstomlezoomerus/DATA/Repository/in/I-ID_20151207.csv
+
+spark-submit --master yarn --driver-memory 1G --executor-memory 8G --executor-cores 3 --num-executors 15 --class com.alstom.datalab.Main file:///home/hadoop/lib/ALDataLab-assembly-1.1.jar --method pipeline3to4 --dirin s3://alstomlezoomerus/DATA/3-NXFile --control s3://alstomlezoomerus/DATA/3-control --direrr s3://alstomlezoomerus/DATA/3-err --dirout s3://alstomlezoomerus/DATA/4-NXFile --repo s3://alstomlezoomerus/DATA/Repository s3://alstomlezoomerus/DATA/2-control/1449687290.csv
 
 #divers shell
 function lstpipegap {
     DIRROOT="s3://alstomlezoomerus"
     DIRIN="$DIRROOT/DATA/2-NXFile/"
     DIRCONTROL="$DIRROOT/DATA/2-control/"
-    DIROUT="$DIRROOT/DATA/2-out/"
+    DIROUT="$DIRROOT/DATA/3-NXFile/"
 
 
     filein=$(aws s3 ls $DIRIN | grep -v folder | grep -v todo | grep -v done | grep -v going | awk '{if ($1 == "PRE") {print $2} else {print $4}}' | sed "s/\/$//" )
