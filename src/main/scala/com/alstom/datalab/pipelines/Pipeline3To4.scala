@@ -42,12 +42,14 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         to_date($"day") as "ctl_day",
         to_date($"filedt") as "ctl_filedt")
 
-    val dfdirinconnection = sqlContext.read.option("mergeSchema", "true").parquet(s"$dirin/connection/")
+    val dfdirinconnection = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/connection/")
     dfdirinconnection.persist(StorageLevel.MEMORY_AND_DISK)
 
     //select correct filedt from dfdriin
-    val dfdirinconnectionCorrect = dfdirinconnection.groupBy("collecttype", "dt", "engine")
-    .agg(min(to_date($"filedt")) as "minfiledt")
+    val dfdirinconnectionCorrect = dfdirinconnection
+        //.select("filedt","collecttype","dt","engine")
+        .groupBy("collecttype", "dt", "engine")
+        .agg(min(to_date($"filedt")) as "minfiledt")
 
     //select correct filedt from dfControlConnection
     val dfControlConnectionToDo = dfdirinconnectionCorrect.join(dfControlConnection,
