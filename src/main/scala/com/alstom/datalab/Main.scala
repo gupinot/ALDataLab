@@ -34,6 +34,8 @@ object Main {
     }
     println("DLMain() : Begin")
 
+    val optionsDefault = OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIRIN, DEFAULT_DIROUT, DEFAULT_DIRERR,List())
+
     val options = nextOption(OptionMap(DEFAULT_REPO,DEFAULT_METHOD,DEFAULT_CONTROL,DEFAULT_DIRIN, DEFAULT_DIROUT, DEFAULT_DIRERR,List()),args.toList)
     println(options)
 
@@ -46,7 +48,7 @@ object Main {
 
     implicit val sc = new SparkContext(conf)
     implicit val sqlContext = new HiveContext(sc)
-    sqlContext.setConf("spark.sql.shuffle.partitions", "50")
+    sqlContext.setConf("spark.sql.shuffle.partitions", "20")
     sqlContext.setConf("spark.sql.parquet.cacheMetadata", "false")
     sqlContext.setConf("spark.sql.autoBroadcastJoinThreshold", (50*1024*1024).toString)
 
