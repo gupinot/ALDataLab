@@ -12,6 +12,6 @@ class GenAIP(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
   override def execute(): Unit = {
-    repo.genAIP()
+    context.repo().genAIP()
   }
 }

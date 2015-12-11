@@ -14,8 +14,8 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
 
   override def execute(): Unit = {
     // main dataframes
-    val cnx = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/connection/")
-    val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/webrequest/")
+    val cnx = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/connection/")
+    val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/webrequest/")
 
     // metadata view on main dataframes
     cnx.select(lit("connections") as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt",$"filedt")
@@ -23,6 +23,6 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
     .unionAll(wr.select(lit("webrequests") as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt",$"filedt").distinct())
       .repartition(1)
       .write.mode(SaveMode.Overwrite)
-      .parquet(this.dirout)
+      .parquet(context.dirin())
   }
 }

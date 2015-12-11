@@ -11,16 +11,18 @@ import com.alstom.datalab.Util._
   * Created by guillaumepinot on 05/11/2015.
   */
 
-class Repo(RepoDir: String)(implicit val sqlContext: SQLContext) extends Serializable {
+class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serializable {
   import sqlContext.implicits._
 
-  val repoDir = RepoDir
-  val MDMRepository = RepoDir + "/MDM-ITC"
-  val I_IDRepository = RepoDir + "/I-ID"
-  val AIPServer = RepoDir + "/AIP-Server"
-  val AIPSoftInstance = RepoDir + "/AIP-SoftInstance"
-  val AIPApplication = RepoDir + "/AIP-Application"
-  val AIP = RepoDir + "/AIP"
+  val repoDir = context.repodir()
+  val MDMRepository = context.repodir() + "/MDM-ITC"
+  val I_IDRepository = context.repodir() + "/I-ID"
+  val AIPServer = context.repodir() + "/AIP-Server"
+  val AIPSoftInstance = context.repodir() + "/AIP-SoftInstance"
+  val AIPApplication = context.repodir() + "/AIP-Application"
+  val AIP = context.repodir() + "/AIP"
+  // register this object as the repo in the context
+  context.repo(this)
 
   def genAIP(currentDate:Date=null): Unit = {
 

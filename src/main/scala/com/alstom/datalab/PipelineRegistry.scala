@@ -8,7 +8,7 @@ import scala.collection.mutable
 /**
   * Registry and Factory for pipeline objects
   */
-class PipelineRegistry(implicit val repo: Repo, implicit val sqlContext: SQLContext) {
+class PipelineRegistry(implicit val sqlContext: SQLContext) {
 
   private val registered = new mutable.HashMap[String,Class[Pipeline]]()
 
@@ -24,7 +24,7 @@ class PipelineRegistry(implicit val repo: Repo, implicit val sqlContext: SQLCont
   def unregister(name: String) = registered.remove(name)
 
   def createInstance(name: String) = registered.get(name) match {
-    case Some(clazz) => Some(clazz.getDeclaredConstructor(classOf[SQLContext]).newInstance(sqlContext).context(repo))
+    case Some(clazz) => Some(clazz.getDeclaredConstructor(classOf[SQLContext]).newInstance(sqlContext))
     case None => None
   }
 }

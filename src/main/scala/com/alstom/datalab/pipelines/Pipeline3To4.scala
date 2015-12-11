@@ -1,11 +1,8 @@
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.exception.MissingWebRequestException
-import com.alstom.datalab.{Pipeline, Repo}
+import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.{SaveMode, DataFrame, SQLContext}
-import org.apache.spark.SparkContext
-import org.apache.spark.storage.StorageLevel
 import org.apache.spark.sql.functions._
 
 
@@ -27,8 +24,8 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     val sc = sqlContext.sparkContext
 
     // main dataframes
-    val cnx_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/connection/")
-    val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"$dirin/webrequest/")
+    val cnx_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/connection/")
+    val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/webrequest/")
 
     // metadata view on main dataframes
     val cnx_meta = cnx_parquet.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct().repartition(1)
@@ -68,7 +65,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         cnx_no_wr.select($"type", $"engine", $"filedt", $"dt",lit("webrequest not found") as "Status")
           .write.format("com.databricks.spark.csv")
           .option("header", "true")
-          .option("delimiter", ";").save(direrr)
+          .option("delimiter", ";").save(context.direrr())
     }
 
     // process all other lines
@@ -114,11 +111,11 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         |)
       """.stripMargin)
       .write.mode(SaveMode.Append)
-      .partitionBy("dt").parquet(dirout)
+      .partitionBy("dt").parquet(context.dirout())
   }
 
   def buildIpLookupTable(): DataFrame = {
-    val ip = repo.readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
+    val ip = context.repo().readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
     ip.registerTempTable("ip")
     broadcast(sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip"""))
   }
@@ -138,7 +135,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
   }
 
   def resolveSector(df: DataFrame): DataFrame = {
-    val dfI_ID = repo.readI_ID().select("I_ID","Sector","SiteCode").cache()
+    val dfI_ID = context.repo().readI_ID().select("I_ID","Sector","SiteCode").cache()
 
     //join for resolution
     df.join(dfI_ID.as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
@@ -148,7 +145,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
 
   def resolveAIP(df: DataFrame): DataFrame = {
 
-    val dfAIP = repo.readAIP().cache()
+    val dfAIP = context.repo().readAIP().cache()
 
     df.join(dfAIP.as("destAip"), $"dest_ip" === $"destAip.aip_server_ip", "left_outer")
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")

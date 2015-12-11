@@ -1,22 +1,42 @@
 /**
   * Created by guillaumepinot on 28/11/2015.
   */
-package com.alstom.datalab
+package com.alstom.datalab.pipelines
 
-import org.apache.spark.sql.SQLContext
+import com.alstom.datalab.Pipeline
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.{DataFrame, SQLContext}
 
-class WebApp(DIN:String) {
+class WebApp(sqlContext: SQLContext) extends Pipeline {
 
-  def genAgg(sqlContext: SQLContext, DirIn:String, DirOut: String): Unit = {
-    //Construct aggregated data for dataLabWebApp
+  import sqlContext.implicits._
 
-    val df5 = sqlContext.read.parquet(DirIn)
+  override def execute(): Unit = {
 
-    /*val dfAggFull = df5
+    val jobid:Long = System.currentTimeMillis/1000
+    val sc = sqlContext.sparkContext
+
+    //read control files from inputFiles and filter on connection filetype)
+    val control = this.inputFiles.map(filein => {sc.textFile(filein)})
+      .reduce(_.union(_))
+      .map(_.split(";"))
+      .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
+      .filter(_.stage == Pipeline3To4.STAGE_NAME)
+      .toDF()
+
+    val connections = control
+      .filter($"filetype" === "connection")
+      .select($"collecttype" as "ctl_collecttype",
+        $"engine" as "ctl_engine",
+        to_date($"day" as "ctl_day"),
+        to_date($"filedt") as "ctl_filedt")
+
+    val agg_full = connections
       .groupBy("source_site", "dest_site", "source_sector", "source_I_ID_site",
       "enddate", "source_app_name", "source_app_category", "source_app_company", "source_app_exec", "source_app_paths",
       "engine", "fileenginedate", "dest_ip", "dest_port", "con_protocol", "con_status", "url")
-      .agg(sum("con_number"))*/
+      .agg(sum("con_number"))
+
 
 
     /*stat <- NXFile[, list(sum_con_cardinality=sum(NX_con_cardinality),

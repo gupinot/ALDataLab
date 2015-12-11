@@ -20,7 +20,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
       val filedate = s"$year-$month-$day"
 
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
-      val respath = s"$dirout/$filetype"
+      val respath = s"${context.dirout()}/$filetype"
       println("RepoProcessInFile() : respath = " + respath)
 
       val res = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").option("delimiter", ";")
@@ -86,6 +86,5 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
       res2.write.mode("append").partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
-    repo.genAIP()
   }
 }

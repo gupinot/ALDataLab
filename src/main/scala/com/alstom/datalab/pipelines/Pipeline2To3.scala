@@ -92,7 +92,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         .collect
 
       val controlres = days.map(day => {
-        val fileout = s"$dirout/$filetype/collecttype=$engine_type/dt=$day/engine=$fileenginename/filedt=$filedate"
+        val fileout = s"${context.dirout()}/$filetype/collecttype=$engine_type/dt=$day/engine=$fileenginename/filedt=$filedate"
 
         try {
           val tmp = resdf.where($"enddate" === day).write.parquet(fileout)
@@ -111,6 +111,6 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
       controlres
 
     })
-    sqlContext.sparkContext.makeRDD(controlres, 1).saveAsTextFile(s"${this.dircontrol}/$jobid.csv")
+    sqlContext.sparkContext.makeRDD(controlres, 1).saveAsTextFile(s"${context.control()}/$jobid.csv")
   }
 }
