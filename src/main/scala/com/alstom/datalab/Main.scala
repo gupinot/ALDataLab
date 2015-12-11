@@ -17,6 +17,7 @@ object Main {
     val context = new Context(Map())
     val props = propertiesAsScalaMap(System.getProperties)
     props.filterKeys(_.startsWith("context.")).foreach((e)=>context.put(e._1,e._2))
+    val defaultMethod = props.getOrElse("method",DEFAULT_METHOD)
 
     val usage = s"""
     Usage: DLMain [--repo string] [--dirout string] [--control string] [--method RepoProcessInFile|pipeline2to3|pipeline3to4|pipeline4to5] <filein> [filein ...]
@@ -30,7 +31,7 @@ object Main {
     }
     println("DLMain() : Begin")
 
-    val options = nextOption(OptionMap(DEFAULT_METHOD,context,List()),args.toList)
+    val options = nextOption(OptionMap(defaultMethod,context,List()),args.toList)
     println(options)
 
     val conf = new SparkConf()
