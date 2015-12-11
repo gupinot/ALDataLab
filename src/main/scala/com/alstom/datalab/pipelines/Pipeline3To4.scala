@@ -114,7 +114,7 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         |)
       """.stripMargin)
       .write.mode(SaveMode.Append)
-      .partitionBy("collecttype", "dt", "engine", "filedt", "jobidorig", "jobid").parquet(dirout)
+      .partitionBy("dt").parquet(dirout)
   }
 
   def buildIpLookupTable(): DataFrame = {
