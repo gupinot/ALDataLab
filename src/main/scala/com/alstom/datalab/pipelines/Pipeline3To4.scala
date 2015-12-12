@@ -1,6 +1,6 @@
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.Pipeline
+import com.alstom.datalab.{ControlFile, Pipeline}
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.{SaveMode, DataFrame, SQLContext}
 import org.apache.spark.sql.functions._

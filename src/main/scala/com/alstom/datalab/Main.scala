@@ -52,14 +52,14 @@ object Main {
 
     pipeline match {
       case Some(pipe) => {
-        pipe.context(options.context).execute()
+        pipe.context(options.context).input(options.args).execute()
       }
       case None => println(s"Method ${options.method} not found")
     }
   }
 
   def nextOption(map : OptionMap, list: List[String]) : OptionMap = {
-    val OptionPattern = "^--?([a-zA-Z0-9_.-)".r
+    val OptionPattern = "^--?([a-zA-Z0-9_.-]+)".r
     list match {
       case Nil => map
       case OptionPattern(opt) :: value :: tail => if (opt == "method")

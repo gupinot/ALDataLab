@@ -2,9 +2,10 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
+import org.apache.spark.sql.types.{StructField, StringType, StructType}
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{DataFrame, SQLContext}
+import org.apache.spark.sql.{Row, SaveMode, DataFrame, SQLContext}
 import org.apache.spark.sql.functions._
 import org.apache.spark.storage.StorageLevel
 
@@ -15,102 +16,142 @@ object Pipeline2To3 {
   val STAGE_NAME = "pipe2to3"
 }
 
+case class FileDescriptor(filetype:String, enginename:String, filedt:String, enginetype:String)
+case class InputRecord(key: FileDescriptor,filename: String)
+
 class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
+
+  def loadMeta(path: String) = try {
+    sqlContext.read.parquet(path)
+  } catch {
+    case e:Throwable =>
+      sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
+        StructField("filetype", StringType, true),
+        StructField("stage", StringType, true),
+        StructField("collecttype", StringType, true),
+        StructField("engine", StringType, true),
+        StructField("dt", StringType, true),
+        StructField("filedt", StringType, true)
+      )))
+  }
+
+  def aggregateMeta(metaDf: DataFrame) = metaDf
+    .filter($"stage" === Pipeline2To3.STAGE_NAME)
+    .groupBy("collecttype","engine","dt")
+    .agg(min($"filedt").as("min_filedt"))
+    .withColumn("dt",to_date($"dt"))
+    .repartition(1)
+
+  def parseFiles(inputFiles: List[String]) = inputFiles.map(filein=> {
+    val filename = basename(filein)
+    val Array(filetype, fileenginename, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
+    val (year, month_day) = file_date.splitAt(4)
+    val (month, day) = month_day.splitAt(2)
+    val filedate = s"$year-$month-$day"
+    val engine_type = collect_type(fileenginename)
+
+    InputRecord(FileDescriptor(filetype, fileenginename, filedate, engine_type), filein)
+  })
 
   override def execute(): Unit = {
     val jobid:Long = System.currentTimeMillis/1000
 
-    val controlres: List[ControlFile] = this.inputFiles.flatMap((filein) => {
-      val filename = basename(filein)
-      val Array(filetype, fileenginename, file_date) = filename.replaceAll("\\.[^_]+$","").split("_")
-      val (year, month_day) = file_date.splitAt(4)
-      val (month, day) = month_day.splitAt(2)
-      val filedate = s"$year-$month-$day"
-      val engine_type = collect_type(fileenginename)
+    val currentMeta = loadMeta(context.meta())
+    val metaDf = aggregateMeta(currentMeta)
+    val inputs = parseFiles(this.inputFiles).groupBy(_.key.filetype)
 
-      println("pipeline2to3() : read filein")
-      val df = sqlContext.read.format("com.databricks.spark.csv")
-        .option("header", "true")
-        .option("delimiter", ";")
-        //.option("inferSchema", "true")
-        .option("mode", "DROPMALFORMED")
-        //.option("parserLib", "UNIVOCITY")
-        .load(filein)
+    val resultMeta = inputs.map(input=>{
+      val filetype = input._1
+      val records = input._2
+      val inputDf = records.map((record)=>{
+        val df = sqlContext.read.format("com.databricks.spark.csv")
+          .option("header", "true")
+          .option("delimiter", ";")
+          .option("mode", "DROPMALFORMED")
+          //.option("parserLib", "UNIVOCITY")
+          .load(record.filename)
 
-      //rename columns
-      println("pipeline2to3() : rename column and split datetime fields")
+        val selectedDf = filetype match {
+          case "connection" => df.select(
+            $"I_ID_D",
+            $"I_ID_U",
+            $"NX_con_start_time" as "con_start",
+            $"NX_con_end_time" as "con_end",
+            $"NX_con_duration" cast "int" as "con_duration",
+            $"NX_con_cardinality" cast "int" as "con_number",
+            $"NX_con_destination_ip" as "dest_ip",
+            $"NX_con_out_traffic" cast "long" as "con_traffic_out",
+            $"NX_con_in_traffic" cast "long" as "con_traffic_in",
+            $"NX_con_type" as "con_protocol",
+            $"NX_con_status" as "con_status",
+            $"NX_con_port" cast "int" as "dest_port",
+            $"NX_bin_app_category" as "source_app_category",
+            $"NX_bin_app_company" as "source_app_company",
+            $"NX_bin_app_name" as "source_app_name",
+            $"NX_bin_exec_name" as "source_app_exec",
+            $"NX_bin_paths" as "source_app_paths",
+            $"NX_bin_version" as "source_app_version",
+            $"NX_device_last_ip" as "source_ip",
+            lit(record.key.enginetype) as "collecttype",
+            lit(record.key.enginename) as "engine",
+            lit(record.key.filedt) as "filedt",
+            to_date($"NX_con_end_time") as "dt"
+          )
+          case "webrequest" => df.select(
+            $"I_ID_D",
+            $"wr_start_time" as "start",
+            $"wr_end_time" as "end",
+            $"wr_url" as "url",
+            $"wr_destination_port" cast "int" as "dest_port",
+            $"wr_destination_ip" as "dest_ip",
+            $"wr_application_name" as "source_app_name",
+            lit(record.key.enginetype) as "collecttype",
+            lit(record.key.enginename) as "engine",
+            lit(record.key.filedt) as "filedt",
+            to_date($"NX_con_end_time") as "dt"
+          )
+          case _ => df
+        }
+        selectedDf
+      }).reduce(_.unionAll(_)).as("in")
 
-      val df2 = filetype match {
-        case "connection" => df.select(
-          $"I_ID_D",
-          $"I_ID_U",
-          to_date($"NX_con_start_time") as "startdate",
-          hour($"NX_con_start_time") as "starttime",
-          to_date($"NX_con_end_time") as "enddate",
-          hour($"NX_con_end_time") as "endtime",
-          $"NX_con_duration" cast "int" as "con_duration",
-          $"NX_con_cardinality" cast "int" as "con_number",
-          $"NX_con_destination_ip" as "dest_ip",
-          $"NX_con_out_traffic" cast "long" as "con_traffic_out",
-          $"NX_con_in_traffic" cast "long" as "con_traffic_in",
-          $"NX_con_type" as "con_protocol",
-          $"NX_con_status" as "con_status",
-          $"NX_con_port" cast "int" as "dest_port",
-          $"NX_bin_app_category" as "source_app_category",
-          $"NX_bin_app_company" as "source_app_company",
-          $"NX_bin_app_name" as "source_app_name",
-          $"NX_bin_exec_name" as "source_app_exec",
-          $"NX_bin_paths" as "source_app_paths",
-          $"NX_bin_version" as "source_app_version",
-          $"NX_device_last_ip" as "source_ip"
-        )
-        case "webrequest" => df.select(
-          $"I_ID_D",
-          to_date($"wr_start_time") as "startdate",
-          hour($"wr_start_time") as "starttime",
-          to_date($"wr_end_time") as "enddate",
-          hour($"wr_end_time") as "endtime",
-          $"wr_url" as "url",
-          $"wr_destination_port" cast "int" as "dest_port",
-          $"wr_destination_ip" as "dest_ip",
-          $"wr_application_name" as "source_app_name"
-        )
-        case _ => df
+      val newInput = inputDf.join(broadcast(metaDf).as("meta"),
+        ($"in.dt" === $"meta.dt") and ($"in.engine" === $"meta.engine") and ($"in.collecttype" === $"meta.collecttype"),
+        "left_outer")
+        .select("min_filedt",inputDf.columns.map("in."+_):_*)
+        .filter("min_filedt > filedt or min_filedt is null")
+        .drop("min_filedt")
+
+      if (newInput.count() > 0) {
+        // only write something if we are not empty
+        (context.get("partition") match {
+          case Some(partNum) => newInput.repartition(partNum.toInt)
+          case None => newInput
+        }).write.mode(SaveMode.Append)
+          .partitionBy("dt")
+          .parquet(s"${context.dirout()}/$filetype")
+      } else {
+        println(s"Empty result set for $input")
       }
 
-      val resdf = df2.persist(StorageLevel.MEMORY_AND_DISK)
+      val updatedMeta = newInput.select(
+        lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage",
+        $"collecttype", $"engine",$"dt",$"filedt").distinct()
 
-      //split resdf by enddate
-      println("pipeline2to3() : split resdf by enddate")
-
-      val days= resdf.groupBy("enddate")
-        .agg(max($"endtime").as("maxtime"),min($"endtime").as("mintime"))
-        .filter($"mintime" <= 3 and $"maxtime" >= 23)
-        .select($"enddate")
-        .map(_.getDate(0))
-        .collect
-
-      val controlres = days.map(day => {
-        val fileout = s"${context.dirout()}/$filetype/collecttype=$engine_type/dt=$day/engine=$fileenginename/filedt=$filedate"
-
-        try {
-          val tmp = resdf.where($"enddate" === day).write.parquet(fileout)
-          println("pipeline2to3() : No duplicated")
-          ControlFile(Pipeline2To3.STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "OK", day.toString)
-        } catch {
-          case e: Exception => {
-            //println("pipeline2to3() : Duplicated "+e.getMessage)
-            ControlFile(Pipeline2To3.STAGE_NAME, jobid.toString, filetype, engine_type, fileenginename, filedate, "KO", day.toString)
-          }
-        }
-        //println(s"pipeline2to3() : CompleteDay $day")
-      })
-
-      resdf.unpersist()
-      controlres
-
+      updatedMeta
     })
-    sqlContext.sparkContext.makeRDD(controlres, 1).saveAsTextFile(s"${context.control()}/$jobid.csv")
+
+    val newMeta = resultMeta.reduce(_.unionAll(_)).repartition(1)
+    // update meta table
+    newMeta.write.mode(SaveMode.Append).parquet(context.meta())
+
+    // save job results to control
+    newMeta.withColumn("jobid",lit(jobid.toString)).withColumn("status",lit("OK"))
+      .write.mode(SaveMode.Overwrite)
+      .format("com.databricks.spark.csv")
+      .option("header", "true")
+      .option("delimiter",";")
+      .save(s"${context.control()}/$jobid.csv")
   }
 }

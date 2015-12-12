@@ -3,7 +3,7 @@
   */
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.Pipeline
+import com.alstom.datalab.{ControlFile, Pipeline}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SQLContext}
 

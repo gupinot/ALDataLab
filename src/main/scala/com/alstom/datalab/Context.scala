@@ -1,5 +1,7 @@
 package com.alstom.datalab
 
+import org.apache.spark.sql.SQLContext
+
 import scala.collection.mutable.HashMap
 
 /**
