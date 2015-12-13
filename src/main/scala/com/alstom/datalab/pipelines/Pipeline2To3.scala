@@ -109,7 +109,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
             lit(record.key.enginetype) as "collecttype",
             lit(record.key.enginename) as "engine",
             lit(record.key.filedt) as "filedt",
-            to_date($"NX_con_end_time") as "dt"
+            to_date($"wr_end_time") as "dt"
           )
           case _ => df
         }
