@@ -1,5 +1,9 @@
 package com.alstom.datalab
 
+import java.io.{BufferedReader, FileReader}
+import java.nio.charset.Charset
+import java.nio.file.{FileSystems, Path, Files}
+
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 import collection.JavaConversions._
@@ -59,7 +63,10 @@ object Main {
       case Nil => map
       case OptionPattern(opt) :: value :: tail => if (opt == "method")
         nextOption(OptionMap(value,map.context,map.args),tail)
-      else {
+      else if (opt == "filelist") {
+        val path = FileSystems.getDefault.getPath(value)
+        nextOption(OptionMap(map.method,map.context,Files.readAllLines(path,Charset.defaultCharset()).toList++map.args),tail)
+      } else {
         map.context.put(opt,value)
         nextOption(OptionMap(map.method,map.context,map.args),tail)
       }
