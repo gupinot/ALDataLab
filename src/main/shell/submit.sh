@@ -24,32 +24,36 @@ usage=
 CONF="/home/hadoop/conf/default.conf"
 JAR="/home/hadoop/lib/default.jar"
 BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
+DRYRUN=0
 
 while [[ $# > 1 ]]
 do
-key="$1"
+   key="$1"
 
-case ${key} in
-    -h|--help)
-    echo <<EOF
+   case ${key} in
+        -h|--help)
+        echo <<EOF
 $0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [filename filename... | - ]
 EOF
-   exit 0
-    ;;
-    -c|--conf)
-    CONF="$2"
-    shift # past argument
-    ;;
-    -j|--jar)
-    JAR="$2"
-    shift # past argument
-    ;;
-    -d|--distribute)
-    BATCHFILESIZE="${2:-0}"
-    shift # past 1st value
-    ;;
-esac
-shift # past argument or value
+        exit 0
+        ;;
+        -c|--conf)
+        CONF="$2"
+        shift # past argument
+        ;;
+        -j|--jar)
+        JAR="$2"
+        shift # past argument
+        ;;
+        -n|--dry-run)
+        DRYRUN=1
+        ;;
+        -d|--distribute)
+        BATCHFILESIZE="${2:-0}"
+        shift # past 1st value
+        ;;
+    esac
+    shift # past argument or value
 done
 
 # Read all filenames to process
@@ -79,8 +83,14 @@ fi
 for batchfile in ${splits}
 do
     echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : BEGIN"
-    spark ${CONF} ${batchfile}
-    ret=$?
+    if [[ ${DRYRUN} -eq 0 ]]
+    then
+        spark ${CONF} ${batchfile}
+        ret=$?
+    else
+        ret=0
+    fi
+
     if [[ ${ret} -eq 0 ]]
     then
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : OK"
