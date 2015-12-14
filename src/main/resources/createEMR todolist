@@ -1,4 +1,4 @@
-When creating new EMR cluster :
+#When creating new EMR cluster :
 EMRMASTER="ec2-54-209-81-97.compute-1.amazonaws.com"
 ALDATALABDIR="/Users/guillaumepinot/Dev/Alstom/V2/script/spark/IdeaProjects/ALDataLab"
 
@@ -8,8 +8,10 @@ scp -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem ALDATALABDIR/client/script/ALData
 scp -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem ALDATALABDIR/client/script/distributeByBatch.sh hadoop@$EMRMASTER:~/script
 ssh -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem hadoop@$EMRMASTER "chmod +x script/*.sh"
 
-Patch /etc/zeppelin/conf/zeppelin-env.sh :
+#Patch /etc/zeppelin/conf/zeppelin-env.sh :
 export CLASSPATH="/usr/share/aws/aws-java-sdk/*:/usr/lib/hadoop-lzo/lib/*:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/*:/usr/share/aws/emr/emrfs/auxlib/*"
 
-Add following line in /etc/spark/conf/spark-defaults.conf
+#Add following line in /etc/spark/conf/spark-defaults.conf
 spark.dynamicAllocation.enabled true
+
+Add rluta public key in .ssh/Authorized

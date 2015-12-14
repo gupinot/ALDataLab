@@ -1,62 +1,31 @@
 #!/usr/bin/env bash
 
-
-function waitServerIdle {
-	ServerIdle=0
-	while [[ $ServerIdle -eq 0 ]]
-	do
-		for ((i=1; i<=${#ServerPID[@]}; i++))
-		do
-			if [[ "${ServerPID[$i]}" == "" ]]
-			then
-				ServerIdle=$i
-				break
-			else
-				tmp=$(ps -p ${ServerPID[$i]} | wc -l)
-				if [[ "${tmp//[[:blank:]]/}" == "1" ]]
-				then
-					ServerIdle=$i
-					ServerPID[$i]=""
-					break
-				fi
-			fi
-		done
-		if [[ $ServerIdle -eq 0 ]]
-		then
-			sleep 10
-		fi
-	done
-	return $ServerIdle
-}
-
-function runscript {
-	waitServerIdle
-	ServerID=$?
-	CMD="spark ${Server[$ServerID]} $ArgListOfScriptCalled $*"
-	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : execute $CMD & ..."
-	$CMD &
-	ServerPID[$ServerID]=$!
-}
-
 function spark() {
-    CONF=$1
+    conf=$1
     todofiles="${@:2}"
 
-    CLASS=$(grep 'spark.class' <$CONF | awk '{print $2}')
-    echo -n "Executing $CLASS from $JAR with config $CONF for $todofiles..." >&5
-    spark-submit --class $CLASS --properties-file $CONF $JAR $todofiles
-    result $?
-    echo "Done." >&5
+    CLASS=$(grep 'spark.class' <$conf | awk '{print $2}')
+    echo "Executing $CLASS from $JAR with config $conf for $todofiles..."
+    spark-submit --class $CLASS --properties-file $conf $JAR $todofiles
+    result=$?
+    echo "Done."
+    return $result
 }
 
 
 ########################################################################################################################
 #main
 
-usages="$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute nbparrallelize batchfilessize] filelist"
-CONF=/home/hadoop/conf/default.conf
-JAR=/home/hadoop/lib/default.jar
-DISTRIBUTE=NO
+usages="$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [-i|--dirin dirinpath] [-p|--fileinpattern fileinpattern] [filelist]"
+CONF="/home/hadoop/conf/default.conf"
+JAR="/home/hadoop/lib/default.jar"
+DISTRIBUTE=$(grep 'shell.distribute' <$CONF | awk '{print $2}')
+BATCHFILESIZE=$(grep 'shell.batchfilesize' <$CONF | awk '{print $2}')
+RENAMEFILEACTIVE=$(grep 'shell.renamefileactive' <$CONF | awk '{print $2}')
+DIRIN=$(grep 'shell.dirin' <$CONF | awk '{print $2}')
+FILEINPATTERN=$(grep 'shell.fileinpattern' <$CONF | awk '{print $2}')
+FILELIST=""
+CURFILELIST=""
 
 while [[ $# > 1 ]]
 do
@@ -68,7 +37,7 @@ case $key in
     exit 0
     ;;
     -c|--conf)
-    conf="$2"
+    CONF="$2"
     shift # past argument
     ;;
     -j|--jar)
@@ -76,36 +45,97 @@ case $key in
     shift # past argument
     ;;
     -d|--distribute)
-    distribute=YES
-    nbparrallelize="$2"
-    batchfilessize="$3"
-    shift # past argument
+    DISTRIBUTE="true"
+    BATCHFILESIZE="$2"
     shift # past 1st value
     ;;
-    -m|--method)
-    method="$2"
-    shift # past argument
+    -i|--dirin)
+    DIRIN="$2"
+    shift # past 1st value
+    ;;
+    -p|--fileinpattern)
+    FILEINPATTERN="$2"
+    shift # past 1st value
     ;;
     *)
-    filelist="${@:1}"
+    FILELIST="${@:1}"
     shift
     ;;
 esac
 shift # past argument or value
 done
 
-if [[ "$distribute" == "NO" ]]
-then
-    spark $conf $filelist
-else
-    for ((i=1; i<=nbparrallelize; i++))
-    do
-        Server[$i]=$i
-        ServerPID[$i]=""
-    done
 
-    for batchfile in $(echo $filelist | xargs -n $batchfilessize | tr " " ";")
+function mvFileList {
+    extfrom=$1
+    extto=$2
+    FileList="${@:3}"
+    if [[ "$FileList" != "" ]]
+    then
+        for filein in $FileList
+        do
+            CMD="aws s3 mv $filein$extfrom $filein$extto"
+            echo "CMD:$CMD"
+            $CMD
+        done
+    fi
+}
+
+function initList() {
+     if [[ "$RENAMEFILEACTIVE" == "true" ]]
+     then
+        mvFileList ".todo" ".ongoing" "$*"
+     fi
+}
+
+function commitList() {
+     if [[ "$RENAMEFILEACTIVE" == "true" ]]
+     then
+        mvFileList ".ongoing" ".done" "$*"
+     fi
+}
+
+function uncommitList() {
+     if [[ "$RENAMEFILEACTIVE" == "true" ]]
+     then
+        mvFileList ".ongoing" ".todo" "$*"
+     fi
+}
+if [[ "$FILELIST" == "" ]]
+then
+    echo "nothing to do"
+    exit 0
+fi
+
+TRAP "uncommitList $CURFILELIST" SIGINT SIGTERM
+
+if [[ "$DISTRIBUTE" != "true" ]]
+then
+    CURFILELIST=$FILELIST
+    initList $CURFILELIST
+    spark $CONF $CURFILELIST
+    ret=$?
+    if [[ $ret -eq 0 ]]
+    then
+        commitList $CURFILELIST
+    else
+        uncommitList $CURFILELIST
+    fi
+else
+    for batchfile in $(echo $FILELIST | xargs -n $BATCHFILESIZE | tr " " ";")
     do
-        runscript $(echo $batchfile | tr ";" " ")
+        CURFILELIST=$(echo $batchfile | tr ";" " ")
+        initList $CURFILELIST
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $CURFILELIST : BEGIN"
+        spark $CONF $CURFILELIST
+        ret=$?
+        if [[ $ret -eq 0 ]]
+        then
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $CURFILELIST : OK"
+            commitList $CURFILELIST
+        else
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $CURFILELIST : KO"
+            uncommitList $CURFILELIST
+        fi
     done
 fi
