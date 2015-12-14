@@ -65,11 +65,11 @@ done
 filelist=$(mktemp)
 if [ "u$*" = "u" -o "$*" = "-" ]
 then
-   cat <&0 >${filelist}
+   cat <&0 | sed -e 's/s3:/s3a:/' >${filelist}
 else
    for f in $@
    do
-     echo ${f} >${filelist}
+     echo ${f} | sed -e 's/s3:/s3a:/' >${filelist}
    done
 fi
 
@@ -104,7 +104,7 @@ do
     if [[ ${VERBOSE} -gt 0 ]]
     then
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : BEGIN"
-    fi 
+    fi
     if [[ ${VERBOSE} -gt 1 ]]
     then
        echo "Files in batch $batchfile:"
@@ -126,7 +126,7 @@ do
         fi
         for f in $(cat ${batchfile})
         do
-            echo ${f} >&5
+            echo ${f} | sed -e 's/s3a:/s3:/' >&5
         done
     else
         if [[ ${VERBOSE} -gt 0 ]]
