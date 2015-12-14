@@ -20,35 +20,40 @@ function spark() {
 ########################################################################################################################
 #main
 
-usage=
+usage="$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [filename filename... | - ]"
 CONF="/home/hadoop/conf/default.conf"
 JAR="/home/hadoop/lib/default.jar"
 BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
 DRYRUN=0
+VERBOSE=0
 
-while [[ $# > 1 ]]
+while [[ $# > 0 ]]
 do
    key="$1"
 
    case ${key} in
-        -h|--help)
-        echo <<EOF
-$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [filename filename... | - ]
-EOF
+     -h|--help)
+        echo ${usage}
         exit 0
         ;;
-        -c|--conf)
+     -c|--conf)
         CONF="$2"
         shift # past argument
         ;;
-        -j|--jar)
+     -j|--jar)
         JAR="$2"
         shift # past argument
         ;;
-        -n|--dry-run)
+     -n|--dry-run)
         DRYRUN=1
         ;;
-        -d|--distribute)
+     -v|--verbose)
+        VERBOSE=$((${VERBOSE} + 1))
+        ;;
+     -vv|--very-verbose)
+        VERBOSE=$((${VERBOSE} + 2))
+        ;;
+     -d|--distribute)
         BATCHFILESIZE="${2:-0}"
         shift # past 1st value
         ;;
@@ -68,7 +73,17 @@ else
    done
 fi
 
+if [[ ${VERBOSE} -gt 2 ]]
+then
+   echo "Files to process:"
+   cat ${filelist}
+fi
+
 # if we need to batch, split original file otherwise keep it a single split
+if [[ ${VERBOSE} -gt 0 ]]
+then
+   echo "Batch size: ${BATCHFILESIZE}"
+fi
 if [[ ${BATCHFILESIZE} -gt 0 ]]
 then
     prefix=$(basename "${filelist}.split.")
@@ -78,11 +93,23 @@ then
 else
     splits=${filelist}
 fi
+if [[ ${VERBOSE} -gt 0 ]]
+then
+   echo "Splits: ${splits}"
+fi
 
 # now run the spark command for each split
 for batchfile in ${splits}
 do
-    echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : BEGIN"
+    if [[ ${VERBOSE} -gt 0 ]]
+    then
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : BEGIN"
+    fi 
+    if [[ ${VERBOSE} -gt 1 ]]
+    then
+       echo "Files in batch $batchfile:"
+       cat ${batchfile}
+    fi
     if [[ ${DRYRUN} -eq 0 ]]
     then
         spark ${CONF} ${batchfile}
@@ -93,15 +120,22 @@ do
 
     if [[ ${ret} -eq 0 ]]
     then
-        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : OK"
+        if [[ ${VERBOSE} -gt 0 ]]
+        then
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : OK"
+        fi
         for f in $(cat ${batchfile})
         do
             echo ${f} >&5
         done
     else
-        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : KO"
+        if [[ ${VERBOSE} -gt 0 ]]
+        then
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : spark $batchfile : KO"
+        fi
     fi
 done
 
 # clean up
 rm -f ${filelist} ${filelist}.split.*
+
