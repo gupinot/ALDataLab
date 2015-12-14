@@ -121,7 +121,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         "left_outer")
         .select("min_filedt",inputDf.columns.map("in."+_):_*)
         .filter("min_filedt > filedt or min_filedt is null")
-        .drop("min_filedt")
+        .drop("min_filedt").persist(StorageLevel.MEMORY_AND_DISK)
 
       if (newInput.count() > 0) {
         // only write something if we are not empty
