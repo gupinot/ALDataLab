@@ -21,7 +21,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
           .select(lit("connections") as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt".cast("string").as("dt"),$"filedt")
           .distinct()
       } catch {
-        case _ => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
+        case _:Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
             StructField("filetype", StringType, true),
             StructField("stage", StringType, true),
             StructField("collecttype", StringType, true),
