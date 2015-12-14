@@ -57,14 +57,14 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
   override def execute(): Unit = {
     val jobid:Long = System.currentTimeMillis/1000
 
-    val currentMeta = loadMeta(context.meta())
-    val metaDf = aggregateMeta(currentMeta)
+    val metaDf = aggregateMeta(loadMeta(context.meta()))
     val inputs = parseFiles(this.inputFiles).groupBy(_.key.filetype)
 
     val resultMeta = inputs.map(input=>{
       val filetype = input._1
       val records = input._2
-      val inputDf = records.map((record)=>{
+
+      val baseDf = records.map((record)=>{
         val df = sqlContext.read.format("com.databricks.spark.csv")
           .option("header", "true")
           .option("delimiter", ";")
@@ -114,21 +114,36 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
           case _ => df
         }
         selectedDf
-      }).reduce(_.unionAll(_)).as("in")
+      }).reduce(_.unionAll(_))
+
+      val inputDf = (context.get("paritition") match {
+        case Some(partNum) => baseDf.repartition(partNum.toInt)
+        case None => baseDf
+      }).as("in")
 
       val newInput = inputDf.join(broadcast(metaDf).as("meta"),
-        ($"in.dt" === $"meta.dt") and ($"in.engine" === $"meta.engine") and ($"in.collecttype" === $"meta.collecttype"),
+        ($"in.dt" === $"meta.dt") and ($"in.engine" === $"meta.engine")
+          and ($"in.collecttype" === $"meta.collecttype") and ($"meta.filetype" === lit(filetype)),
         "left_outer")
         .select("min_filedt",inputDf.columns.map("in."+_):_*)
         .filter("min_filedt > filedt or min_filedt is null")
         .drop("min_filedt").persist(StorageLevel.MEMORY_AND_DISK)
 
       if (newInput.count() > 0) {
-        // only write something if we are not empty
-        (context.get("partition") match {
-          case Some(partNum) => newInput.repartition(partNum.toInt)
-          case None => newInput
-        }).write.mode(SaveMode.Append)
+        val resultDf = if (filetype == "connection") {
+          val completeDf = newInput.groupBy($"collecttype",$"engine",$"dt",$"filedt")
+            .agg(min(hour($"endtime")).as("min_hour"),max(hour($"endtime")).as("max_hour"))
+            .filter($"min_hour" <= 3 and $"max_hour" >= 23)
+
+          newInput.as("all").join(completeDf.as("complete"),
+            ($"all.dt" === $"complete.dt") and ($"all.engine" === $"complete.engine")
+              and ($"all.collecttype" === $"complete.collecttype") and ($"all.filedt" === $"complete.filedt"),"inner")
+            .select(newInput.columns.map(newInput.col):_*)
+        } else {
+          newInput
+        }
+
+        resultDf.write.mode(SaveMode.Append)
           .partitionBy("dt")
           .parquet(s"${context.dirout()}/$filetype")
       } else {
