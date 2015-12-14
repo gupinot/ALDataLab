@@ -1,6 +1,6 @@
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.Pipeline
+import com.alstom.datalab.{Meta, Pipeline}
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.types.{StructField, StringType, StructType}
 import org.apache.spark.{SparkContext, SparkConf}
@@ -19,29 +19,8 @@ object Pipeline2To3 {
 case class FileDescriptor(filetype:String, enginename:String, filedt:String, enginetype:String)
 case class InputRecord(key: FileDescriptor,filename: String)
 
-class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
+class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   import sqlContext.implicits._
-
-  def loadMeta(path: String) = try {
-    sqlContext.read.parquet(path)
-  } catch {
-    case e:Throwable =>
-      sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
-        StructField("filetype", StringType, true),
-        StructField("stage", StringType, true),
-        StructField("collecttype", StringType, true),
-        StructField("engine", StringType, true),
-        StructField("dt", StringType, true),
-        StructField("filedt", StringType, true)
-      )))
-  }
-
-  def aggregateMeta(metaDf: DataFrame) = metaDf
-    .filter($"stage" === Pipeline2To3.STAGE_NAME)
-    .groupBy("collecttype","engine","dt","filetype")
-    .agg(min($"filedt").as("min_filedt"))
-    .withColumn("dt",to_date($"dt"))
-    .repartition(1)
 
   def parseFiles(inputFiles: List[String]) = inputFiles.map(filein=> {
     val filename = basename(filein)
@@ -116,7 +95,7 @@ class Pipeline2To3(sqlContext: SQLContext) extends Pipeline {
         selectedDf
       }).reduce(_.unionAll(_))
 
-      val inputDf = (context.get("paritition") match {
+      val inputDf = (context.get("partition") match {
         case Some(partNum) => baseDf.repartition(partNum.toInt)
         case None => baseDf
       }).as("in")
