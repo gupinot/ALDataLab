@@ -8,17 +8,17 @@ import scala.collection.mutable.HashMap
   * Created by raphael on 11/12/2015.
   */
 object Context {
-  val REPO="context.repo"
+  val REPO="repo"
   val DEFAULT_REPO="s3://alstomlezoomerus/DATA/Repository"
-  val DIRERR="context.direrr"
+  val DIRERR="direrr"
   val DEFAULT_DIRERR="s3://alstomlezoomerus/DATA/2-err"
-  val DIROUT="context.dirout"
+  val DIROUT="dirout"
   val DEFAULT_DIROUT="s3://alstomlezoomerus/DATA/2-out"
-  val DIRIN="context.dirin"
+  val DIRIN="dirin"
   val DEFAULT_DIRIN="s3://alstomlezoomerus/DATA/2-in"
-  val CONTROL="context.control"
+  val CONTROL="control"
   val DEFAULT_CONTROL="s3://alstomlezoomerus/DATA/2-control"
-  val META="context.meta"
+  val META="meta"
   val DEFAULT_META="s3://alstomlezoomerus/DATA/2-meta"
 }
 

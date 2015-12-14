@@ -16,7 +16,7 @@ object Main {
   def main(args: Array[String]) {
     val context = new Context(Map())
     val props = propertiesAsScalaMap(System.getProperties)
-    props.filterKeys(_.startsWith("context.")).foreach((e)=>context.put(e._1,e._2))
+    props.filterKeys(_.startsWith("context.")).foreach((e)=>context.put(e._1.substring("context.".length),e._2))
     val defaultMethod = props.getOrElse("method",DEFAULT_METHOD)
 
     val usage = s"""
