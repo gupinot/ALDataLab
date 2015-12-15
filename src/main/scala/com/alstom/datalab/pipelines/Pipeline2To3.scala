@@ -98,7 +98,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       val inputDf = (context.get("partition") match {
         case Some(partNum) => baseDf.repartition(partNum.toInt)
         case None => baseDf
-      }).as("in")
+      }).as("in").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 
       val newInput = inputDf.join(broadcast(metaDf).as("meta"),
         ($"in.dt" === $"meta.dt") and ($"in.engine" === $"meta.engine")
@@ -106,8 +106,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         "left_outer")
         .select("min_filedt",inputDf.columns.map("in."+_):_*)
         .filter("min_filedt > filedt or min_filedt is null")
-        .drop("min_filedt").persist(StorageLevel.MEMORY_AND_DISK)
-
+        .drop("min_filedt").persist(StorageLevel.MEMORY_AND_DISK_SER_2)
 
       val resultDf = if (newInput.count() > 0) {
         val resDf = if (filetype == "connection") {
@@ -115,7 +114,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
             .agg(min(hour($"con_end")).as("min_hour"),max(hour($"con_end")).as("max_hour"))
             .filter($"min_hour" <= 3 and $"max_hour" >= 23)
 
-          newInput.as("all").join(completeDf.as("complete"),
+          newInput.as("all").join(broadcast(completeDf).as("complete"),
             ($"all.dt" === $"complete.dt") and ($"all.engine" === $"complete.engine")
               and ($"all.collecttype" === $"complete.collecttype") and ($"all.filedt" === $"complete.filedt"),"inner")
             .select(newInput.columns.map(newInput.col):_*)
