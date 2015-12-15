@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 function mvfiledone() {
+dirout=$1
 while read line
 do
 	file=$(basename $line)
-	CMV="aws s3 mv $line $dirdone/$file"
+	CMV="aws s3 mv $line $dirout/$file"
 	if [[ "$DRYRUN" == "-n" ]]
 	then
 		echo "$CMV"
@@ -52,9 +53,9 @@ done
 
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
-aws s3 ls ${dirin}/ | egrep "\.gz$" | awk -v dirin=$dirin '{if ($1 == "PRE") {print dirin"/"$2} else {print dirin"/"$4}'} | egrep "$FILEPATTERN" >$tempfile
-for var in connection_ webrequest_
+for var in connection webrequest
 do
-	egrep "\/$var" $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>$LOGERR | mvfiledone
+    aws s3 ls ${dirin}/${var}/ | egrep "\.gz$" | awk -v dirin=$dirin -v var=$var '{if ($1 == "PRE") {print dirin"/"var"/"$2} else {print dirin"/"var"/"$4}'} | egrep "$FILEPATTERN" >$tempfile
+	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>$LOGERR | mvfiledone "${dirdone}/${var}"
 done
-#rm $tempfile
+rm $tempfile
