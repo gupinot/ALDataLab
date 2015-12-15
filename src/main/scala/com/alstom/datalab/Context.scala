@@ -9,17 +9,17 @@ import scala.collection.mutable.HashMap
   */
 object Context {
   val REPO="repo"
-  val DEFAULT_REPO="s3://alstomlezoomerus/DATA/Repository"
+  val DEFAULT_REPO="s3a://gedatalab/data/repo"
   val DIRERR="direrr"
-  val DEFAULT_DIRERR="s3://alstomlezoomerus/DATA/2-err"
+  val DEFAULT_DIRERR="s3a://gedatalab/data/err"
   val DIROUT="dirout"
-  val DEFAULT_DIROUT="s3://alstomlezoomerus/DATA/2-out"
+  val DEFAULT_DIROUT="s3a://gedatalab/data/out/encoded"
   val DIRIN="dirin"
-  val DEFAULT_DIRIN="s3://alstomlezoomerus/DATA/2-in"
+  val DEFAULT_DIRIN="s3a://gedatalab/data/out/encoded"
   val CONTROL="control"
-  val DEFAULT_CONTROL="s3://alstomlezoomerus/DATA/2-control"
+  val DEFAULT_CONTROL="s3a://gedatalab/data/control"
   val META="meta"
-  val DEFAULT_META="s3://alstomlezoomerus/DATA/2-meta"
+  val DEFAULT_META="s3a://gedatalab/data/meta"
 }
 
 class Context(map: Map[String,String]) extends HashMap[String,String] {
