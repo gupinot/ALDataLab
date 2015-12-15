@@ -44,7 +44,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     val cnx = broadcast(cnx_meta_delta_ok)
 
-    val all_dt = cnx.select($"dt").distinct().collect().map(_.getString(0))
+    val all_dt = cnx.select($"dt").distinct().collect().map(_.getDate(0))
 
     // main dataframes
     val cnx_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/connection/")
@@ -53,13 +53,13 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     //Read and resolve
     val cnx_filtered = cnx_parquet.filter($"dt".isin(all_dt:_*))
-      .join(cnx, cnx_parquet("collecttype") === cnx("type") && cnx_parquet("engine") === cnx("engine")
-        && cnx_parquet("filedt") === cnx("filedt") && cnx_parquet("dt") === cnx("dt"), "inner")
+      .join(cnx, cnx_parquet("collecttype") === cnx("collecttype") && cnx_parquet("engine") === cnx("engine")
+        && cnx_parquet("filedt") === cnx("min_filedt") && cnx_parquet("dt") === cnx("dt"), "inner")
       .select(cnx_parquet.columns.map(cnx_parquet.col):_*)
 
     val wr_filtered = wr_parquet.filter($"dt".isin(all_dt:_*))
-      .join(cnx, wr_parquet("collecttype") === cnx("type") && wr_parquet("engine") === cnx("engine")
-        && wr_parquet("filedt") === cnx("filedt") && wr_parquet("dt") === cnx("dt"), "inner")
+      .join(cnx, wr_parquet("collecttype") === cnx("collecttype") && wr_parquet("engine") === cnx("engine")
+        && wr_parquet("filedt") === cnx("min_filedt") && wr_parquet("dt") === cnx("dt"), "inner")
       .select(wr_parquet.columns.map(wr_parquet.col):_*)
 
     println("pipeline3to4() : data resolutions")
@@ -92,7 +92,8 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .write.mode(SaveMode.Append)
       .partitionBy("dt").parquet(context.dirout())
 
-
+    val cnx_meta_result = cnx_meta_delta_ok.withColumn("Stage", lit(Pipeline3To4.STAGE_NAME))
+    cnx_meta_result.write.mode(SaveMode.Append).parquet(context.meta())
 
   }
 
