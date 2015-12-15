@@ -1,8 +1,9 @@
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.{ControlFile, Pipeline}
+import com.alstom.datalab.{Meta, Pipeline, ControlFile}
 import com.alstom.datalab.Util._
-import org.apache.spark.sql.{SaveMode, DataFrame, SQLContext}
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.{Row, SaveMode, DataFrame, SQLContext}
 import org.apache.spark.sql.functions._
 
 
@@ -13,64 +14,42 @@ object Pipeline3To4 {
   val STAGE_NAME = "pipe3to4"
 }
 
-class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
+class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   import sqlContext.implicits._
 
-  var AIPToResolve = true
 
   def execute(): Unit = {
 
     val jobidcur:Long = System.currentTimeMillis/1000
-    val sc = sqlContext.sparkContext
+
+    //read meta 23 and 34
+    val metaDf23 = aggregateMeta(loadMeta(context.meta()), Pipeline2To3.STAGE_NAME).as("metaDf23")
+    val metaDf34 = aggregateMeta(loadMeta(context.meta()), Pipeline3To4.STAGE_NAME).as("metaDf34")
+
+    //keep only connection delta (meta23 not in meta34)
+    val cnx_meta_delta = metaDf23.join(metaDf34,
+      ($"metaDf23.dt" === $"metaDf34.dt") and ($"metaDf23.engine" === $"metaDf34.engine")
+      and ($"metaDf23.collecttype" === $"metaDf34.collecttype") and ($"metaDf23.filetype" === $"metaDf34.filetype")
+      and ($"metaDf23.filetype" === "connection") and ($"metaDf23.min_filedt" === $"metaDf34.min_filedt"),
+      "left_outer")
+      .filter("metaDf34.dt is null")
+      .select(metaDf23.columns.map(metaDf23.col):_*).as("cnx_meta_delta")
+
+    //select only record from cnx_meta_delta with corresponding webrequest record in metaDf23
+    val cnx_meta_delta_ok = cnx_meta_delta.join(metaDf23.filter($"filetype" === "webrequest"),
+      $"cnx_meta_delta.engine" === $"metaDf23.engine"
+      and $"cnx_meta_delta.min_filedt" === $"metaDf23.min_filedt",
+      "inner")
+      .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
+
+    val cnx = broadcast(cnx_meta_delta_ok)
+
+    val all_dt = cnx.select($"dt").distinct().collect().map(_.getString(0))
 
     // main dataframes
     val cnx_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/connection/")
-    val wr = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/webrequest/")
+    val wr_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/webrequest/")
 
-    // metadata view on main dataframes
-    val cnx_meta = cnx_parquet.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct().repartition(1)
-    val wr_meta = wr.select($"collecttype" as "type",$"engine",$"dt",$"filedt").distinct().repartition(1)
-
-    //read control files from inputFiles and filter on connection filetype)
-    val control: DataFrame = this.inputFiles.map(filein => {sc.textFile(filein)})
-      .reduce(_.union(_))
-      .map(_.split(";"))
-      .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
-      .repartition(1)
-      .toDF()
-
-    val jobidorig=control.select("jobid").distinct().head.getString(0)
-
-    val ctl_cnx_only = control
-      .filter($"filetype" === "connection")
-      .select($"collecttype" as "type", $"engine" as "engine", to_date($"day") as "dt", to_date($"filedt") as "filedt")
-
-    //select correct filedt from cn-onnections
-    val cnx_best = cnx_meta.groupBy("type", "dt", "engine").agg(min(to_date($"filedt")) as "filedt")
-
-    //select correct filedt from dfControlConnection
-    val cnx_all = cnx_best.as("cnx_best")
-      .join(ctl_cnx_only.as("ctl"),
-      ($"cnx_best.type" === $"ctl.type") && ($"cnx_best.engine" === $"ctl.engine")
-        && ($"cnx_best.dt" === $"ctl.dt") && ($"cnx_best.filedt" === $"ctl.filedt"), "inner")
-      .join(wr_meta.as("wr"),
-      ($"cnx_best.type" === $"wr.type") && ($"cnx_best.engine" === $"wr.engine")
-        && ($"cnx_best.filedt" === $"wr.filedt") && ($"cnx_best.dt" === $"wr.dt"), "left_outer")
-    .select($"cnx_best.dt", $"ctl.filedt", $"ctl.type", $"ctl.engine", $"wr.filedt" as "wr_filedt").cache()
-
-    // save incomplete connections data to reject file
-    val cnx_no_wr = cnx_all.filter("wr_filedt is null")
-    if (cnx_no_wr .count() != 0) {
-        println("following webrequest files not found :")
-        cnx_no_wr.select($"type", $"engine", $"filedt", $"dt",lit("webrequest not found") as "Status")
-          .write.format("com.databricks.spark.csv")
-          .option("header", "true")
-          .option("delimiter", ";").save(context.direrr())
-    }
-
-    // process all other lines
-    val cnx = broadcast(cnx_all.filter("wr_filedt is not null"))
-    val all_dt = cnx.select($"dt").distinct().collect().map(_.getString(0))
 
     //Read and resolve
     val cnx_filtered = cnx_parquet.filter($"dt".isin(all_dt:_*))
@@ -78,10 +57,10 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
         && cnx_parquet("filedt") === cnx("filedt") && cnx_parquet("dt") === cnx("dt"), "inner")
       .select(cnx_parquet.columns.map(cnx_parquet.col):_*)
 
-    val wr_filtered = wr.filter($"dt".isin(all_dt:_*))
-      .join(cnx, wr("collecttype") === cnx("type") && wr("engine") === cnx("engine")
-        && wr("filedt") === cnx("filedt") && wr("dt") === cnx("dt"), "inner")
-      .select(wr.columns.map(wr.col):_*)
+    val wr_filtered = wr_parquet.filter($"dt".isin(all_dt:_*))
+      .join(cnx, wr_parquet("collecttype") === cnx("type") && wr_parquet("engine") === cnx("engine")
+        && wr_parquet("filedt") === cnx("filedt") && wr_parquet("dt") === cnx("dt"), "inner")
+      .select(wr_parquet.columns.map(wr_parquet.col):_*)
 
     println("pipeline3to4() : data resolutions")
     val cnx_resolved = resolveSite(resolveAIP(resolveSector((cnx_filtered))))
@@ -92,26 +71,29 @@ class Pipeline3To4(sqlContext: SQLContext) extends Pipeline {
     //join with df
     sqlContext.sql(
       s"""
-        |with weburl as (
-        |   select collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port,concat_ws('|',collect_set(url)) as url
-        |   from webrequests
-        |   group by collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port
-        |)
-        |select c.*, w.url, $jobidcur as jobid, $jobidorig as jobidorig
-        |from connections c
-        |left outer join weburl w on (
-        |  c.collecttype=w.collecttype
-        |  and c.dt=w.dt
-        |  and c.engine=w.engine
-        |  and c.filedt=w.filedt
-        |  and c.I_ID_D=w.I_ID_D
-        |  and c.source_app_name=w.source_app_name
-        |  and c.dest_port=w.dest_port
-        |  and c.dest_ip=w.dest_ip
-        |)
+         |with weburl as (
+         |   select collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port,concat_ws('|',collect_set(url)) as url
+         |   from webrequests
+         |   group by collecttype, dt, engine, filedt, I_ID_D,source_app_name,dest_ip,dest_port
+         |)
+         |select c.*, w.url
+         |from connections c
+         |left outer join weburl w on (
+         |  c.collecttype=w.collecttype
+         |  and c.dt=w.dt
+         |  and c.engine=w.engine
+         |  and c.filedt=w.filedt
+         |  and c.I_ID_D=w.I_ID_D
+         |  and c.source_app_name=w.source_app_name
+         |  and c.dest_port=w.dest_port
+         |  and c.dest_ip=w.dest_ip
+         |)
       """.stripMargin)
       .write.mode(SaveMode.Append)
       .partitionBy("dt").parquet(context.dirout())
+
+
+
   }
 
   def buildIpLookupTable(): DataFrame = {

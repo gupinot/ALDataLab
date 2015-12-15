@@ -24,13 +24,13 @@ trait Meta {
       )))
   }
 
-  def aggregateMeta(metaDf: DataFrame)(implicit sqlContext: SQLContext) = {
-    import sqlContext.implicits._
+  def aggregateMeta(metaDf: DataFrame, stage :String)(implicit sqlContext: SQLContext) = {
+  import sqlContext.implicits._
     metaDf
-      .filter($"stage" === Pipeline2To3.STAGE_NAME)
-      .groupBy("collecttype","engine","dt","filetype")
-      .agg(min($"filedt").as("min_filedt"))
-      .withColumn("dt",to_date($"dt"))
-      .repartition(1)
+    .filter($"stage" === stage)
+    .groupBy("collecttype","engine","dt","filetype")
+    .agg(min($"filedt").as("min_filedt"))
+    .withColumn("dt",to_date($"dt"))
+    .repartition(1)
   }
 }

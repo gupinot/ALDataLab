@@ -29,10 +29,7 @@ object Main {
     Context values:
       ${context}
     """
-    if (args.length == 0) {
-      println(usage)
-      sys.exit(1)
-    }
+
     println("DLMain() : Begin")
 
     val options = nextOption(OptionMap(defaultMethod,context,List()),args.toList)

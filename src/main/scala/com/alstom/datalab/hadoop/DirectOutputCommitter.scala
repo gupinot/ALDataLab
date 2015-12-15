@@ -3,8 +3,6 @@ package com.alstom.datalab.hadoop
 /**
   * Created by raphael on 14/12/2015.
   */
-package com.alstom.datalab.hadoop
-
 import org.apache.hadoop.mapred.JobContext
 import org.apache.hadoop.mapred.OutputCommitter
 import org.apache.hadoop.mapred.TaskAttemptContext

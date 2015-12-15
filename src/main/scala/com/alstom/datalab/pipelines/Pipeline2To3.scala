@@ -36,7 +36,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   override def execute(): Unit = {
     val jobid:Long = System.currentTimeMillis/1000
 
-    val metaDf = aggregateMeta(loadMeta(context.meta()))
+    val metaDf = aggregateMeta(loadMeta(context.meta()), Pipeline2To3.STAGE_NAME)
     val inputs = parseFiles(this.inputFiles).groupBy(_.key.filetype)
 
     val resultMeta = inputs.map(input=>{
@@ -108,10 +108,11 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         .filter("min_filedt > filedt or min_filedt is null")
         .drop("min_filedt").persist(StorageLevel.MEMORY_AND_DISK)
 
-      if (newInput.count() > 0) {
-        val resultDf = if (filetype == "connection") {
+
+      val resultDf = if (newInput.count() > 0) {
+        val resDf = if (filetype == "connection") {
           val completeDf = newInput.groupBy($"collecttype",$"engine",$"dt",$"filedt")
-            .agg(min(hour($"endtime")).as("min_hour"),max(hour($"endtime")).as("max_hour"))
+            .agg(min(hour($"con_end")).as("min_hour"),max(hour($"con_end")).as("max_hour"))
             .filter($"min_hour" <= 3 and $"max_hour" >= 23)
 
           newInput.as("all").join(completeDf.as("complete"),
@@ -122,14 +123,17 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
           newInput
         }
 
-        resultDf.write.mode(SaveMode.Append)
+        resDf.write.mode(SaveMode.Append)
           .partitionBy("dt")
           .parquet(s"${context.dirout()}/$filetype")
+
+        resDf
       } else {
-        println(s"Empty result set for $input")
+          println(s"Empty result set for $input")
+          newInput
       }
 
-      val updatedMeta = newInput.select(
+      val updatedMeta = resultDf.select(
         lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage",
         $"collecttype", $"engine",$"dt",$"filedt").distinct()
 
