@@ -95,14 +95,6 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     val cnx_meta_result = cnx_meta_delta_ok.withColumn("Stage", lit(Pipeline3To4.STAGE_NAME))
     cnx_meta_result.write.mode(SaveMode.Append).parquet(context.meta())
 
-    // save job results to control
-    cnx_meta_result.withColumn("jobid",lit(jobidcur.toString)).withColumn("status",lit("OK"))
-      .write.mode(SaveMode.Overwrite)
-      .format("com.databricks.spark.csv")
-      .option("header", "true")
-      .option("delimiter",";")
-      .save(s"${context.control()}/$jobidcur.csv")
-
   }
 
   def buildIpLookupTable(): DataFrame = {
