@@ -15,18 +15,19 @@ do
 done < /dev/stdin
 }
 
-SUBMIT=/home/hadoop/script/submit.sh
+SUBMIT=/home/hadoop/shell/submit.sh
 CONF=/home/hadoop/conf/pipe2to3.conf
 dirin=$(cat $CONF | egrep '^shell\.dirin' | awk '{print $2}')
 dirdone=$(cat $CONF | egrep '^shell\.dirdone' | awk '{print $2}')
 submitArg=""
 FILEPATTERN=".*"
 DRYRUN=""
+VERBOSE=0
 
 LOGERR=$(mktemp)
 echo "error log in $LOGERR"
 
-usage="$0 [-f|--filepattern filepattern -n|--dry-run] [submitArg]"
+usage="$0 [-f|--filepattern filepattern] [-n|--dry-run] [-v|--verbose] [submitArg]"
 while [[ $# > 0 ]]
 do
 key="$1"
@@ -38,6 +39,9 @@ case $key in
     ;;
     -n|--dry-run)
     DRYRUN="-n"
+    ;;
+    -v|--verbose)
+    VERBOSE=1
     ;;
     -f|--filepattern)
     FILEPATTERN="$2"
@@ -56,6 +60,6 @@ echo "tempfile=$tempfile"
 for var in connection webrequest
 do
     aws s3 ls ${dirin}/${var}/ | egrep "\.gz$" | awk -v dirin=$dirin -v var=$var '{if ($1 == "PRE") {print dirin"/"var"/"$2} else {print dirin"/"var"/"$4}'} | egrep "$FILEPATTERN" >$tempfile
-	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>$LOGERR | mvfiledone "${dirdone}/${var}"
+	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
 done
 rm $tempfile
