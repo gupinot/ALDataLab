@@ -63,7 +63,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .select(wr_parquet.columns.map(wr_parquet.col):_*)
 
     println("pipeline3to4() : data resolutions")
-    val cnx_resolved = resolveSite(resolveAIP(resolveSector((cnx_filtered))))
+    val cnx_resolved = resolveSite(resolveAIP(resolveSector(cnx_filtered)))
 
     wr_filtered.registerTempTable("webrequests")
     cnx_resolved.registerTempTable("connections")
@@ -90,9 +90,9 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
          |)
       """.stripMargin)
       .write.mode(SaveMode.Append)
-      .partitionBy("dt").parquet(context.dirout())
+      .partitionBy("month").parquet(context.dirout())
 
-    val cnx_meta_result = cnx_meta_delta_ok.withColumn("Stage", lit(Pipeline3To4.STAGE_NAME))
+    val cnx_meta_result = cnx_meta_delta_ok.withColumn("Stage", lit(Pipeline3To4.STAGE_NAME)).repartition(1)
     cnx_meta_result.write.mode(SaveMode.Append).parquet(context.meta())
 
   }
