@@ -109,7 +109,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       val joinedCachedDf = newInput.cache()
 
       val completeDf = joinedCachedDf.groupBy($"collecttype",$"engine",$"dt",$"filedt")
-        .agg(min(hour($"con_end")).as("min_hour"),max(hour($"con_end")).as("max_hour"))
+        .agg(min(hour($"end")).as("min_hour"),max(hour($"end")).as("max_hour"))
         .filter($"min_hour" <= 3 and $"max_hour" >= 23)
 
       val resDf = if (filetype == "connection") {
