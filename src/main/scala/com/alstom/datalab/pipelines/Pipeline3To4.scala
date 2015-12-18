@@ -37,8 +37,8 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     //select only record from cnx_meta_delta with corresponding webrequest record in metaDf23
     val cnx_meta_delta_ok = cnx_meta_delta.join(
       metaDf23.filter($"filetype" === "webrequest").select("engine","min_filedt").distinct().as("metaDF23"),
-      ($"cnx_meta_delta.engine" === $"metaDf23.engine")
-      and ($"cnx_meta_delta.min_filedt" === $"metaDf23.min_filedt"),
+      ($"cnx_meta_delta.engine" === $"metaDF23.engine")
+      and ($"cnx_meta_delta.min_filedt" === $"metaDF23.min_filedt"),
       "inner")
       .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
 
