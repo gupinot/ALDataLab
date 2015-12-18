@@ -107,7 +107,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   def buildIpLookupTable(): DataFrame = {
     val ip = context.repo().readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
     ip.registerTempTable("ip")
-    broadcast(sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip"""))
+    broadcast(sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip""").cache())
   }
 
   def resolveSite(df: DataFrame): DataFrame = {
@@ -125,7 +125,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   }
 
   def resolveSector(df: DataFrame): DataFrame = {
-    val dfI_ID = context.repo().readI_ID().select("I_ID","Sector","SiteCode").cache()
+    val dfI_ID = broadcast(context.repo().readI_ID().select("I_ID","Sector","SiteCode").cache())
 
     //join for resolution
     df.join(dfI_ID.as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
@@ -135,7 +135,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
   def resolveAIP(df: DataFrame): DataFrame = {
 
-    val dfAIP = context.repo().readAIP().cache()
+    val dfAIP = broadcast(context.repo().readAIP().cache())
 
     df.join(dfAIP.as("destAip"), $"dest_ip" === $"destAip.aip_server_ip", "left_outer")
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")
