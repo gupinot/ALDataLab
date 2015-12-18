@@ -51,7 +51,7 @@ else
     echo "nothing" > $tmpfile
 fi
 
-echo $tmpfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR
+cat $tmpfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR
 ret=$?
 echo "$0 : submit return : $ret"
 rm $tmpfile
