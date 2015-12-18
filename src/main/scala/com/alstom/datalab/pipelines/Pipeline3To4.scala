@@ -17,7 +17,6 @@ object Pipeline3To4 {
 class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   import sqlContext.implicits._
 
-
   def execute(): Unit = {
 
     val jobidcur:Long = System.currentTimeMillis/1000
@@ -44,7 +43,15 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     val cnx = broadcast(cnx_meta_delta_ok)
 
-    val all_dt = cnx.select($"dt").distinct().collect().map(_.getDate(0))
+    val all_dt = {
+      if (this.inputFiles.length == 2) {
+        val begindate = this.inputFiles(0)
+        val enddate = this.inputFiles(1)
+        cnx.select($"dt").filter($"dt" >= begindate).filter($"dt" <= enddate).distinct().collect().map(_.getDate(0))
+      }else {
+        cnx.select($"dt").distinct().collect().map(_.getDate(0))
+      }
+    }
 
     // main dataframes
     val cnx_parquet = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/connection/")
