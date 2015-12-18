@@ -26,18 +26,19 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     val metaDf34 = aggregateMeta(loadMeta(context.meta()), Pipeline3To4.STAGE_NAME).as("metaDf34")
 
     //keep only connection delta (meta23 not in meta34)
-    val cnx_meta_delta = metaDf23.join(metaDf34,
+    val cnx_meta_delta = metaDf23.filter($"metaDf23.filetype" === "connection").join(metaDf34,
       ($"metaDf23.dt" === $"metaDf34.dt") and ($"metaDf23.engine" === $"metaDf34.engine")
       and ($"metaDf23.collecttype" === $"metaDf34.collecttype") and ($"metaDf23.filetype" === $"metaDf34.filetype")
-      and ($"metaDf23.filetype" === "connection") and ($"metaDf23.min_filedt" === $"metaDf34.min_filedt"),
+      and ($"metaDf23.min_filedt" === $"metaDf34.min_filedt"),
       "left_outer")
       .filter("metaDf34.dt is null")
       .select(metaDf23.columns.map(metaDf23.col):_*).as("cnx_meta_delta")
 
     //select only record from cnx_meta_delta with corresponding webrequest record in metaDf23
-    val cnx_meta_delta_ok = cnx_meta_delta.join(metaDf23.filter($"filetype" === "webrequest"),
-      $"cnx_meta_delta.engine" === $"metaDf23.engine"
-      and $"cnx_meta_delta.min_filedt" === $"metaDf23.min_filedt",
+    val cnx_meta_delta_ok = cnx_meta_delta.join(
+      metaDf23.filter($"filetype" === "webrequest").select("engine","min_filedt").distinct().as("metaDF23"),
+      ($"cnx_meta_delta.engine" === $"metaDf23.engine")
+      and ($"cnx_meta_delta.min_filedt" === $"metaDf23.min_filedt"),
       "inner")
       .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
 

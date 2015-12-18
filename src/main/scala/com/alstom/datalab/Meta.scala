@@ -32,5 +32,6 @@ trait Meta {
     .agg(min($"filedt").as("min_filedt"))
     .withColumn("dt",to_date($"dt"))
     .repartition(1)
+    .cache()
   }
 }
