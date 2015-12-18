@@ -42,6 +42,9 @@ object Main {
     implicit val sc = new SparkContext(conf)
     implicit val sqlContext = new HiveContext(sc)
 
+    // use directcommiter for S3
+    sc.hadoopConfiguration.set("spark.sql.parquet.output.committer.class","org.apache.spark.sql.parquet.DirectParquetOutputCommitter")
+
     implicit val repo = new Repo(options.context)
     val registry = new PipelineRegistry()
     val pipeline = registry.createInstance(options.method)
