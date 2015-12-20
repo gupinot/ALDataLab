@@ -33,4 +33,4 @@ esac
 shift # past argument or value
 done
 
-echo "vide" | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR
+echo "nothing" | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR
