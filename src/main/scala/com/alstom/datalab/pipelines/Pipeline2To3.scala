@@ -109,7 +109,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         .drop("min_filedt")
 
       val joinedCachedDf = context.get("no-cache") match {
-        case Some(_) => newInput
+        case Some(ftype) => if ((ftype == "all") || (filetype == filetype)) newInput else newInput.cache()
         case None => newInput.cache()
       }
 
@@ -127,7 +127,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       }
 
       val cachedResDf = context.get("no-cache") match {
-        case Some(_) => resDf
+        case Some(ftype) => if ((ftype == "all") || (filetype == filetype)) resDf else resDf.cache()
         case None => resDf.cache()
       }
 
