@@ -2,10 +2,15 @@
 
 function mvfiledone() {
 dirout=$1
+if ! hdfs dfs -test -d $dirout
+then
+	hdfs dfs -mkdir -p $dirout
+fi
 while read line
 do
 	file=$(basename $line)
-	CMV="aws s3 mv $line $dirout/$file"
+	#CMV="aws s3 mv $line $dirout/$file"
+	CMV="hdfs dfs -mv $line $dirout/$file"
 	if [[ "$DRYRUN" == "-n" ]]
 	then
 		echo "$CMV"
@@ -59,7 +64,7 @@ tempfile=$(mktemp)
 echo "tempfile=$tempfile"
 for var in connection webrequest
 do
-    aws s3 ls ${dirin}/${var}/ | egrep "\.gz$" | awk -v dirin=$dirin -v var=$var '{if ($1 == "PRE") {print dirin"/"var"/"$2} else {print dirin"/"var"/"$4}'} | egrep "$FILEPATTERN" >$tempfile
+    hdfs dfs -ls ${dirin}/${var}/ | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
 	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
 done
 rm $tempfile

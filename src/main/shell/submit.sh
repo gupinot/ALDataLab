@@ -26,6 +26,7 @@ JAR="/home/hadoop/lib/default.jar"
 BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
 DRYRUN=0
 VERBOSE=0
+S3=${S3:-s3}
 
 while [[ $# > 0 ]]
 do
@@ -65,11 +66,11 @@ done
 filelist=$(mktemp)
 if [ "u$*" = "u" -o "$*" = "-" ]
 then
-   cat <&0 | sed -e 's/s3:/s3a:/' >${filelist}
+   cat <&0 | sed -e "s/s3:/$S3:/" >${filelist}
 else
    for f in $@
    do
-     echo ${f} | sed -e 's/s3:/s3a:/' >${filelist}
+     echo ${f} | sed -e "s/s3:/$S3:/" >${filelist}
    done
 fi
 
@@ -126,7 +127,7 @@ do
         fi
         for f in $(cat ${batchfile})
         do
-            echo ${f} | sed -e 's/s3a:/s3:/' >&5
+            echo ${f} | sed -e "s/$S3:/s3:/" >&5
         done
     else
         if [[ ${VERBOSE} -gt 0 ]]
