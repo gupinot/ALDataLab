@@ -93,6 +93,8 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         selectedDf
       }).reduce(_.unionAll(_))
 
+      val endColumn = if (filetype == "connection") $"con_end" else $"end"
+
       val inputDf = (context.get("partition") match {
         case Some(partNum) => baseDf.coalesce(partNum.toInt)
         case None => baseDf
@@ -106,22 +108,28 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         .filter("min_filedt > filedt or min_filedt is null")
         .drop("min_filedt")
 
-      val joinedCachedDf = newInput.cache()
+      val joinedCachedDf = context.get("no-cache") match {
+        case Some(ftype) => if ((ftype == "all") || (filetype == filetype)) newInput else newInput.cache()
+        case None => newInput.cache()
+      }
 
       val completeDf = joinedCachedDf.groupBy($"collecttype",$"engine",$"dt",$"filedt")
-        .agg(min(hour($"end")).as("min_hour"),max(hour($"end")).as("max_hour"))
+        .agg(min(hour(endColumn)).as("min_hour"),max(hour(endColumn)).as("max_hour"))
         .filter($"min_hour" <= 3 and $"max_hour" >= 23)
 
       val resDf = if (filetype == "connection") {
         joinedCachedDf.as("all").join(broadcast(completeDf).as("complete"),
           ($"all.dt" === $"complete.dt") and ($"all.engine" === $"complete.engine")
             and ($"all.collecttype" === $"complete.collecttype") and ($"all.filedt" === $"complete.filedt"),"inner")
-          .select(newInput.columns.map(newInput.col):_*)
+          .select(joinedCachedDf.columns.map(joinedCachedDf.col):_*)
       } else {
         joinedCachedDf
       }
 
-      val cachedResDf = resDf.cache()
+      val cachedResDf = context.get("no-cache") match {
+        case Some(ftype) => if ((ftype == "all") || (filetype == filetype)) resDf else resDf.cache()
+        case None => resDf.cache()
+      }
 
       cachedResDf.write.mode(SaveMode.Append)
         .partitionBy("month")
@@ -134,14 +142,5 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       updatedMeta.write.mode(SaveMode.Append).parquet(context.meta())
       updatedMeta
     })
-    /*
-      // save job results to control
-      newMeta.withColumn("jobid",lit(jobid.toString)).withColumn("status",lit("OK"))
-        .write.mode(SaveMode.Overwrite)
-        .format("com.databricks.spark.csv")
-        .option("header", "true")
-        .option("delimiter",";")
-        .save(s"${context.control()}/$jobid.csv")
-    */
   }
 }
