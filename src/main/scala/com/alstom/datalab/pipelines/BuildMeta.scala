@@ -30,10 +30,16 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
             StructField("filedt", StringType, true)
           )))
       }
-    })
+    }).reduce(_.unionAll(_))
+
+    val meta2 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
+      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt".cast("string").as("dt"),$"filedt")
+      .distinct()
+      .unionAll(meta)
+
     // now merge all found dataframes and save it
-    meta.reduce(_.unionAll(_)).repartition(1)
+    meta2.repartition(1)
       .write.mode(SaveMode.Overwrite)
-      .parquet(context.dirout())
+      .parquet(context.meta())
   }
 }

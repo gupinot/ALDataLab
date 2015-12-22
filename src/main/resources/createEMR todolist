@@ -10,8 +10,39 @@ ssh -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem hadoop@$EMRMASTER "chmod +x scrip
 
 #Patch /etc/zeppelin/conf/zeppelin-env.sh :
 export CLASSPATH="/usr/share/aws/aws-java-sdk/*:/usr/lib/hadoop-lzo/lib/*:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/*:/usr/share/aws/emr/emrfs/auxlib/*"
+#Add S3 notebook
+export ZEPPELIN_NOTEBOOK_S3_BUCKET="gezeppelin"
+export ZEPPELIN_NOTEBOOK_S3_USER="zeppelin"
+
+#zeppelin-site.xml :
+<property>
+  <name>zeppelin.notebook.s3.user</name>
+  <value>zeppelin</value>
+  <description>user name for s3 folder structure</description>
+</property>
+
+<property>
+  <name>zeppelin.notebook.s3.bucket</name>
+  <value>gezeppelin</value>
+  <description>bucket name for notebook storage</description>
+</property>
+
+<property>
+  <name>zeppelin.notebook.storage</name>
+  <value>org.apache.zeppelin.notebook.repo.S3NotebookRepo</value>
+  <description>notebook persistence layer implementation</description>
+</property>
+
+<!--
+<property>
+  <name>zeppelin.notebook.storage</name>
+  <value>org.apache.zeppelin.notebook.repo.VFSNotebookRepo</value>
+  <description>notebook persistence layer implementation</description>
+</property>
+-->
 
 #Add following line in /etc/spark/conf/spark-defaults.conf
 spark.dynamicAllocation.enabled true
 
 Add rluta public key in .ssh/Authorized
+
