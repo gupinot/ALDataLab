@@ -1,0 +1,14 @@
+---
+- name: Import Grafana GPG signing key
+  apt_key: url=https://packagecloud.io/gpg.key state=present
+
+- name: Add Grafana repository
+  apt_repository: repo='deb https://packagecloud.io/grafana/testing/debian/ wheezy main' state=present
+
+- name: Install packages
+  apt: name={{ item }} state=present
+  with_items:
+    - grafana
+
+- name: Start the Grafana service
+  service: name=grafana-server state=restarted enabled=yes

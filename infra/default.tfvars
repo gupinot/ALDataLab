@@ -1,0 +1,8 @@
+key_name = ""
+key_path = ""
+aws_access_key = ""
+aws_secret_key = ""
+aws_region = "us-east-1"
+aws_availability_zone = "us-east-1a"
+instance_type = "m3.xlarge"
+spot_price = "0.045"
