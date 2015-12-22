@@ -32,4 +32,27 @@ trait Meta {
     .agg(min($"filedt").as("min_filedt"))
     .withColumn("dt",to_date($"dt"))
   }
+
+  def deltaMeta(path: String, stage1: String, stage2: String)(implicit sqlContext: SQLContext) = {
+    import sqlContext.implicits._
+    val metaDf1 = aggregateMeta(loadMeta(path), stage1).as("metaDf1")
+    val metaDf2 = aggregateMeta(loadMeta(path), stage2).as("metaDf2")
+
+    //keep only connection delta (meta23 not in meta34)
+    val cnx_meta_delta = metaDf1.filter($"metaDf1.filetype" === "connection").join(metaDf2,
+      ($"metaDf1.dt" === $"metaDf2.dt") and ($"metaDf1.engine" === $"metaDf2.engine")
+        and ($"metaDf1.collecttype" === $"metaDf2.collecttype") and ($"metaDf1.filetype" === $"metaDf2.filetype")
+        and ($"metaDf1.min_filedt" === $"metaDf2.min_filedt"),
+      "left_outer")
+      .filter("metaDf2.dt is null")
+      .select(metaDf1.columns.map(metaDf1.col):_*).as("cnx_meta_delta")
+
+    //select only record from cnx_meta_delta with corresponding webrequest record in metaDf1
+    cnx_meta_delta.join(
+      metaDf1.filter($"filetype" === "webrequest").select("engine","min_filedt").distinct().as("metaDf1"),
+      ($"cnx_meta_delta.engine" === $"metaDf1.engine")
+        and ($"cnx_meta_delta.min_filedt" === $"metaDf1.min_filedt"),
+      "inner")
+      .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
+  }
 }
