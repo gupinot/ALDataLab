@@ -24,6 +24,14 @@ object Util {
     }
   )
 
+  def to_int = udf(
+    (num: String) => try {
+      num.toInt
+    } catch {
+      case e:Throwable => -1
+    }
+  )
+
   def collect_type(enginename: String) = enginename match {
     case "sabad15034.ad.sys" | "sacch15002.ad.sys" | "sumhg15005.dom1.ad.sys" => "server"
     case _ => "device"

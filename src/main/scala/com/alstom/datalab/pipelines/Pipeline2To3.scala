@@ -53,7 +53,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
             $"I_ID_U",
             $"NX_con_start_time" as "con_start",
             $"NX_con_end_time" as "con_end",
-            $"NX_con_duration" cast "int" as "con_duration",
+            to_int($"NX_con_duration") as "con_duration",
             $"NX_con_cardinality" cast "int" as "con_number",
             $"NX_con_destination_ip" as "dest_ip",
             $"NX_con_out_traffic" cast "long" as "con_traffic_out",
