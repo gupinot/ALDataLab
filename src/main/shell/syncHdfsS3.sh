@@ -45,7 +45,12 @@ case $method in
         s3-dist-cp --src=$dirdatas3 --dest=$dirdatahdfs
     ;;
     toS3)
-        s3-dist-cp --src=$dirdatahdfs --dest=$dirdatas3
+        s3-dist-cp --src=${dirdatahdfs} --dest=${dirdatas3}.result
+        ret=$?
+        if [ $ret -eq 0 ]
+        then
+            hdfs dfs -rm -r -f ${dirdatas3}
+            hdfs dfs -mv {$dirdatas3}.result ${dirdatas3}
     ;;
 esac
 
