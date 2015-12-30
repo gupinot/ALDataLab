@@ -38,21 +38,19 @@ def run(argv):
         if verbose:
             print("Processing ",file)
         try:
-            base_input = pd.read_excel(file)
+            base_input = pd.read_excel(file,sheetname=0)
             base_tags=extract_tags_from_name(file)
             base_input.columns=['stream','date','value']
             input = base_input.groupby(['date','stream']).agg(np.mean).reset_index()
             input['table']=input['stream'].map(extract_table_and_tags)
             input['name']=input['stream'].map(extract_name)
-            grouped = input[input['table'] != 'app'].groupby('table').apply(pivot).reset_index()
-            index=pd.to_datetime(grouped['date'],format='%b %d %Y %I:%M%p')
-            final=grouped.set_index(index)
-            byTable = final.groupby('table')
+            byTable = input[input['table'].str.astartswith('iostat')].groupby('table')
             for key,df in byTable:
                 (tablename,tags)= parse_key(key)
                 tags.update(base_tags)
-                nodatedf = df[df.columns - ['date','table','name']]
-                client.write_points(nodatedf,tablename,tags=tags)
+                grouped = df[['date','name','value']].pivot(index='date',columns='name',values='value')
+                grouped.index = pd.to_datetime(grouped.index,format='%b %d %Y %I:%M%p')
+                client.write_points(grouped,tablename,tags=tags)
         except:
             print("Error encountered when processing ", file, " : ",sys.exc_info()[0])
             raise
