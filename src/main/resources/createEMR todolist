@@ -51,4 +51,4 @@ Add rluta public key in .ssh/Authorized
 
 #ec2 spark cluster
 cd /Users/guillaumepinot/Dev/spark-1.5.2-bin-2.7.1/ec2
-./spark-ec2 --key-pair=KeyLezoomerUs --identity-file=/Users/guillaumepinot/Dev/AWS/Credentials/KeyLezoomerUs.pem --region=us-east-1 --zone=us-east-1a --spot-price=0.045 --instance-type=m3.xlarge --copy-aws-credentials -s 3 --user datalab --master-instance-type=m3.xlarge launch gespark
+./spark-ec2 --key-pair=KeyLezoomerUs --identity-file=/Users/guillaumepinot/Dev/AWS/Credentials/KeyLezoomerUs.pem --region=us-east-1 --zone=us-east-1a --spot-price=0.045 --instance-type=m3.xlarge --copy-aws-credentials -s 3 --master-instance-type=m3.xlarge launch gespark

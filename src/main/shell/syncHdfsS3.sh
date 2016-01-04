@@ -3,6 +3,7 @@
 CONF=/home/hadoop/conf/syncHdfsS3.conf
 
 dirdatas3=$(cat $CONF | egrep '^shell\.dirdatas3' | awk '{print $2}')
+dirs3temp=$(cat $CONF | egrep '^shell\.dirs3temp' | awk '{print $2}')
 dirdatahdfs=$(cat $CONF | egrep '^shell\.dirdatahdfs' | awk '{print $2}')
 FILEPATTERN=".*"
 DRYRUN=""
@@ -42,15 +43,17 @@ done
 
 case $method in
     fromS3)
-        s3-dist-cp --src=$dirdatas3 --dest=$dirdatahdfs
+        s3-dist-cp --src=${dirdatas3} --dest=${dirdatahdfs}
     ;;
     toS3)
-        s3-dist-cp --src=${dirdatahdfs} --dest=${dirdatas3}.result
+        s3-dist-cp --src=${dirdatahdfs} --dest=${dirs3temp}
         ret=$?
         if [ $ret -eq 0 ]
         then
             hdfs dfs -rm -r -f ${dirdatas3}
-            hdfs dfs -mv {$dirdatas3}.result ${dirdatas3}
+            hdfs dfs -cp {$dirs3temp} ${dirdatas3}
+            hdfs dfs -rm -r -f ${dirs3temp}
+        fi
     ;;
 esac
 
