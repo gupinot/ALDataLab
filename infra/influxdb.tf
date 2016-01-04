@@ -13,6 +13,7 @@ resource "aws_spot_instance_request" "influxdb" {
   instance_type = "${var.instance_type}"
   availability_zone = "${var.aws_availability_zone}"
   ami = "${lookup(var.aws_amis, var.aws_region)}"
+  iam_instance_profile="s3_read_only"
   key_name = "${var.key_name}"
 
   spot_price = "${var.spot_price}"
