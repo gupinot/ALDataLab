@@ -44,7 +44,7 @@ def run(argv):
             input = base_input.groupby(['date','stream']).agg(np.mean).reset_index()
             input['table']=input['stream'].map(extract_table_and_tags)
             input['name']=input['stream'].map(extract_name)
-            byTable = input[input['table'].str.astartswith('iostat')].groupby('table')
+            byTable = input[input['table'].str.startswith('iostat')].groupby('table')
             for key,df in byTable:
                 (tablename,tags)= parse_key(key)
                 tags.update(base_tags)
