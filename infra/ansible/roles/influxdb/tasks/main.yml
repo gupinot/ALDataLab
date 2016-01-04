@@ -21,6 +21,9 @@
 - name: influxdb - wait for service
   wait_for: port=8086 delay=5
 
+- name: influxdb - create datalab database
+  shell: "curl -X POST 'http://localhost:8086/cluster/database_configs/datalab?u=root&p=root' -d '{\"name\": \"datalab\"}'"
+
 - name: influxdb - create grafana database
   shell: "curl -X POST 'http://localhost:8086/cluster/database_configs/grafana?u=root&p=root' -d '{\"name\": \"grafana\"}'"
 

@@ -6,5 +6,7 @@
   sudo: yes
 
   roles:
+    - aws	
     - influxdb
     - grafana
+    - pandas
