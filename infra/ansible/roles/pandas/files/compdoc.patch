@@ -1,0 +1,11 @@
+--- /usr/local/lib/python3.4/site-packages/xlrd/compdoc.py	2015-08-28 12:37:32.000000000 +0200
++++ /usr/local/lib/python3.5/site-packages/xlrd/compdoc.py	2015-12-23 12:23:00.000000000 +0100
+@@ -415,7 +415,7 @@
+         while s >= 0:
+             if self.seen[s]:
+                 print("_locate_stream(%s): seen" % qname, file=self.logfile); dump_list(self.seen, 20, self.logfile)
+-                raise CompDocError("%s corruption: seen[%d] == %d" % (qname, s, self.seen[s]))
++                #raise CompDocError("%s corruption: seen[%d] == %d" % (qname, s, self.seen[s]))
+             self.seen[s] = seen_id
+             tot_found += 1
+             if tot_found > found_limit:

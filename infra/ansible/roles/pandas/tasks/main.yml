@@ -9,5 +9,8 @@
 - name: Install pip modules
   pip: name=influxdb executable=pip3
 
+- name: Patch xlrd
+  patch: dest=/usr/lib/python3.4/site-packages/xlrd/compdoc.py src=compdoc.patch
+
 - name: Install import.py script
   copy: src=../../../../import.py dest=/usr/local/bin/import.py mode=755
