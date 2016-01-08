@@ -1,0 +1,10 @@
+---
+- name: Install standard packges
+  apt: name={{ item }} state=present
+  with_items:
+    - awscli
+    - python-boto
+
+- name: Install default ssh access file
+  s3: bucket=gedatalab object=/infra/authorized_keys dest=~ubuntu/.ssh/authorized_keys mode=get
+

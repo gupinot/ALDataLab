@@ -1,12 +1,14 @@
 ---
-- name: main task
-  hosts: all
+- name: install infludb server
+  hosts: influxdb
   vars_files:
     - vars/external_vars.yml
   sudo: yes
 
   roles:
-    - aws	
+    - common
+    - aws
     - influxdb
     - grafana
     - pandas
+    - importer

@@ -1,7 +1,7 @@
 ---
 - name: Import InfluxDB GPG signing key
   apt_key: url=https://repos.influxdata.com/influxdb.key state=present
-  
+
 - name: Add InfluxDB repository
   apt_repository: repo='deb https://repos.influxdata.com/ubuntu trusty stable' state=present
 
@@ -22,13 +22,28 @@
   wait_for: port=8086 delay=5
 
 - name: influxdb - create datalab database
-  shell: "curl -X POST 'http://localhost:8086/cluster/database_configs/datalab?u=root&p=root' -d '{\"name\": \"datalab\"}'"
+  command: influx -execute 'CREATE DATABASE {{ INFLUXDB_DATABASE }}'
+
+- name: influxdb - create datalab user
+  uri:
+    url: http://localhost:8086/db/{{ INFLUXDB_DATABASE }}/users?u=root&p=root
+    method: POST
+    body_format: json
+    body: "{\"name\": \"{{ INFLUXDB_USER }}\", \"password\": \"{{ INFLUXDB_PASSWORD }}\"}"
 
 - name: influxdb - create grafana database
-  shell: "curl -X POST 'http://localhost:8086/cluster/database_configs/grafana?u=root&p=root' -d '{\"name\": \"grafana\"}'"
+  command: influx -execute 'CREATE DATABASE grafana'
 
 - name: influxdb - create grafana user
-  shell: "curl -X POST 'http://localhost:8086/db/grafana/users?u=root&p=root' -d '{\"name\": \"grafana\", \"password\": \"{{ INFLUXDB_GRAFANA_PASSWORD }}\"}'"
+  uri:
+    url: http://localhost:8086/db/grafana/users?u=root&p=root
+    method: POST
+    body_format: json
+    body: "{\"name\": \"grafana\", \"password\": \"{{ INFLUXDB_GRAFANA_PASSWORD }}\"}"
 
 - name: influxdb - change root pw
-  shell: "curl -X POST 'http://localhost:8086/cluster_admins/root?u=root&p=root' -d '{\"password\": \"{{ INFLUXDB_ROOT_PASSWORD }}\"}'"
+  uri:
+    url: http://localhost:8086/cluster_admins/root?u=root&p=root
+    method: POST
+    body_format: json
+    body: "{\"password\": \"{{ INFLUXDB_ROOT_PASSWORD }}\"}"
