@@ -1,0 +1,3 @@
+---
+- name: Install import.py script
+  copy: src=../../../../import.py dest=/usr/local/bin/import.py mode=0755

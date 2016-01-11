@@ -4,5 +4,8 @@
   with_items:
     - awscli
 
-- name: Install credentials
-  copy: src=~/.aws dest=~/
+- name: Create aws config directory
+  file: state=directory path=~ubuntu/.aws owner=ubuntu mode=0700
+
+- name: Install config
+  template: src=config.j2 dest=~ubuntu/.aws/config owner=ubuntu

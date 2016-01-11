@@ -11,8 +11,11 @@ INFLUXDB_USER: 'datalab'
 # Password for the above user
 INFLUXDB_PASSWORD: 'datalab'
 
-# Password for the grafana user who will connect to the grafana database
+# Password for the grafana user who will connect to the influxdb database
 INFLUXDB_GRAFANA_PASSWORD: 'grafana'
-#
+
 # Version of grafana you want to install
 GRAFANA_SOURCE_FILENAME: 'grafana-2.6.0'
+
+# Default AWS region
+AWS_REGION: 'us-east-1'
