@@ -10,6 +10,9 @@ ssh -i ~/Dev/AWS/Credentials/KeyLezoomerUs.pem hadoop@$EMRMASTER "chmod +x scrip
 
 #Patch /etc/zeppelin/conf/zeppelin-env.sh :
 export CLASSPATH="/usr/share/aws/aws-java-sdk/*:/usr/lib/hadoop-lzo/lib/*:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/*:/usr/share/aws/emr/emrfs/auxlib/*"
+
+
+
 #Add S3 notebook
 export ZEPPELIN_NOTEBOOK_S3_BUCKET="gezeppelin"
 export ZEPPELIN_NOTEBOOK_S3_USER="zeppelin"

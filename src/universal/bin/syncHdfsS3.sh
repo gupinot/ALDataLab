@@ -43,17 +43,21 @@ done
 
 case $method in
     fromS3)
-        s3-dist-cp --src=${dirdatas3} --dest=${dirdatahdfs}
+        hdfs dfs -mv ${dirins3}/connection/* ${dirpipelines3}/in/connection/. &&\
+        hdfs dfs -mv ${dirins3}/webrequest/* ${dirpipelines3}/in/webrequest/. &&\
+        hdfs dfs -mv ${dirins3}/repo/* ${dirpipelines3}/in/repo/. &&\
+        hdfs dfs cp -p -f ${dirpipelines3}/in/connection/* ${dirinsaves3}/connection/. &&\
+        hdfs dfs cp -p -f ${dirpipelines3}/in/webrequest/* ${dirinsaves3}/webrequest/. &&\
+        hdfs dfs cp -p -f ${dirpipelines3}/in/repo/* ${dirinsaves3}/repo/. &&\
+        s3-dist-cp --src=${dirpipelines3} --dest=${dirpipelinehdfs}
+        exit $?
     ;;
     toS3)
-        s3-dist-cp --src=${dirdatahdfs} --dest=${dirs3temp}
-        ret=$?
-        if [ $ret -eq 0 ]
-        then
-            hdfs dfs -rm -r -f ${dirdatas3}
-            hdfs dfs -cp {$dirs3temp} ${dirdatas3}
-            hdfs dfs -rm -r -f ${dirs3temp}
-        fi
+        DATE=$(date +"%Y%m%d%H%M%S")
+        hdfs dfs -mkdir ${dirpipelinesaves3}/$DATE &&\
+        hdfs dfs -mv ${dirpipelines3} ${dirpipelinesaves3}/$DATE/. &&\
+        s3-dist-cp --src=${dirdatahdfs} --dest=${dirpipelines3}
+        exit $?
     ;;
 esac
 
