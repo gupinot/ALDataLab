@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/pipe3to4.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/pipe3to4.conf
 submitArg=""
 DRYRUN=""
 VERBOSE=0

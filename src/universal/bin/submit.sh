@@ -21,8 +21,9 @@ function spark() {
 #main
 
 usage="$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [filename filename... | - ]"
-CONF="/home/hadoop/conf/default.conf"
-JAR="/home/hadoop/lib/default.jar"
+
+CONF="$HOME/pipeline/conf/default.conf"
+JAR="$HOME/pipeline/lib/default.jar"
 BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
 DRYRUN=0
 VERBOSE=0
@@ -39,6 +40,7 @@ do
         ;;
      -c|--conf)
         CONF="$2"
+        BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
         shift # past argument
         ;;
      -j|--jar)

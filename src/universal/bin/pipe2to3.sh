@@ -20,8 +20,8 @@ do
 done < /dev/stdin
 }
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/pipe2to3.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/pipe2to3.conf
 dirin=$(cat $CONF | egrep '^shell\.dirin' | awk '{print $2}')
 dirdone=$(cat $CONF | egrep '^shell\.dirdone' | awk '{print $2}')
 submitArg=""

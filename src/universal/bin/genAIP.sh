@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/genAIP.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/genAIP.conf
+
 submitArg=""
 DRYRUN=""
 VERBOSE=0

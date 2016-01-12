@@ -10,14 +10,15 @@ do
 	then
 		echo "$CMV"
 	else
+		echo "$CMV"
 		$CMV
 	fi
 done < /dev/stdin
 }
 
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/repo.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/repo.conf
 dirin=$(cat $CONF | egrep '^shell\.dirin' | awk '{print $2}')
 dirdone=$(cat $CONF | egrep '^shell\.dirdone' | awk '{print $2}')
 submitArg=""
@@ -59,7 +60,7 @@ done
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
 
-aws s3 ls ${dirin}/ | egrep "\.csv$" | awk -v dirin=$dirin '{if ($1 == "PRE") {print dirin"/"$2} else {print dirin"/"$4}'} | egrep "$FILEPATTERN" >$tempfile
+hdfs dfs -ls ${dirin} | egrep -o "[^ ]+\.csv$" | egrep "$FILEPATTERN" >$tempfile
 
 if [ $(wc -l $tempfile | awk '{print $1}') -gt 0 ]; then
     cat $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}"
