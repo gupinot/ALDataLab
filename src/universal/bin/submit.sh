@@ -22,9 +22,17 @@ function spark() {
 
 usage="$0 [-c|--conf confpath] [-j|--jar jarpath] [-d|--distribute batchfilessize] [filename filename... | - ]"
 
-CONF="$HOME/pipeline/conf/default.conf"
-JAR="$HOME/pipeline/lib/default.jar"
-BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} | awk '{print $2}')
+DEFAULT_ACTION="pipeline2to3"
+if [ -r "$HOME/pipeline" ]
+then
+  BASEDIR=$HOME/pipeline
+else
+  BASEDIR=$(pwd)
+fi
+
+CONF=$(egrep -l -r "^args --method ${DEFAULT_ACTION}" ${BASEDIR}/conf |head -1)
+JAR=$(find $BASEDIR/lib -name '*.jar' | tail -1)
+BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} |awk '{print $2}')
 DRYRUN=0
 VERBOSE=0
 S3=${S3:-s3}

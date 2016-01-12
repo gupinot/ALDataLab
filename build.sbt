@@ -12,6 +12,18 @@ libraryDependencies += "joda-time" % "joda-time" % "2.8"
 
 enablePlugins(UniversalPlugin)
 
-mappings in Universal <+= (assemblyPackageScala in assembly, assemblyJarName in assembly) map { (jar,name) =>
+mappings in Universal <+= (assembly in assembly, assemblyJarName in assembly) map { (jar,name) => {
+  println(jar.toString)
   jar -> ("lib/" + name)
+}
+}
+
+import S3._
+
+s3Settings
+
+host in upload := "gedatalab.s3.amazonaws.com"
+
+mappings in upload <+= (packageBin in Universal, packageName in Universal) map {
+  (bin,name) => (bin,"binaries/"+name)
 }
