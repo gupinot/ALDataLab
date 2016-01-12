@@ -106,7 +106,7 @@ DEFAULT_SPARK_GITHUB_REPO = "https://github.com/apache/spark"
 # Default location to get the spark-ec2 scripts (and ami-list) from
 DEFAULT_SPARK_EC2_GITHUB_REPO = "https://github.com/rluta/spark-ec2"
 DEFAULT_SPARK_EC2_BRANCH = "zeppelin"
-
+DEFAULT_INSTANCE_TYPE="m3.xlarge"
 
 def setup_external_libs(libs):
     """
@@ -196,11 +196,11 @@ def parse_args():
         help="If you have multiple profiles (AWS or boto config), you can configure " +
              "additional, named profiles by using this option (default: %default)")
     parser.add_option(
-        "-t", "--instance-type", default="m3.large",
+        "-t", "--instance-type", default=DEFAULT_INSTANCE_TYPE,
         help="Type of instance to launch (default: %default). " +
              "WARNING: must be 64-bit; small instances won't work")
     parser.add_option(
-        "-m", "--master-instance-type", default="m3.large",
+        "-m", "--master-instance-type", default=DEFAULT_INSTANCE_TYPE,
         help="Master instance type (leave empty for same as instance-type)")
     parser.add_option(
         "-r", "--region", default="us-east-1",
