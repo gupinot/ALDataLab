@@ -82,7 +82,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .write.mode(SaveMode.Append)
       .partitionBy("month").parquet(context.dirout())
 
-    val cnx_meta_result = cnx_meta_delta_ok.withColumn("Stage", lit(Pipeline3To4.STAGE_NAME)).repartition(1)
+    val cnx_meta_result = cnx_meta_delta_ok.withColumn("stage", lit(Pipeline3To4.STAGE_NAME)).repartition(1)
     cnx_meta_result.write.mode(SaveMode.Append).parquet(context.meta())
 
   }

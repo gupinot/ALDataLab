@@ -5,7 +5,7 @@ dirout=$1
 while read line
 do
 	file=$(basename $line)
-	CMV="aws s3 mv $line $dirout/$file"
+	CMV="hdfs dfs -mv $line $dirout/$file"
 	if [[ "$DRYRUN" == "-n" ]]
 	then
 		echo "$CMV"

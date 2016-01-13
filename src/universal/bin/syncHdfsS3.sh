@@ -50,10 +50,10 @@ case $method in
     fromS3)
         for var in connection webrequest repo
         do
-            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $(hdfs dfs -count ${dirins3}/${var} 2>/dev/null| awk '{print $2}' ||echo 0)"
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}')"
 
             [[ $(hdfs dfs -count ${dirins3}/${var} 2>/dev/null | awk '{print $2}') -gt 0 ]] &&\
-                hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var} &&\
+                (hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var}) &&\
                 hdfs dfs -mv ${dirins3}/${var}/* ${dirpipelines3}/in/${var}/. &&\
                 hdfs dfs -cp -p ${dirpipelines3}/in/${var}/* ${dirinsaves3}/${var}/.
         done

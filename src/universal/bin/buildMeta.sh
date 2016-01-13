@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/buildMeta.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/buildMeta.conf
 submitArg=""
 DRYRUN=""
 VERBOSE=0
