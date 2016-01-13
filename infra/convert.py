@@ -5,64 +5,43 @@ import sys
 import getopt
 import pandas as pd
 import numpy as np
-from influxdb import DataFrameClient
 import re
-from time import strptime
+from datetime import datetime
 
 # Script globals
 verbose=False
-influxdbUrl='influxdb://root:root@localhost:8086/datalab'
-influxdb='datalab'
+output='data.csv'
 
-def run(argv):
-    global verbose,influxdbUrl,influxdb
+def build_frame(file):
+    tags=extract_tags_from_name(file)
 
-    # Read options
     try:
-        opts, args = getopt.getopt(argv,"vi:",["influxdb=","verbose"])
-        if len(args)  == 0:
-            raise "Missing arguments"
+        input = pd.read_excel(file,sheetname=0)
     except:
-        print("import.py [-v|--verbose] [-i|--influxdb]=<influxdb url> <xlsUrl> ...")
-        sys.exit(1)
+        print('Failed to read '+file)
+        input = pd.DataFrame({
+            'stream':pd.Series([np.nan],dtype='object'),
+            'date':pd.Series([np.nan],dtype='object'),
+            'value':pd.Series([np.nan],dtype='float')
+        })
 
-    for opt,val in opts:
-        if opt in ("-v","--verbose"):
-            verbose=True
-        elif opt in ("-i","--influxdb"):
-            influxdbUrl=val
-
-    client = DataFrameClient(database=influxdb)
-
-    for file in args:
-        if verbose:
-            print("Processing ",file)
-        try:
-            base_input = pd.read_excel(file,sheetname=0)
-            base_tags=extract_tags_from_name(file)
-            base_input.columns=['stream','date','value']
-            input = base_input.groupby(['date','stream']).agg(np.mean).reset_index()
-            input['table']=input['stream'].map(extract_table_and_tags)
-            input['name']=input['stream'].map(extract_name)
-            byTable = input[input['table'].str.startswith('iostat')].groupby('table')
-            for key,df in byTable:
-                (tablename,tags)= parse_key(key)
-                tags.update(base_tags)
-                grouped = df[['date','name','value']].pivot(index='date',columns='name',values='value')
-                grouped.index = pd.to_datetime(grouped.index,format='%b %d %Y %I:%M%p')
-                client.write_points(grouped,tablename,tags=tags)
-        except:
-            print("Error encountered when processing ", file, " : ",sys.exc_info()[0])
-            raise
-
-def pivot(df):
-    res = df[['date','name','value']].pivot(index='date',columns='name',values='value')
-    return res
+    input.columns=['stream','date','value']
+    for tagname in tags.keys():
+        input[tagname]=input['stream'].map(lambda x: tags[tagname])
+    input['table']=input['stream'].astype('str').map(extract_table_and_tags)
+    input['name']=input['stream'].astype('str').map(extract_name)
+    input['date']=pd.to_datetime(input['date'])
+    return input
 
 def extract_tags_from_name(url):
     basename = url.split('/')[-1]
     noext = basename[0:basename.rfind('.')]
-    return {'server': noext.split('_')[0]}
+    tags = noext.split('_')
+    if len(tags) > 1:
+        importdt = datetime.strptime(tags[1],'%Y%m%d-%H%M%S').isoformat()
+    else:
+        importdt = None
+    return {'server': tags[0].lower(), 'importdt': importdt}
 
 def extract_table_and_tags(value):
     if value.startswith("PROCESSOR Utilization") or value.startswith("MemPhysUsage") \
@@ -87,18 +66,30 @@ def extract_tags(value):
     else:
         return ""
 
-def parse_key(value):
-    (tablename,sep,tagString) = value.partition(':')
-    tags={}
-    if len(tagString) > 0:
-        for tagkv in tagString.split(','):
-            (tag,sep,value)=tagkv.partition('=')
-            tags[tag]=value
+def run(argv):
+    global verbose,output
 
-    return [tablename,tags]
+    # Read options
+    try:
+        opts, args = getopt.getopt(argv,"vo:",["verbose","output"])
+        if len(args)  == 0:
+            raise "Missing arguments"
+    except:
+        print("convert.py [-v|--verbose] -o <output.csv> <xlsUrl> ...")
+        sys.exit(1)
 
-def convert_datetime(val):
-    return strptime(val,'%b %d %Y %I:%M%p')
+    for opt,val in opts:
+        if opt in ("-v","--verbose"):
+            verbose=True
+        elif opt in ["-o","--output"]:
+            output=val
+
+    if verbose:
+        print("Reading frames ")
+
+    frames = [ build_frame(file) for file in args ]
+    merged = pd.concat(frames)
+    merged.to_json(output,orient='records')
 
 if __name__ == "__main__":
     run(sys.argv[1:])
