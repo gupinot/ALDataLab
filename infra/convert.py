@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 
 # coding: utf-8
 import sys
@@ -47,24 +47,29 @@ def extract_table_and_tags(value):
     if value.startswith("PROCESSOR Utilization") or value.startswith("MemPhysUsage") \
         or value.startswith("MemVirtualUsage") or value.startswith("SwapUsage"):
         return "sysstat"
-    elif value.startswith("Ldsk:"):
+    elif value.startswith("Ldsk:") or value.startswith("Ldisk"):
         return "iostat:"+extract_tags(value[4:])
     else:
         return "app"
 
 def extract_name(value):
-    matched = re.search(":?([^: ]+)\^\^(.*)",value)
-    if matched:
-        return (matched.group(1)+'_'+matched.group(2).replace('%','percent')).lower()
-    else:
-        return value.lower()
+    patterns = ['^L(disk[^ ]+).*\^\^(.*)',':?([^: ]+)\^\^(.*)']
+    for pattern in patterns:
+        matched = re.search(pattern,value)
+        if matched:
+            return (matched.group(1)+'_'+matched.group(2).replace('%','percent').replace('#','count')).lower()
+
+    return value.lower()
 
 def extract_tags(value):
     matched = re.search("([^ ]+) ?\((.+)\):",value)
     if matched:
         return 'mount='+matched.group(1)+',device='+matched.group(2)
     else:
-        return ""
+        matched = re.search("\(?([A-Z]:)\)?",value)
+        if matched:
+            return 'mount='+matched.group(1)
+    return ""
 
 def run(argv):
     global verbose,output
