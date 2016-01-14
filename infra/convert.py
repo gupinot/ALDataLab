@@ -7,10 +7,11 @@ import pandas as pd
 import numpy as np
 import re
 from datetime import datetime
+import time
 
 # Script globals
 verbose=False
-output='data.csv'
+output='serverusage_'+str(round(time.time()))+'.json'
 
 def build_frame(file):
     tags=extract_tags_from_name(file)
