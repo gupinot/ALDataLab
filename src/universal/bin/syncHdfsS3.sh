@@ -48,28 +48,32 @@ done
 
 case $method in
     fromS3)
-        for var in connection webrequest repo
+        DATE=$(date +"%Y%m%d-%H%M%S")
+        CMD="hadoop distcp ${dirpipelines3}/ ${dirpipelinesaves3}/$DATE/" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
+        (for var in connection webrequest repo
         do
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}')"
 
-            [[ $(hdfs dfs -count ${dirins3}/${var} 2>/dev/null | awk '{print $2}') -gt 0 ]] &&\
+            [[ $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
                 (hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var}) &&\
-                hdfs dfs -mv ${dirins3}/${var}/* ${dirpipelines3}/in/${var}/. &&\
-                hdfs dfs -cp -p ${dirpipelines3}/in/${var}/* ${dirinsaves3}/${var}/.
-        done
-        CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}"
-        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD"
-        $CMD; ret=$?
-        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD exit with $ret"
+                for fic in $(hdfs dfs -ls ${dirins3}/${var}/* | awk '{print $6}')
+                do
+                    aws s3 mv ${fic/s3n:/s3:} ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) &&\
+                    aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) ${dirinsaves3/s3n:/s3:}/${var}/$(basename $fic) || exit 1
+                done
+        done) &&\
+        CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
+        hdfs dfs -rm -f -R ${dirpipelinehdfs} && $CMD; ret=$?
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 exit with $ret"
     ;;
     toS3)
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3"
-        DATE=$(date +"%Y%m%d-%H%M%S")
-        hdfs dfs -mv ${dirpipelines3} ${dirpipelinesaves3}/$DATE &&\
-        hadoop distcp ${dirdatahdfs} ${dirpipelines3}; ret=$?
-        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : hdfs dfs -mv ${dirpipelines3} ${dirpipelinesaves3}/$DATE && hadoop distcp ${dirdatahdfs} ${dirpipelines3} exit with $ret"
+        aws s3 rm ${dirpipelines3/s3n:/s3:} --recursive &&\
+        hadoop distcp ${dirpipelinehdfs} ${dirpipelines3}; ret=$?
+        echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3 exit with $ret"
     ;;
 esac
 
-exit $ret
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : End"
+exit $ret
