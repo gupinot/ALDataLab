@@ -18,7 +18,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
     val meta = List("connection","webrequest").map( filetype => {
       try {
         sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/$filetype/")
-          .select(lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt".cast("string").as("dt"),$"filedt")
+          .select(lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",to_date($"dt") as "dt", $"filedt")
           .distinct()
       } catch {
         case _:Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
@@ -33,7 +33,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
     }).reduce(_.unionAll(_))
 
     val meta2 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
-      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype",$"engine",$"dt".cast("string").as("dt"),$"filedt")
+      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
       .distinct()
       .unionAll(meta)
 
