@@ -109,6 +109,7 @@ then
    echo "Splits: ${splits}"
 fi
 
+ret=0
 # now run the spark command for each split
 for batchfile in ${splits}
 do
@@ -149,4 +150,4 @@ done
 
 # clean up
 rm -f ${filelist} ${filelist}.split.*
-
+exit $ret
