@@ -37,12 +37,14 @@ def build_frame(file):
 def extract_tags_from_name(url):
     basename = url.split('/')[-1]
     noext = basename[0:basename.rfind('.')]
-    tags = noext.split('_')
-    if len(tags) > 1:
-        importdt = datetime.strptime(tags[1],'%Y%m%d-%H%M%S').isoformat()
+    spoint = noext.rfind('_')
+    if spoint > 0:
+        servername = noext[0:spoint]
+        importdt = datetime.strptime(noext[(spoint+1):],'%Y%m%d-%H%M%S').isoformat()
     else:
+        servername = noext
         importdt = None
-    return {'server': tags[0].lower(), 'importdt': importdt}
+    return {'server': servername.lower(), 'importdt': importdt}
 
 def extract_table_and_tags(value):
     if value.startswith("PROCESSOR Utilization") or value.startswith("MemPhysUsage") \

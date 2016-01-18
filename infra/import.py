@@ -8,6 +8,7 @@ import numpy as np
 from influxdb import DataFrameClient
 import re
 from time import strptime
+from datetime import datetime
 
 # Script globals
 verbose=False
@@ -38,8 +39,8 @@ def run(argv):
         if verbose:
             print("Processing ",file)
         try:
-            base_input = pd.read_excel(file,sheetname=0)
             base_tags=extract_tags_from_name(file)
+            base_input = pd.read_excel(file,sheetname=0)
             base_input.columns=['stream','date','value']
             input = base_input.groupby(['date','stream']).agg(np.mean).reset_index()
             input['table']=input['stream'].map(extract_table_and_tags)
@@ -62,7 +63,14 @@ def pivot(df):
 def extract_tags_from_name(url):
     basename = url.split('/')[-1]
     noext = basename[0:basename.rfind('.')]
-    return {'server': noext.split('_')[0]}
+    spoint = noext.rfind('_')
+    if spoint > 0:
+        servername = noext[0:spoint]
+        importdt = datetime.strptime(noext[(spoint+1):],'%Y%m%d-%H%M%S').isoformat()
+    else:
+        servername = noext
+        importdt = None
+    return {'server': servername.lower(), 'importdt': importdt}
 
 def extract_table_and_tags(value):
     if value.startswith("PROCESSOR Utilization") or value.startswith("MemPhysUsage") \
