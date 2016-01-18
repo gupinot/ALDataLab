@@ -54,6 +54,5 @@ trait Meta {
         and ($"cnx_meta_delta.min_filedt" === $"metaDf1.min_filedt"),
       "inner")
       .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
-      .withColumnRenamed("min_filedt", "filedt")
   }
 }
