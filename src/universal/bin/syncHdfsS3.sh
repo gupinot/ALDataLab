@@ -59,9 +59,10 @@ case $method in
                 for fic in $(hdfs dfs -ls ${dirins3}/${var}/* | awk '{print $6}')
                 do
                     aws s3 mv ${fic/s3n:/s3:} ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) &&\
-                    aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) ${dirinsaves3/s3n:/s3:}/${var}/$(basename $fic) || exit 1
+                    aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) ${dirinsaves3/s3n:/s3:}/${var}/$(basename $fic) || return 1
                 done
-        done) &&\
+        done
+        return 0) &&\
         CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
         hdfs dfs -rm -f -R ${dirpipelinehdfs} && $CMD; ret=$?
