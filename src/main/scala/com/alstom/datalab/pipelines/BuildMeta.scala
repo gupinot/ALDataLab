@@ -37,8 +37,18 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
       .distinct()
       .unionAll(meta)
 
+    val meta3 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/device")
+      .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("device") as "collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
+      .distinct()
+      .unionAll(meta2)
+
+    val meta4 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/server")
+      .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("server") as "collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
+      .distinct()
+      .unionAll(meta3)
+
     // now merge all found dataframes and save it
-    meta2.repartition(1)
+    meta4.repartition(1)
       .write.mode(SaveMode.Overwrite)
       .parquet(context.meta())
   }

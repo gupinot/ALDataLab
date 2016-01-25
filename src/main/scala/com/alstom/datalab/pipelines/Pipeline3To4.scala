@@ -22,7 +22,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     val jobidcur:Long = System.currentTimeMillis/1000
 
     //read meta 23 and 34
-    val cnx_meta_delta_ok = deltaMeta(context.meta(), Pipeline2To3.STAGE_NAME, Pipeline3To4.STAGE_NAME)
+    val cnx_meta_delta_ok = deltaMeta3to4(context.meta())
 
     val cnx = broadcast(cnx_meta_delta_ok)
 
@@ -85,6 +85,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     val cnx_meta_result = cnx_meta_delta_ok.withColumn("stage", lit(Pipeline3To4.STAGE_NAME))
       .withColumnRenamed("min_filedt", "filedt")
       .select("filetype", "stage", "collecttype", "engine", "dt", "filedt")
+      .filter($"dt".isin(all_dt:_*))
       .repartition(1)
     cnx_meta_result.write.mode(SaveMode.Append).parquet(context.meta())
 

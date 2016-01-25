@@ -71,7 +71,7 @@ case $method in
     toS3)
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3"
         aws s3 rm ${dirpipelines3/s3n:/s3:} --recursive &&\
-        hadoop distcp ${dirpipelinehdfs} ${dirpipelines3}; ret=$?
+        hadoop distcp ${dirpipelinehdfs}/* ${dirpipelines3}; ret=$?
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3 exit with $ret"
     ;;
 esac
