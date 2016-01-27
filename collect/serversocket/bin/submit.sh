@@ -12,7 +12,7 @@ function deploy() {
 	 cat $SCRIPT_SERVER | sed -e "s/HOST_NAME/$SERVER/" > $TMP_SCRIPT &&\
 	 scp $TMP_SCRIPT datalab@$SERVER:~/$(basename $SCRIPT_SERVER) &&\
 	 rm $TMP_SCRIPT &&\
-	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "chmod +x ~/$(basename $SCRIPT_SERVER) && echo \"*/5 * * * * ~/$(basename $SCRIPT_SERVER) monitor\" >> mycron && crontab mycron" &&\
+	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "chmod +x ~/$(basename $SCRIPT_SERVER) && echo \"*/5 * * * * ~/$(basename $SCRIPT_SERVER) monitor 2>~/collect.err 1>~/collect.out\" >> mycron && crontab mycron" &&\
 	 RET_DEPLOY=0
 	return $RET_DEPLOY
 }
@@ -55,20 +55,20 @@ function test() {
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no -t -t datalab@$SERVER "sudo -n netstat -anp || yes | sudo netstat -anp" 1>$stdoutlog 2>$errlog && NETSTAT_RET=0
+		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "sudo -n netstat -anp || yes | sudo netstat -anp" 1>$stdoutlog 2>$errlog && NETSTAT_RET=0
 		return $NETSTAT_RET
 	) && NETSTAT_RET=$?
-	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -ne 0 ]] && NETSTAT_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding"| head -n 1 | tr -d '\n' | tr -d '\r')" && NETSTAT_ERR="$NETSTAT_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
+	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -ne 0 ]] && NETSTAT_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding"| grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && NETSTAT_ERR="$NETSTAT_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
 
 	#sudo on lsof
 	[[ $SSH_RET -eq 0 ]] &&\
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no -t -t datalab@$SERVER "sudo -n /usr/sbin/lsof -nP -i || sudo -n /usr/bin/lsof -nP -i || yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "sudo -n /usr/sbin/lsof -nP -i || sudo -n /usr/bin/lsof -nP -i || yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
 		return $LSOF_RET
 	) && LSOF_RET=$?
-	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && LSOF_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | head -n 1 | tr -d '\n' | tr -d '\r')" && LSOF_ERR="$LSOF_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
+	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && LSOF_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && LSOF_ERR="$LSOF_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
 	
 
 	#crontab
