@@ -1,0 +1,22 @@
+
+#Directory
+REPO<-Sys.getenv("REPO")
+DATA<-Sys.getenv("DATA")
+IN<-Sys.getenv("IN")
+OUT<-Sys.getenv("OUT")
+DONE<-Sys.getenv("DONE")
+
+INNXFILES<-Sys.getenv("INNXFILES")
+OUTNXFILES<-Sys.getenv("OUTNXFILES")
+DONENXFILES<-Sys.getenv("DONENXFILES")
+DONENXFILESIN<-Sys.getenv("DONENXFILESIN")
+ANONYMIZED<-Sys.getenv("ANONYMIZED")
+MERGEDSPLITED<-Sys.getenv("MERGEDSPLITED")
+
+#IDM and MDM repository
+IDMFILE<-Sys.getenv("IDMFILE")
+I_ID<-Sys.getenv("I_ID")
+
+DICTIONNARY<-Sys.getenv("DICTIONNARY")
+DICTIONNARY_HIST<-Sys.getenv("DICTIONNARY_HIST")
+
