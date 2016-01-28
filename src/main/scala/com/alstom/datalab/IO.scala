@@ -32,12 +32,12 @@ class IO {
     val filedeviceouthdfs = s"hdfs:///tmp/writecsv${jobid}"
     deletefile(filedeviceouthdfs)
     deletefile(s"${s3root}/${dstfile}")
-    if (gz) {
-      dfin.write.format("com.databricks.spark.csv").option("header", "true").option("codec", "org.apache.hadoop.io.compress.GzipCodec").option("delimiter", ";").save(filedeviceouthdfs)
-    } else {
-      dfin.write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", s"${delimiter}").save(filedeviceouthdfs)
-    }
+    var cmd = dfin.write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", delimiter)
 
+    if (gz) {
+      cmd = cmd.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
+    }
+    cmd.save(filedeviceouthdfs)
     merge(filedeviceouthdfs, s"${s3root}/${dstfile}")
     deletefile(filedeviceouthdfs)
   }
