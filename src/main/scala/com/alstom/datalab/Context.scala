@@ -22,7 +22,6 @@ object Context {
   val DEFAULT_CONTROL="hdfs:///data/control"
   val META="meta"
   val DEFAULT_META="hdfs:///data/meta"
-  val
 }
 
 class Context(map: Map[String,String]) extends HashMap[String,String] {

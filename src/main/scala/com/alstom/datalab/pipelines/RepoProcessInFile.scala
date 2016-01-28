@@ -4,12 +4,63 @@ import com.alstom.datalab.{Repo, Pipeline}
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
 
 /**
   * Created by raphael on 02/12/2015.
   */
 class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
+
+  val aipserverSchema = StructType(Seq(
+    StructField("host_name", StringType, true),
+    StructField("function", StringType, true),
+    StructField("type", StringType, true),
+    StructField("subfunction", StringType, true),
+    StructField("skyscope", StringType, true),
+    StructField("vmw_host", StringType, true),
+    StructField("windfarm", StringType, true),
+    StructField("ip", StringType, true),
+    StructField("ipvalidation", StringType, true),
+    StructField("size", StringType, true),
+    StructField("SID", StringType, true),
+    StructField("decomdate", StringType, true),
+    StructField("status", StringType, true),
+    StructField("serial", StringType, true),
+    StructField("site_name", StringType, true),
+    StructField("site_code", StringType, true),
+    StructField("cpu_type", StringType, true),
+    StructField("cpu_num", IntegerType, true),
+    StructField("cpu_cores", IntegerType, true),
+    StructField("memory_mb", IntegerType, true),
+    StructField("owner", StringType, true),
+    StructField("owner_org_id", StringType, true),
+    StructField("owner_org_terranga_code", StringType, true),
+    StructField("owner_org_terranga_name", StringType, true),
+    StructField("admin_by", StringType, true),
+    StructField("adminby_org_id", StringType, true),
+    StructField("adminby_org_terranga", StringType, true),
+    StructField("adminby_org_name", StringType, true),
+    StructField("dt_purchase", StringType, true),
+    StructField("dt_install", StringType, true),
+    StructField("vendor", StringType, true),
+    StructField("model", StringType, true),
+    StructField("ola", StringType, true),
+    StructField("csc_costs", StringType, true),
+    StructField("dco_costs", StringType, true),
+    StructField("role", StringType, true),
+    StructField("linked_app", IntegerType, true),
+    StructField("platform", StringType, true),
+    StructField("ownership", StringType, true),
+    StructField("phys_host", StringType, true),
+    StructField("cat_india", StringType, true),
+    StructField("os_name", StringType, true),
+    StructField("os_edition", StringType, true),
+    StructField("os_version", StringType, true),
+    StructField("os_service_pack", StringType, true),
+    StructField("os_arch", StringType, true),
+    StructField("source", StringType, true)))
+
 
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
