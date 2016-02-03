@@ -4,6 +4,7 @@ CONF=$HOME/pipeline/conf/syncHdfsS3.conf
 
 
 dirpipelines3=$(cat $CONF | egrep '^shell\.dirpipelines3' | awk '{print $2}')
+dircollectserverusages3=$(cat $CONF | egrep '^shell\.dircollectserverusages3' | awk '{print $2}')
 dirpipelinehdfs=$(cat $CONF | egrep '^shell\.dirpipelinehdfs' | awk '{print $2}')
 dirins3=$(cat $CONF | egrep '^shell\.dirins3' | awk '{print $2}')
 dirinsaves3=$(cat $CONF | egrep '^shell\.dirinsaves3' | awk '{print $2}')
@@ -50,20 +51,22 @@ case $method in
     fromS3)
         DATE=$(date +"%Y%m%d-%H%M%S")
         CMD="hadoop distcp ${dirpipelines3}/ ${dirpipelinesaves3}/$DATE/" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
-        (for var in connection webrequest repo
+        CMD="aws s3 mv ${dircollectserverusages3/s3n:/s3:}/ ${dirins3/s3n:/s3:}/serverusage/" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
+        ret=0 &&\
+        (for var in connection webrequest repo serverusage
         do
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}')"
 
             [[ $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
                 (hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var}) &&\
-                for fic in $(hdfs dfs -ls ${dirins3}/${var}/* | awk '{print $6}')
+                (for fic in $(hdfs dfs -ls ${dirins3}/${var}/* | awk '{print $6}')
                 do
                     aws s3 mv ${fic/s3n:/s3:} ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) &&\
                     aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) ${dirinsaves3/s3n:/s3:}/${var}/$(basename $fic) || return 1
-                done
+                done) || ret=1
         done
-        return 0) &&\
-        CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
+        )
+        [[ $ret -eq 0 ]] && CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
         hdfs dfs -rm -f -R ${dirpipelinehdfs} && $CMD; ret=$?
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 exit with $ret"
