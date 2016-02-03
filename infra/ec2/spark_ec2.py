@@ -217,6 +217,17 @@ def parse_args():
         "-v", "--spark-version", default=DEFAULT_SPARK_VERSION,
         help="Version of Spark to use: 'X.Y.Z' or a specific git hash (default: %default)")
     parser.add_option(
+        "--deploy-profile", default=None,
+        help="If you have multiple profiles (AWS or boto config), you can configure " +
+             "additional, named profiles by using this option. If not empty, this profile will be deployed"
+             "to the master instead of profile option  (default: %default)")
+    parser.add_option(
+        "--deploy-aws-key-id", default=None,
+        help="AWS key id to deploy to server if copy credentials is enabled  (default: %default)")
+    parser.add_option(
+        "--deploy-aws-key-secret", default=None,
+        help="AWS key secret to deploy to server if copy credentials is enabled  (default: %default)")
+    parser.add_option(
         "--spark-git-repo",
         default=DEFAULT_SPARK_GITHUB_REPO,
         help="Github repo from which to checkout supplied commit hash (default: %default)")
@@ -1103,8 +1114,8 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
     }
 
     if opts.copy_aws_credentials:
-        template_vars["aws_access_key_id"] = conn.aws_access_key_id
-        template_vars["aws_secret_access_key"] = conn.aws_secret_access_key
+        template_vars["aws_access_key_id"] = opts.aws_access_key_id
+        template_vars["aws_secret_access_key"] = opts.aws_secret_access_key
     else:
         template_vars["aws_access_key_id"] = ""
         template_vars["aws_secret_access_key"] = ""
@@ -1354,6 +1365,24 @@ def real_main():
     except Exception as e:
         print((e), file=stderr)
         sys.exit(1)
+
+    if opts.deploy_aws_key_id is None:
+        opts.aws_access_key_id = conn.aws_access_key_id
+    else:
+        opts.aws_access_key_id = opts.deploy_aws_key_id
+
+    if opts.deploy_aws_key_secret is None:
+        opts.aws_secret_access_key = conn.aws_secret_access_key
+    else:
+        opts.aws_secret_access_key = opts.deploy_aws_key_secret
+
+    try:
+        if opts.deploy_profile is not None:
+            deployconn = ec2.connect_to_region(opts.region, profile_name=opts.deploy_profile)
+            opts.aws_access_key_id = deployconn.aws_access_key_id
+            opts.aws_secret_access_key = deployconn.aws_secret_access_key
+    except Exception as e:
+        print((e), file=stderr)
 
     # Select an AZ at random if it was not specified.
     if opts.zone == "":
