@@ -3,40 +3,60 @@
   */
 package com.alstom.datalab.pipelines
 
-import com.alstom.datalab.{ControlFile, Pipeline}
+import com.alstom.datalab.{Meta, ControlFile, Pipeline}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SQLContext}
 
-class WebApp(sqlContext: SQLContext) extends Pipeline {
+class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
   import sqlContext.implicits._
 
-  override def execute(): Unit = {
+  def aggregateDevice(df: DataFrame) = {
 
-    val jobid:Long = System.currentTimeMillis/1000
-    val sc = sqlContext.sparkContext
+  }
 
-    //read control files from inputFiles and filter on connection filetype)
-    val control = this.inputFiles.map(filein => {sc.textFile(filein)})
-      .reduce(_.union(_))
-      .map(_.split(";"))
-      .map(s => ControlFile(s(0), s(1), s(2), s(3), s(4), s(5), s(6), s(7)))
-      .filter(_.stage == Pipeline3To4.STAGE_NAME)
-      .toDF()
+  def generate(df: DataFrame, collecttype: String = "device") = {
+    val dayone = "2015-10-01"
+    val date_last =
 
-    val connections = control
-      .filter($"filetype" === "connection")
-      .select($"collecttype" as "ctl_collecttype",
-        $"engine" as "ctl_engine",
-        to_date($"day" as "ctl_day"),
-        to_date($"filedt") as "ctl_filedt")
+  }
 
-    val agg_full = connections
-      .groupBy("source_site", "dest_site", "source_sector", "source_I_ID_site",
-      "enddate", "source_app_name", "source_app_category", "source_app_company", "source_app_exec", "source_app_paths",
-      "engine", "fileenginedate", "dest_ip", "dest_port", "con_protocol", "con_status", "url")
-      .agg(sum("con_number"))
+  def execute(): Unit = {
 
+
+    val jobidcur:Long = System.currentTimeMillis/1000
+
+    //read meta to compute
+    val meta45 = aggregateMeta(loadMeta(context.meta()), Pipeline4To5.STAGE_NAME).as("meta45")
+
+    //keep only days with sufficient engines collected : 20 for device, 3 for server
+    val dt_device = meta45
+      .filter("collecttype = device")
+      .groupBy("dt")
+      .agg(countDistinct($"engine").as("engine_count"))
+      .filter("engine_count >= 20")
+      .select($"dt")
+      .distinct()
+      .collect()
+      .map(_.getDate(0))
+    val dt_server = meta45
+      .filter("collecttype = server")
+      .groupBy("dt")
+      .agg(countDistinct($"engine").as("engine_count"))
+      .filter("engine_count >= 3")
+      .select($"dt")
+      .distinct()
+      .collect()
+      .map(_.getDate(0))
+
+    val aggregated = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}")
+    aggregated.cache()
+
+    val aggregated_device = aggregated.filter($"dt".isin(dt_device:_*))
+    val aggregated_server = aggregated.filter($"dt".isin(dt_server:_*))
+
+    generate(aggregated_device)
+    generate(aggregated_server)
 
 
     /*stat <- NXFile[, list(sum_con_cardinality=sum(NX_con_cardinality),
@@ -62,5 +82,5 @@ class WebApp(sqlContext: SQLContext) extends Pipeline {
       NX_con_status,
       wr.url)]*/
   }
-
 }
+
