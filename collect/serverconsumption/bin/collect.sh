@@ -19,4 +19,6 @@ do
 	echo "$(date +"%Y/%m/%d-%H:%M:%S") : $0 : CMD : $CMD > $dirserverxls/${SERVER}_$suffix.xls"
 	$CMD > $dirserverxls/${SERVER}_$suffix.xls
 done
+echo "$(date +"%Y/%m/%d-%H:%M:%S") : $0 : execute convert-send script..."
+$ROOTDIR/bin/convert-send.sh
 echo "$(date +"%Y/%m/%d-%H:%M:%S") : $0 : end"

@@ -4,6 +4,7 @@ ROOTDIR=/datalab2/home/datalab/ALDataLab/collect/serverconsumption
 SERVERLST=$ROOTDIR/conf/server.lst
 URL="http://iww.dcs.itssc.alstom.com/nrtmd/streamsdump/server"
 dirserverxls="/datalab3/DATA/SERVER"
+LOG=$ROOTDIR/log; [[ -d $LOG ]] || mkdir -p $LOG
 
 dirin="/datalab3/DATA/SERVER"
 export dirdone="/datalab3/DATA/SERVER/done"; [[ -d $dirdone ]] || mkdir -p $dirdone

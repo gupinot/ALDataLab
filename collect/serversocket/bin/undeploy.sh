@@ -5,14 +5,17 @@ CONF=$(dirname $0)/../conf/conf.sh
 
 DATECUR=$(date +"%Y%m%d-%H%M%S")
 
+cp -f $SERVERSTATUS $SERVERSTATUS.$DATECUR
 for host in $(cat $SERVERSTATUS | awk -F';' '{if ($3 == "2") print $1}')
 do 
-	status=1
+	status=2
 	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
-	$ROOTDIR/bin/submit.sh collect $ip && status=0
+	$ROOTDIR/bin/submit.sh undeploy $ip && status=1
 	tmpfile=$(mktemp)
-	echo "$host;$ip;$status;$DATECUR" >> $SERVERCOLLECT
+	grep -v "^$host;" $SERVERSTATUS > $tmpfile
+	echo "$host;$ip;$status;$DATECUR" >> $tmpfile
 	echo "$0 : $host;$ip;$status;$DATECUR"
+	cp -f $tmpfile $SERVERSTATUS
 done
 
 
