@@ -12,7 +12,16 @@ function deploy() {
 	 cat $SCRIPT_SERVER | sed -e "s/HOST_NAME/$SERVER/" > $TMP_SCRIPT &&\
 	 scp $TMP_SCRIPT datalab@$SERVER:~/$(basename $SCRIPT_SERVER) &&\
 	 rm $TMP_SCRIPT &&\
-	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "chmod +x ~/$(basename $SCRIPT_SERVER) && echo \"*/5 * * * * ~/$(basename $SCRIPT_SERVER) monitor 2>~/collect.err 1>~/collect.out\" >> mycron && crontab mycron" &&\
+	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "chmod +x ~/$(basename $SCRIPT_SERVER) && echo \"*/5 * * * * ~/$(basename $SCRIPT_SERVER) monitor 2>~/monitor.err 1>~/monitor.out\" >> mycron && crontab mycron" &&\
+	 RET_DEPLOY=0
+	return $RET_DEPLOY
+}
+
+function undeploy() {
+	SERVER=$1
+	RET_DEPLOY=1
+	test $SERVER &&\
+	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "crontab -r; rm -fr monitor collect monitor.sh monitor.out monitor.err" &&\
 	 RET_DEPLOY=0
 	return $RET_DEPLOY
 }
@@ -30,6 +39,7 @@ function collect() {
 
 function test() {
 	SERVER=$1
+	HOST=$2
 	SSH_RET=1
 	SSH_ERR=""
 	HOME_DIR=""
@@ -82,7 +92,7 @@ function test() {
 	) && CRONTAB_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $CRONTAB_RET -ne 0 ]] && CRONTAB_ERR="$(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | head -n 1 | tr -d '\n' | tr -d '\r')"
 
-	echo "$SERVER;${SSH_RET};${SSH_ERR};${HOME_DIR};$NETSTAT_RET;${NETSTAT_ERR};$LSOF_RET;${LSOF_ERR};${CRONTAB_RET};${CRONTAB_ERR}"
+	echo "$HOST;$SERVER;${SSH_RET};${SSH_ERR};${HOME_DIR};$NETSTAT_RET;${NETSTAT_ERR};$LSOF_RET;${LSOF_ERR};${CRONTAB_RET};${CRONTAB_ERR}"
 	
 	TEST_RET=1
 	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -eq 0 ]] && [[ $LSOF_RET -eq 0 ]] && [[ $CRONTAB_RET -eq 0 ]] && TEST_RET=0
@@ -92,7 +102,7 @@ function test() {
 ########################################################################################################################
 #main
 
-usage="$0 test|deploy|collect server"
+usage="$0 test|deploy|collect ipserver hostname"
 
 while [[ $# > 0 ]]
 do
@@ -103,9 +113,11 @@ do
         echo ${usage}
         exit 0
         ;;
-     test|deploy|collect)
+     test|deploy|collect|undeploy)
 	method=$key
 	server=$2
+	host=$3
+	shift
 	shift
         ;;
     esac
@@ -114,10 +126,13 @@ done
 
 case $method in
   test)
-    test $server
+    test $server $host
     ;;
   deploy)
     deploy $server
+    ;;
+  undeploy)
+    undeploy $server
     ;;
   collect)
     collect $server
