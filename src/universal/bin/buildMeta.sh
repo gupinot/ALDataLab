@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#script to rebuild meta data from pipeline/out/ sub-directories content
 
 SUBMIT=$HOME/pipeline/bin/submit.sh
 CONF=$HOME/pipeline/conf/buildMeta.conf

@@ -1,6 +1,6 @@
 package com.alstom.datalab
 
-import com.alstom.datalab.pipelines.Pipeline2To3
+import com.alstom.datalab.pipelines.{Pipeline3To4, Pipeline4To5, Pipeline2To3}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{SQLContext, DataFrame, Row}
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
@@ -35,8 +35,8 @@ trait Meta {
 
   def deltaMeta3to4(path: String)(implicit sqlContext: SQLContext) = {
     import sqlContext.implicits._
-    val stage1 = "pipe2to3"
-    val stage2 = "pipe3to4"
+    val stage1 = Pipeline2To3.STAGE_NAME
+    val stage2 = Pipeline3To4.STAGE_NAME
     val metaDf1 = aggregateMeta(loadMeta(path), stage1).as("metaDf1")
     val metaDf2 = aggregateMeta(loadMeta(path), stage2).as("metaDf2")
 
@@ -60,8 +60,8 @@ trait Meta {
 
   def deltaMeta4to5(path: String)(implicit sqlContext: SQLContext) = {
     import sqlContext.implicits._
-    val stage1 = "pipe3to4"
-    val stage2 = "pipe4to5"
+    val stage1 = Pipeline3To4.STAGE_NAME
+    val stage2 = Pipeline4To5.STAGE_NAME
     val metaDf1 = aggregateMeta(loadMeta(path), stage1).as("metaDf1")
     val metaDf2 = aggregateMeta(loadMeta(path), stage2).as("metaDf2")
 

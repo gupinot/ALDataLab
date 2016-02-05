@@ -15,7 +15,6 @@ import org.apache.spark.sql.DataFrame
 
 class IO {
   private val hadoopConfig = new Configuration()
-  private val s3root = "s3n://gezeppelin/document"
   private def merge(srcPath: String, dstPath: String): Unit =  {
     val hdfs = FileSystem.get(hadoopConfig)
     val dstFs : FileSystem = FileSystem.get(URI.create(dstPath), hadoopConfig)
@@ -27,9 +26,11 @@ class IO {
     fs.delete(new Path(file), true)
   }
 
-  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";") = {
+  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";", s3root: String = "s3n://gecustomers/document") = {
     val jobid:Long = System.currentTimeMillis
     val filedeviceouthdfs = s"hdfs:///tmp/writecsv${jobid}"
+    if (dstfile == "") throw new IllegalArgumentException("dstfile cannot be empty !");
+    if ( ! s3root.matches("^s3n:\\/\\/[^\\/]+\\/document")) throw new IllegalArgumentException(s"s3root argument value (${s3root}) not authorized !");
     deletefile(filedeviceouthdfs)
     deletefile(s"${s3root}/${dstfile}")
     var cmd = dfin.write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", delimiter)
