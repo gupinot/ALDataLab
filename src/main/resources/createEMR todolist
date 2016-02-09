@@ -74,3 +74,6 @@ vi /root/zeppelin/conf/zeppelin-site.xml
 
 
 
+sbt assembly universal:packageZipTarball
+
+

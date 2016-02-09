@@ -49,10 +49,10 @@ class Pipeline4To5(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     val resAgregatedServer = resolved_filtered
       .filter($"collecttype" === "server")
-      .groupBy("source_ip", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+      .groupBy("source_sector", "source_ip", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
       "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type", "source_aip_app_sector",
       "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-      "dest_ip", "dest_site", "dest_port", "con_protocol",
+      "dest_ip", "dest_site", "dest_port", "con_protocol", "con_status",
       "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type", "dest_aip_app_sector",
       "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month")
       .agg(sum($"con_number").as("con_number"),
@@ -62,21 +62,21 @@ class Pipeline4To5(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .write.mode(SaveMode.Append)
       .partitionBy("month").parquet(s"${context.dirout()}/server")
 
-    val myConcat = new ConcatString(",")
+    val myConcat = new ConcatUniqueString(",")
     val resAgregatedDevice = resolved_filtered
       .filter($"collecttype" === "device")
-      .groupBy("source_I_ID_site", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+      .groupBy("source_sector", "source_I_ID_site", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
         "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type", "source_aip_app_sector",
         "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-        "dest_ip", "dest_site", "dest_port", "con_protocol",
+        "dest_ip", "dest_site", "dest_port", "con_protocol", "con_status",
         "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type", "dest_aip_app_sector",
         "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month")
       .agg(sum($"con_number").as("con_number"),
         sum($"con_traffic_in").as("con_traffic_in"),
         sum($"con_traffic_out").as("con_traffic_out"),
         mean($"con_duration").as("con_duration"),
-        myConcat($"I_ID_U").as("I_ID_U"),
-        approxCountDistinct($"I_ID_U").as("distinct_I_ID_U"))
+        myConcat($"I_ID_U").as("I_ID_U"))
+      .withColumn("distinct_I_ID_U", countSeparator(",")($"I_ID_U"))
       .write.mode(SaveMode.Append)
       .partitionBy("month").parquet(s"${context.dirout()}/device")
 

@@ -15,37 +15,63 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
 
   override def execute(): Unit = {
     // try to read the dataframes metadata
-    val meta = List("connection","webrequest").map( filetype => {
+    val meta = List("connection", "webrequest").map(filetype => {
       try {
         sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/$filetype/")
-          .select(lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype",$"engine",to_date($"dt") as "dt", $"filedt")
+          .select(lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
           .distinct()
       } catch {
-        case _:Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row],StructType(List(
-            StructField("filetype", StringType, true),
-            StructField("stage", StringType, true),
-            StructField("collecttype", StringType, true),
-            StructField("engine", StringType, true),
-            StructField("dt", StringType, true),
-            StructField("filedt", StringType, true)
-          )))
+        case _: Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row], StructType(List(
+          StructField("filetype", StringType, true),
+          StructField("stage", StringType, true),
+          StructField("collecttype", StringType, true),
+          StructField("engine", StringType, true),
+          StructField("dt", StringType, true),
+          StructField("filedt", StringType, true)
+        )))
       }
     }).reduce(_.unionAll(_))
 
     val meta2 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
-      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
+      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
       .distinct()
       .unionAll(meta)
 
-    val meta3 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/device")
-      .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("device") as "collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
-      .distinct()
-      .unionAll(meta2)
+    val meta3 = {
+      try {
+        sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/device")
+          .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("device") as "collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
+          .distinct()
+      }
+      catch {
+        case _: Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row], StructType(List(
+          StructField("filetype", StringType, true),
+          StructField("stage", StringType, true),
+          StructField("collecttype", StringType, true),
+          StructField("engine", StringType, true),
+          StructField("dt", StringType, true),
+          StructField("filedt", StringType, true)
+        )))
+      }
+    }.unionAll(meta2)
 
-    val meta4 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/server")
-      .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("server") as "collecttype",$"engine",to_date($"dt") as "dt",$"filedt")
-      .distinct()
-      .unionAll(meta3)
+    val meta4 = {
+      try {
+        sqlContext.read.option("mergeSchema", "false").parquet(s"${context.diragg()}/server")
+          .select(lit("connection") as "filetype", lit(Pipeline4To5.STAGE_NAME) as "stage", lit("server") as "collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
+          .distinct()
+      }
+      catch {
+        case _: Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row], StructType(List(
+          StructField("filetype", StringType, true),
+          StructField("stage", StringType, true),
+          StructField("collecttype", StringType, true),
+          StructField("engine", StringType, true),
+          StructField("dt", StringType, true),
+          StructField("filedt", StringType, true)
+        )))
+      }
+    }.unionAll(meta3)
 
     // now merge all found dataframes and save it
     meta4.repartition(1)
