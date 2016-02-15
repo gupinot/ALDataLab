@@ -3,6 +3,20 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
+function synchro() {
+	#synchronize server to have monitoring log at same timestamp
+	SERVER=$1
+	RET_SYNCHRO=1
+	TIMEDELTA=""
+	deltatime_M=$((($(date --utc --date 'now' +'%s') - $(ssh datalab@$SERVER "date --utc --date 'now' +'%s'"))/60))
+	[[ $deltatime_M -eq 0 ]] && TIMEDELTA=""
+	[[ $deltatime_M -gt 0 ]] && TIMEDELTA="+ $deltatime_M minutes"
+	[[ $deltatime_M -lt 0 ]] && TIMEDELTA="- $(echo $deltatime_M | tr -d -) minutes"
+	ssh datalab@$SERVER "echo TIMEDELTA=\\\"$TIMEDELTA\\\" > timedelta.sh" &&\
+	RET_SYNCHRO=0
+	return $RET_SYNCHRO
+}
+
 function deploy() {
 	#deploy server script on datalab@$SERVER:/var/tmp/script and create corresponding crontab
 	SERVER=$1
@@ -21,7 +35,7 @@ function undeploy() {
 	SERVER=$1
 	RET_DEPLOY=1
 	test $SERVER &&\
-	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "crontab -r; rm -fr monitor collect monitor.sh monitor.out monitor.err" &&\
+	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "crontab -r; rm -fr monitor collect monitor.sh monitor.out monitor.err timedelta.sh" &&\
 	 RET_DEPLOY=0
 	return $RET_DEPLOY
 }
@@ -86,7 +100,7 @@ function test() {
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "echo '00 09 * * 1-5 echo hello' >> mycron && crontab mycron && crontab -l && rm mycron && crontab -r" 1>$stdoutlog 2>$errlog &&\
+		ssh -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "echo '00 09 * * 1-5 echo hello' >> mycron && (crontab -l > crontab_save 2>/dev/null || echo "nothing" 1>/dev/null) && crontab mycron && crontab -l && rm mycron && crontab -r && (crontab crontab_save 2>/dev/null || echo "nothing" 1>/dev/null)" 1>$stdoutlog 2>$errlog &&\
 		([[ ! -f $errlog ]] || [[ $(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | wc -l | awk '{print $1}') -eq 0 ]]) && CRONTAB_RET=0
 		return $CRONTAB_RET
 	) && CRONTAB_RET=$?
@@ -102,7 +116,7 @@ function test() {
 ########################################################################################################################
 #main
 
-usage="$0 test|deploy|collect ipserver hostname"
+usage="$0 test|deploy|collect|undeploy|synchro ipserver hostname"
 
 while [[ $# > 0 ]]
 do
@@ -113,7 +127,7 @@ do
         echo ${usage}
         exit 0
         ;;
-     test|deploy|collect|undeploy)
+     test|deploy|collect|undeploy|synchro)
 	method=$key
 	server=$2
 	host=$3
@@ -130,12 +144,16 @@ case $method in
     ;;
   deploy)
     deploy $server
+    synchro $server
     ;;
   undeploy)
     undeploy $server
     ;;
   collect)
     collect $server
+    ;;
+  synchro)
+    synchro $server
     ;;
 esac
 exit $?

@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
 
 HOSTNAME="HOST_NAME"
+if [[ -f $HOME/timedelta.sh ]]
+then
+	. $HOME/timedelta.sh
+else
+	TIMEDELTA=""
+fi
+datH=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H")
+datM=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H%M")
 DIR_MONITOR=~/monitor && [[ -d $DIR_MONITOR ]] || mkdir -p $DIR_MONITOR
 DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
 MAX_SPACE_USED=1000000
 MAX_SPACE_LEFT=100000
-LSOF_MONITOR=${DIR_MONITOR}/lsof_${HOSTNAME}_$(date +"%Y%m%d-%H").csv.gz
-PS_MONITOR=${DIR_MONITOR}/ps_${HOSTNAME}_$(date +"%Y%m%d-%H").csv.gz
+LSOF_MONITOR=${DIR_MONITOR}/lsof_${HOSTNAME}_${datH}.csv.gz
+PS_MONITOR=${DIR_MONITOR}/ps_${HOSTNAME}_${datH}.csv.gz
 
 export PATH=$PATH:/usr/sbin
 
 
 function monitor() {
-	dat=$(date +"%Y%m%d%H%M")
-	sudo lsof -nPi4 | sed 1d | awk -vdat=$dat -vserver=$HOSTNAME '{print server";"dat";"$1";"$2";"$3";"$8";"$9";"$10}' | gzip -c >> $LSOF_MONITOR
-	ps -Ao "%U;%p;%P;%x;%a" | sed -e "s/; */;/g" | sed -e "s/ *;/;/g" | awk -vdat=$dat -vserver=$HOSTNAME -F'\n' '{print server";"dat";"$1}' | sed 1d | gzip -c >> $PS_MONITOR 
+	sudo lsof -nPi4 | sed 1d | awk -vdat=$datM -vserver=$HOSTNAME '{print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10}' | gzip -c >> $LSOF_MONITOR
+	 ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | sed 1d | gzip -c >> $PS_MONITOR 
 }
 
 function server_info() {

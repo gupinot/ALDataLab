@@ -3,7 +3,7 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-DATECUR=$(date +"%Y%m%d-%H%M%S")
+DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 
 for host in $(cat $SERVERSTATUS | awk -F';' '{if ($3 == "2") print $1}')
 do 
