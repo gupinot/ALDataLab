@@ -54,7 +54,7 @@ class Pipeline4To5(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
       "dest_ip", "dest_site", "dest_port", "con_protocol", "con_status",
       "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type", "dest_aip_app_sector",
-      "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month")
+      "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month", "engine", "filedt")
       .agg(sum($"con_number").as("con_number"),
         sum($"con_traffic_in").as("con_traffic_in"),
         sum($"con_traffic_out").as("con_traffic_out"),
@@ -70,7 +70,7 @@ class Pipeline4To5(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
         "dest_ip", "dest_site", "dest_port", "con_protocol", "con_status",
         "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type", "dest_aip_app_sector",
-        "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month")
+        "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month", "engine", "filedt")
       .agg(sum($"con_number").as("con_number"),
         sum($"con_traffic_in").as("con_traffic_in"),
         sum($"con_traffic_out").as("con_traffic_out"),

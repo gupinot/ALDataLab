@@ -3,7 +3,7 @@ package com.alstom.datalab.pipelines
 import com.alstom.datalab.Pipeline
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.types.{StringType, StructField, StructType, DateType}
 import org.apache.spark.sql.{Row, SQLContext, SaveMode}
 
 /**
@@ -26,7 +26,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
           StructField("stage", StringType, true),
           StructField("collecttype", StringType, true),
           StructField("engine", StringType, true),
-          StructField("dt", StringType, true),
+          StructField("dt", DateType, true),
           StructField("filedt", StringType, true)
         )))
       }
@@ -49,7 +49,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
           StructField("stage", StringType, true),
           StructField("collecttype", StringType, true),
           StructField("engine", StringType, true),
-          StructField("dt", StringType, true),
+          StructField("dt", DateType, true),
           StructField("filedt", StringType, true)
         )))
       }
@@ -67,7 +67,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
           StructField("stage", StringType, true),
           StructField("collecttype", StringType, true),
           StructField("engine", StringType, true),
-          StructField("dt", StringType, true),
+          StructField("dt", DateType, true),
           StructField("filedt", StringType, true)
         )))
       }

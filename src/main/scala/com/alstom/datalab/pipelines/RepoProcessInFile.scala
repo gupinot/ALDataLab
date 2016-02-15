@@ -61,6 +61,25 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
     StructField("os_arch", StringType, true),
     StructField("source", StringType, true)))
 
+  def gb2mb = udf(
+    (num: String) => try {
+      Math.round(num.replace(',', '.').toDouble*1000)
+    } catch {
+      case e:Throwable => 0
+    }
+  )
+
+  def transcodeTiers = udf(
+    (tier: String) => tier match {
+      case "Tier 1" => "SAN replicated DR"
+      case "Tier 2" => "SAN"
+      case "Tier 3" => "NAS"
+      case "DAS" => "DAS"
+      case "Local" => "Local"
+      case "Exclude" => "Exclude"
+      case _ => "Unknown"
+    }
+  )
 
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
@@ -95,11 +114,27 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-Server" => res.select(
           $"Host name".as("aip_server_hostname"),
+          $"Physical Server name".as("aip_server_phys_host"),
+          $"Size".as("aip_server_size"),
           $"Function".as("aip_server_function"),
           $"Type".as("aip_server_type"),
           $"Sub-Function".as("aip_server_subfunction"),
           $"IP address".as("aip_server_ip"),
+          $"For Hosting Virtual Servers Only".as("aip_server_vmw_host"),
           $"Status".as("aip_server_status"),
+          $"Site code".as("aip_server_site"),
+          $"Site Name".as("aip_server_site_name"),
+          $"Leased or owned".as("aip_server_ownership"),
+          $"CPU Name".as("aip_server_cpu_type"),
+          $"CPUs number".as("aip_server_cpu_num"),
+          $"Core number".as("aip_server_cpu_cores"),
+          $"Owner".as("aip_server_owner"),
+          $"Owner Org UID".as("aip_server_owner_org_id"),
+          $"Vendor".as("aip_server_vendor"),
+          $"Model".as("aip_server_model"),
+          $"Installation date".as("aip_server_dt_install"),
+          $"Operational role".as("aip_server_role"),
+          $"Source".as("aip_server_source"),
           $"Administrated by".as("aip_server_adminby"),
           $"OS Name".as("aip_server_os_name"),
           lit(filedate).as("filedate")
@@ -130,6 +165,20 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Sector",
           lit(filedate).as("filedate")
         )
+        case "Storage-Master-Report" => res
+          .withColumn("server", lower($"sServerName"))
+          .withColumn("mount", lower($"sPartition"))
+          .withColumn("type", transcodeTiers($"StorageTier"))
+          .filter($"BillableForStorage" === "Yes")
+          .withColumn("charged_total_mb", gb2mb($"TotalMeassureGb"))
+          .withColumn("charged_used_mb", gb2mb($"UsedMeassureGb"))
+          .select(
+            $"server".as("server"),
+            $"mount".as("mount"),
+            $"type".as("type"),
+            $"charged_used_mb".as("charged_used_mb"),
+            $"charged_total_mb".as("charged_total_mb"),
+            lit(filedate).as("filedate"))
         case _ => println(s"RepoProcessInFile() : filetype ($filetype) not match")
           sys.exit(1)
       }

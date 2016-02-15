@@ -65,7 +65,7 @@ trait Meta {
     val metaDf1 = aggregateMeta(loadMeta(path), stage1).as("metaDf1")
     val metaDf2 = aggregateMeta(loadMeta(path), stage2).as("metaDf2")
 
-    //keep only connection delta (meta23 not in meta34)
+    //keep only connection delta (meta45 not in meta34)
     metaDf1.join(metaDf2,
       ($"metaDf1.dt" === $"metaDf2.dt") and ($"metaDf1.engine" === $"metaDf2.engine")
         and ($"metaDf1.collecttype" === $"metaDf2.collecttype") and ($"metaDf1.filetype" === $"metaDf2.filetype")

@@ -9,7 +9,7 @@ import org.apache.spark.sql.functions._
 /**
   * Created by guillaumepinot on 25/01/2016.
   */
-  class ServerUsage(implicit sqlContext: SQLContext) extends Pipeline with Meta {
+  class EncodeServerUsage(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     import sqlContext.implicits._
     val metrics=Map(
@@ -49,4 +49,62 @@ import org.apache.spark.sql.functions._
                   group by date, server, tags""").write.mode(SaveMode.Append).parquet(s"${context.dirout()}/sysstat")
         })
       }
+
+    def aggregate() = {
+      val dfStorage = context.repo().readMasterStorage()
+
+      val dfAIP = context.repo().readAIP()
+
+      def deviceFormat = udf(
+        (device: String, mount: String) => if(device == null || device == "") mount else device
+      )
+
+      def transcodetype = udf(
+        (input: String) => input match {
+          case null => "notFound"
+          case _ => input
+        }
+      )
+
+      val iostatorig = sqlContext.read.parquet(s"${context.dirin()}/iostat")
+        .withColumn("server", lower($"server"))
+        .withColumn("device", lower(deviceFormat($"device", $"mount")))
+        .filter("total_mb is not null")
+
+      val iostat = iostatorig
+        .join(dfStorage, iostatorig("server") === dfStorage("server") && iostatorig("device") === dfStorage("mount"), "left_outer")
+        .select((iostatorig.columns.map(iostatorig.col)
+          ++ List(dfStorage("type"), dfStorage("charged_used_mb"), dfStorage("charged_total_mb"))):_*)
+        .withColumn("type", transcodetype(dfStorage("type")))
+        .join(dfAIP, iostatorig("server") === dfAIP("aip_server_hostname"), "left_outer")
+        .withColumn("percent_avail", round($"avail_mb"/$"total_mb", 2))
+      //iostat.write.mode(SaveMode.Overwrite).parquet(s"${context.dirout()}/iostat")
+
+      iostat
+        .groupBy("server", "device")
+        .agg(
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          max($"total_mb").as("max_total_mb"),
+          min($"avail_mb").as("q0_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.10)), 2).as("q10_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.25)), 2).as("q25_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.50)), 2).as("q50_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.75)), 2).as("q75_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.90)), 2).as("q90_avail_mb"),
+          max($"avail_mb").as("q100_avail_mb"),
+          min($"percent_avail").as("q0_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.10)), 2).as("q10_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.25)), 2).as("q25_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.50)), 2).as("q50_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.75)), 2).as("q75_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.90)), 2).as("q90_percent_avail"),
+          max($"percent_avail").as("q100_percent_avail"),
+          first($"charged_used_mb").as("charged_used_mb"),
+          first($"charged_total_mb").as("charged_total_mb")
+          )
+        .write.mode(SaveMode.Overwrite).parquet(s"${context.diragg()}/iostat")
     }
+  }

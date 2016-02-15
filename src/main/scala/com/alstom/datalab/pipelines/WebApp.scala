@@ -23,68 +23,75 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   def splitudf(splitcar: String) = udf(
     (chaine: String) => chaine.split(splitcar)
   )
+
   def aggregatedf(df: DataFrame, collecttype: String = "device", date_range: String, level: String, resolution: String) = {
     val myConcat = new ConcatUniqueString(",")
     val res = {
       if (collecttype == "device") {
-        if (level == "detail") {
-          if (resolution == "IDM") {
-            df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+        {
+          if (level == "detail") {
+            if (resolution == "IDM") {
+              df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+                "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
+                "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
+                "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
+                "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
+                "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
+            } else {
+              df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+                "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
+                "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
+                "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
+                "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
+                "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
+            }
+          } else {
+            if (resolution == "IDM") {
+              df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+                "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
+                "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
+                "con_status", "dest_site",
+                "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
+                "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
+            } else {
+              df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+                "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
+                "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
+                "con_status", "dest_site",
+                "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
+                "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
+            }
+          }
+        }.agg(sum($"con_number").as("con_number"),
+          sum($"con_traffic_in" + $"con_traffic_out").as("con_traffic"),
+          sum(($"con_traffic_in" + $"con_traffic_out")*($"con_number")).cast("bigint").as("con_times_traffic"),
+          myConcat($"I_ID_U").as("I_ID_U"))
+          .withColumn("distinct_I_ID_U", countSeparator(",")($"I_ID_U"))
+      }else {
+        {
+          if (level == "detail") {
+            df.groupBy("source_sector", "source_ip",
+              "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
               "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
               "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
               "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
               "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
               "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
-          }else {
-            df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+          } else {
+            df.groupBy("source_sector", "source_ip",
+              "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
               "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
               "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-              "dest_ip", "dest_port", "con_protocol", "dest_site","con_status",
+              "con_status", "dest_site",
               "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
               "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
           }
-        }else {
-          if (resolution == "IDM") {
-            df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
-              "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
-              "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-              "con_status",
-              "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
-              "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
-          }else {
-            df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
-              "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
-              "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-              "con_status",
-              "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
-              "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")}
         }
-      }else {
-        if (level == "detail") {
-          df.groupBy("source_sector", "source_ip",
-            "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
-            "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
-            "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-            "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
-            "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
-            "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
-        }else {
-          df.groupBy("source_sector", "source_ip",
-            "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
-            "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
-            "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-            "con_status",
-            "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
-            "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
-        }
-      }
-    }.agg(sum($"con_number").as("con_number"),
-      sum($"con_traffic_in" + $"con_traffic_out").as("con_traffic"),
-      (sum($"con_traffic_in" + $"con_traffic_out")*sum($"con_number")).as("con_times_traffic"),
-      myConcat($"I_ID_U").as("I_ID_U"))
-      .withColumn("distinct_I_ID_U", countSeparator(",")($"I_ID_U"))
+      }.agg(sum($"con_number").as("con_number"),
+        sum($"con_traffic_in" + $"con_traffic_out").as("con_traffic"),
+        sum(($"con_traffic_in" + $"con_traffic_out")*($"con_number")).cast("bigint").as("con_times_traffic"))
+    }
     res
-
   }
 
   def generate(df: DataFrame, collecttype: String = "device", date_range: String, level: String, resolution: String) = {
@@ -94,12 +101,12 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       case "server" => if (level == "detail") "AppliDetailServer2Server" else "AppliServer2Server"
     }
     val filename2 = date_range match {
-      case "full" => ""
+      case "Full" => ""
       case _ => date_range
     }
     val fileout = s"Stat${filename1}${filename2}.csv.gz"
 
-    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), s"${context.dirout()}/fileout")
+    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), dstfile =  s"${fileout}", s3root = s"${context.dirout()}", skipVerify = true)
   }
 
   def execute(): Unit = {
@@ -143,7 +150,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
           case "Full" => datelist.agg(min($"dt").as("dt")).collect().map(_.getDate(0).toString())
         }
         val filedaterangeprefix = if (collecttype == "server") "DateRangeServer" else "DateRange"
-        val filedaterange = if (date_range == "Full") s"${filedaterangeprefix}" else s"${filedaterangeprefix}${date_range}.csv.gz"
+        val filedaterange = if (date_range == "Full") s"${filedaterangeprefix}.csv.gz" else s"${filedaterangeprefix}${date_range}.csv.gz"
 
         val daterangeSchema =  StructType(Seq(
           StructField("firstDate", StringType, true),
@@ -153,10 +160,16 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         val tmp = sqlContext.sparkContext.parallelize(rows)
         val daterange = sqlContext.createDataFrame(tmp, daterangeSchema)
 
-        myIO.writeCsvToS3(daterange, s"${context.dirout()}/${filedaterange}")
+        myIO.writeCsvToS3(daterange, dstfile = s"${filedaterange}", s3root = s"${context.dirout()}", skipVerify = true)
 
         val aggregated = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/${collecttype}")
-        val aggregated_dtok =  aggregated.join(datelist.filter($"dt" >= daymin), aggregated("dt") === datelist("dt"), "inner")
+        val aggregated_dtok =  aggregated
+          .join(datelist.filter($"dt" >= daymin(0)), aggregated("dt") === datelist("dt"), "inner")
+          .select(aggregated.columns.map(aggregated.col):_*)
+          .withColumn("con_number", $"con_number".cast("bigint"))
+          .withColumn("con_traffic_in", $"con_traffic_in".cast("bigint"))
+          .withColumn("con_traffic_out", $"con_traffic_out".cast("bigint"))
+          .na.fill("NA").na.fill(0)
         aggregated_dtok.cache()
 
         for (resolution <- List("IDM", "Device"); level <- List("detail", "nodetail")) {
@@ -167,13 +180,14 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
           myIO.writeCsvToS3(aggregated_dtok
             .select($"source_site" as "SiteCode").distinct()
             .unionAll(aggregated_dtok.select($"dest_site" as "SiteCode").distinct())
-            .distinct().withColumn("CountryCode", lit("")).withColumn("SiteName", lit("")),
-            s"${context.dirout()}/SiteCode.csv.gz")
+            .distinct().filter("SiteCode is not null")
+            .withColumn("CountryCode", lit("")).withColumn("SiteName", lit("")),
+          dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
         }
       }
     }
 
-    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").distinct(), s"${context.dirout()}/SectorCode.csv.gz")
+    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
 
     //TODO : SiteCode.csv.gz
 

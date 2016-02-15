@@ -26,14 +26,14 @@ class IO {
     fs.delete(new Path(file), true)
   }
 
-  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";", s3root: String = "s3n://gecustomers/document") = {
+  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";", s3root: String = "s3n://gecustomers/document", skipVerify: Boolean = false) = {
     val jobid:Long = System.currentTimeMillis
     val filedeviceouthdfs = s"hdfs:///tmp/writecsv${jobid}"
     if (dstfile == "") throw new IllegalArgumentException("dstfile cannot be empty !");
-    if ( ! s3root.matches("^s3n:\\/\\/[^\\/]+\\/document")) throw new IllegalArgumentException(s"s3root argument value (${s3root}) not authorized !");
+    if ( ! skipVerify && ! s3root.matches("^s3n:\\/\\/[^\\/]+\\/document")) throw new IllegalArgumentException(s"s3root argument value (${s3root}) not authorized !");
     deletefile(filedeviceouthdfs)
     deletefile(s"${s3root}/${dstfile}")
-    var cmd = dfin.write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", delimiter)
+    var cmd = dfin.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", delimiter)
 
     if (gz) {
       cmd = cmd.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
