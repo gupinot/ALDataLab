@@ -20,8 +20,15 @@ export PATH=$PATH:/usr/sbin
 
 
 function monitor() {
-	sudo lsof -nPi4 | sed 1d | awk -vdat=$datM -vserver=$HOSTNAME '{print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10}' | gzip -c >> $LSOF_MONITOR
-	 ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | sed 1d | gzip -c >> $PS_MONITOR 
+	sudo lsof -nPi4 | sed 1d | \
+	awk -vdat=$datM -vserver=$HOSTNAME \
+	'$8 ~ /UDP|TCP/ {print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
+	 $7 ~ /UDP|TCP/ {print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
+
+	ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed 1d | \
+	sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | \
+	awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
+	sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR
 }
 
 function server_info() {
