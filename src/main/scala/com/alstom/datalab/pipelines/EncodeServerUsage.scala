@@ -26,6 +26,10 @@ import org.apache.spark.sql.functions._
 
     def execute(): Unit = {
 
+      if (this.inputFiles.length == 1 && this.inputFiles.contains("nothing") ) {
+        aggregate(context.dirout(), context.diragg())
+      } else {
+
         this.inputFiles.foreach(filein => {
 
           val usagedata = sqlContext.read.json(filein).filter("table != 'app'")
@@ -48,9 +52,13 @@ import org.apache.spark.sql.functions._
                   select cast(date/1000 as timestamp) as date,server,tags,sum(cpu_percent) as cpu_percent, sum(memvirtualusage_percent) as memvirtualusage_percent, sum(swapusage_percent) as swapusage_percent, sum(memphysusage_percent) as memphysusage_percent from sysstat_pivot
                   group by date, server, tags""").write.mode(SaveMode.Append).parquet(s"${context.dirout()}/sysstat")
         })
+        try {
+          aggregate(context.dirout(), context.diragg())
+        }
       }
+    }
 
-    def aggregate() = {
+    def aggregate(dirin: String, dirout: String) = {
       val dfStorage = context.repo().readMasterStorage()
 
       val dfAIP = context.repo().readAIP()
@@ -66,7 +74,7 @@ import org.apache.spark.sql.functions._
         }
       )
 
-      val iostatorig = sqlContext.read.parquet(s"${context.dirin()}/iostat")
+      val iostatorig = sqlContext.read.parquet(s"${dirin}/iostat")
         .withColumn("server", lower($"server"))
         .withColumn("device", lower(deviceFormat($"device", $"mount")))
         .filter("total_mb is not null")
@@ -78,7 +86,6 @@ import org.apache.spark.sql.functions._
         .withColumn("type", transcodetype(dfStorage("type")))
         .join(dfAIP, iostatorig("server") === dfAIP("aip_server_hostname"), "left_outer")
         .withColumn("percent_avail", round($"avail_mb"/$"total_mb", 2))
-      //iostat.write.mode(SaveMode.Overwrite).parquet(s"${context.dirout()}/iostat")
 
       iostat
         .groupBy("server", "device")
@@ -105,6 +112,6 @@ import org.apache.spark.sql.functions._
           first($"charged_used_mb").as("charged_used_mb"),
           first($"charged_total_mb").as("charged_total_mb")
           )
-        .write.mode(SaveMode.Overwrite).parquet(s"${context.diragg()}/iostat")
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat")
     }
   }

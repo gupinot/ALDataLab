@@ -175,22 +175,31 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         for (resolution <- List("IDM", "Device"); level <- List("detail", "nodetail")) {
           generate(aggregated_dtok, collecttype, date_range, level, resolution)
         }
-        if (collecttype == "device" && date_range == "Full") {
-          //eval site code list
-          myIO.writeCsvToS3(aggregated_dtok
-            .select($"source_site" as "SiteCode").distinct()
-            .unionAll(aggregated_dtok.select($"dest_site" as "SiteCode").distinct())
-            .distinct().filter("SiteCode is not null")
-            .withColumn("CountryCode", lit("")).withColumn("SiteName", lit("")),
-          dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
-        }
       }
     }
 
+    //Eval and write SectorCode file
     myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
 
-    //TODO : SiteCode.csv.gz
+    //eval and write SiteCode file
+    val SiteCode = context.repo().readMDM()
+      .select(
+        $"mdm_loc_code".as("SiteCode"),
+        $"mdm_loc_name".as("SiteName"),
+        $"mdm_loc_country".as("CountryCode")
+      )
+      .distinct()
+      .unionAll(
+        context.repo().readI_ID()
+        .select(
+          $"SiteCode",
+          $"SiteName",
+          $"CountryCode"
+        ).distinct())
+      .distinct()
 
+    myIO.writeCsvToS3(SiteCode,
+        dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
   }
 }
 

@@ -104,6 +104,8 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .select(
             monotonicallyIncreasingId().as("mdm_id"),
             $"Location Code".as("mdm_loc_code"),
+            $"Location Name".as("mdm_loc_name"),
+            $"Country Code".as("mdm_loc_country"),
             regexp_replace($"IP Address", "[^0-9.]", "").as("mdm_ip_start"),
             regexp_replace($"Mask", "[^0-9]", "").cast("int").as("mdm_ip_range"),
             lit(filedate).as("filedate")
@@ -162,6 +164,8 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
         case "I-ID" => res.select(
           $"I_ID",
           $"SiteCode",
+          $"SiteName",
+          $"CountryCode",
           $"Sector",
           lit(filedate).as("filedate")
         )

@@ -2,19 +2,43 @@ package com.alstom.datalab.pipelines
 
 /**
   * Created by guillaumepinot on 13/02/2016.
-  * Aim : create one file by server in AIP-Server with following informations :
-  *   - by day
+  * Aim : create one file by server and by type of information (flow, cpu usage, storage usage)
+  *   - server list is from AIP-Server. Key : IP
+  *   - aggregated by day and by month
+
   *   - flows relation
-  *     - type of device : device (laptop/desktop, server)
-  *     - relation : source or dest
-  *     - type of connection : tcp/udp, port
-  *     - volume of connection : traffic in/out, count distinct login, count connection
-  *     -
-  *   - CPU usage
+  *     - source :
+  *       - device_type : laptop_desktop, server
+  *       - if server : ip
+  *       - site
+  *       - con_type : tcp, udp
+  *       - port
+  *       - con_traffic
+  *       - con_connection
+  *       - con_distinct_user
+  *     - destination :
+  *       - device_type : laptop_desktop, server
+  *       - if server : ip
+  *       - site
+  *       - con_type : tcp, udp
+  *       - port
+  *       - con_traffic
+  *       - con_connection
+  *       - con_distinct_user
+  *   - CPU usage or memory usage
+  *     - type : cpu, memory
+  *     - percentiles %used : q0, q10, q25, q50, q75, q90, q100
   *   - Storage usage
-*/
+  *     - charged_type : SAN, NAS, ...
+  *     - percentiles %available : q0, q10, q25, q50, q75, q90, q100
+  *     - percentiles available mb : q0, q10, q25, q50, q75, q90, q100
+  *     - max_total_avail
+  *     - charged_used_mb
+  *     - charged_total_mb
+  **/
 
 
 class serverallaxis {
+
 
 }
