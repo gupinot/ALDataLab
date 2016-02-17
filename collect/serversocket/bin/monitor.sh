@@ -20,8 +20,8 @@ export PATH=$PATH:/usr/sbin
 
 
 function monitor() {
-	sudo lsof -nPi4 | sed 1d | awk -vdat=$datM -vserver=$HOSTNAME '{print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10}' | gzip -c >> $LSOF_MONITOR
-	 ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | sed 1d | gzip -c >> $PS_MONITOR 
+	sudo lsof -nPi4 | sed 1d | awk -vdat=$datM -vserver=$HOSTNAME '{print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}' | gzip -c >> $LSOF_MONITOR
+	 ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | sed 1d | sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR 
 }
 
 function server_info() {
@@ -38,7 +38,7 @@ function free_space() {
 }
 
 function collect() {
-	ret=1
+	ret=0
 	for fic in $(ls $DIR_MONITOR | grep -v $(basename $LSOF_MONITOR) | grep -v $(basename $PS_MONITOR))
 	do
 		mv $DIR_MONITOR/$fic $DIR_COLLECT/. && ret=0
