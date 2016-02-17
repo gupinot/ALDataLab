@@ -9,8 +9,7 @@ fi
 while read line
 do
 	file=$(basename $line)
-	#CMV="aws s3 mv $line $dirout/$file"
-	CMV="hdfs dfs -mv $line $dirout/$file"
+	CMV="hdfs dfs -mv $line $dirout/."
 	if [[ "$DRYRUN" == "-n" ]]
 	then
 		echo "$CMV"
@@ -64,6 +63,14 @@ done
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
 
-hdfs dfs -ls ${dirin}/ | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
-sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}"
+ret=1
+hdfs dfs -ls ${dirin}/ | egrep -o "[^ ]+(\.gz|\.json)$" | egrep -o "[^\/]+$" | egrep "$FILEPATTERN" | cut -d_ -f2 | cut -d- -f1 | sort -u | awk '{print "*"$1"*json*"}' > $tempfile
+
+[[ $(wc -l $tempfile | awk '{print $1}') -eq 0 ]] &&\
+echo "nothing" | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR && ret=0
+[[ $(wc -l $tempfile | awk '{print $1}') -gt 0 ]] &&\
+cat $tempfile | awk -v dirin=${dirin} '{print dirin"/"$1}' | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}" && ret=0
+
 rm $tempfile
+echo "$0 : end with ret code : $ret"
+exit $ret

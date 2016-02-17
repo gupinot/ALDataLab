@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-#script to rebuild meta data from pipeline/out/ sub-directories content
 
 SUBMIT=$HOME/pipeline/bin/submit.sh
-CONF=$HOME/pipeline/conf/buildMeta.conf
+CONF=$HOME/pipeline/conf/webapp.conf
 submitArg=""
 DRYRUN=""
 VERBOSE=0
+DATERANGE=0
 
 LOGERR=$(mktemp)
 echo "error log in $LOGERR"
@@ -35,3 +35,5 @@ shift # past argument or value
 done
 
 echo "nothing" | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR
+ret=$?
+echo "$0 : submit return : $ret"

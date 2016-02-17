@@ -15,7 +15,6 @@ import org.apache.spark.sql.DataFrame
 
 class IO {
   private val hadoopConfig = new Configuration()
-  private val s3root = "s3n://gezeppelin/document"
   private def merge(srcPath: String, dstPath: String): Unit =  {
     val hdfs = FileSystem.get(hadoopConfig)
     val dstFs : FileSystem = FileSystem.get(URI.create(dstPath), hadoopConfig)
@@ -27,17 +26,19 @@ class IO {
     fs.delete(new Path(file), true)
   }
 
-  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";") = {
+  def writeCsvToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, delimiter: String = ";", s3root: String = "s3n://gecustomers/document", skipVerify: Boolean = false) = {
     val jobid:Long = System.currentTimeMillis
     val filedeviceouthdfs = s"hdfs:///tmp/writecsv${jobid}"
+    if (dstfile == "") throw new IllegalArgumentException("dstfile cannot be empty !");
+    if ( ! skipVerify && ! s3root.matches("^s3n:\\/\\/[^\\/]+\\/document")) throw new IllegalArgumentException(s"s3root argument value (${s3root}) not authorized !");
     deletefile(filedeviceouthdfs)
     deletefile(s"${s3root}/${dstfile}")
-    if (gz) {
-      dfin.write.format("com.databricks.spark.csv").option("header", "true").option("codec", "org.apache.hadoop.io.compress.GzipCodec").option("delimiter", ";").save(filedeviceouthdfs)
-    } else {
-      dfin.write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", s"${delimiter}").save(filedeviceouthdfs)
-    }
+    var cmd = dfin.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").option("delimiter", delimiter)
 
+    if (gz) {
+      cmd = cmd.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
+    }
+    cmd.save(filedeviceouthdfs)
     merge(filedeviceouthdfs, s"${s3root}/${dstfile}")
     deletefile(filedeviceouthdfs)
   }

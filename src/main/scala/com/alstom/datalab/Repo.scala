@@ -16,6 +16,7 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
 
   val repoDir = context.repodir()
   val MDMRepository = context.repodir() + "/MDM-ITC"
+  val StorageMasterRepository = context.repodir() + "/Storage-Master-Report"
   val I_IDRepository = context.repodir() + "/I-ID"
   val AIPServer = context.repodir() + "/AIP-Server"
   val AIPSoftInstance = context.repodir() + "/AIP-SoftInstance"
@@ -37,7 +38,10 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
         aip_server("aip_server_hostname") === aip_soft_instance("aip_appinstance_hostname"), "left_outer")
       .join(aip_application,
         aip_soft_instance("aip_appinstance_shared_unique_id") === aip_application("aip_app_shared_unique_id"), "left_outer")
-      .groupBy("aip_server_ip", "aip_server_adminby", "aip_server_function", "aip_server_subfunction")
+      .groupBy("aip_server_ip", "aip_server_hostname", "aip_server_adminby", "aip_server_function", "aip_server_subfunction",
+        "aip_server_phys_host", "aip_server_size", "aip_server_type", "aip_server_vmw_host", "aip_server_status", "aip_server_site", "aip_server_site_name",
+        "aip_server_ownership", "aip_server_cpu_type", "aip_server_cpu_num", "aip_server_cpu_cores", "aip_server_owner", "aip_server_owner_org_id", "aip_server_vendor",
+        "aip_server_model", "aip_server_dt_install", "aip_server_role", "aip_server_source", "aip_server_os_name")
       .agg(myConcat($"aip_appinstance_name").as("aip_app_name"),
         myConcat($"aip_appinstance_type").as("aip_appinstance_type"),
         myConcat($"aip_app_type").as("aip_app_type"),
@@ -64,6 +68,8 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
   def readMDM(currentDate:Date=null): DataFrame = readRepo(MDMRepository,currentDate)
 
   def readI_ID(currentDate:Date=null): DataFrame = readRepo(I_IDRepository,currentDate)
+
+  def readMasterStorage(currentDate:Date=null): DataFrame = readRepo(StorageMasterRepository,currentDate)
 
   def readRepo(reponame: String, currentDate:Date): DataFrame = {
 

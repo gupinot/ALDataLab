@@ -131,5 +131,66 @@ object Util {
     }
   }
 
+  //UDAF to concatenate multiple row (unique) in agg()
+  class ConcatUniqueString(separator: String) extends UserDefinedAggregateFunction {
+
+    def inputSchema: StructType =
+      new StructType().add("site", StringType)
+    def bufferSchema: StructType =
+      new StructType().add("bigsite", StringType)
+    // returns just a double: the sum
+    def dataType: DataType = StringType
+    // always gets the same result
+    def deterministic: Boolean = true
+
+    // each partial sum is initialized to zero
+    def initialize(buffer: MutableAggregationBuffer): Unit = {
+      buffer.update(0, "")
+    }
+
+    // an individual sales value is incorporated by adding it if it exceeds 500.0
+    def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
+      val concat = buffer.getString(0)
+      if (!input.isNullAt(0)) {
+        val site = input.getString(0)
+        if (concat !="" || site!="") {
+          if (concat == "") {
+            buffer.update(0, site)
+          }else if (site == "") {
+            buffer.update(0, concat)
+          }else {
+            val res = concat+separator+site
+            buffer.update(0, res.split(separator).distinct.mkString(separator))
+          }
+        }
+      }
+    }
+
+    // buffers are merged by adding the single values in them
+    def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {
+      val concat = buffer1.getString(0)
+      val site = buffer2.getString(0)
+      if (concat !="" || site!="") {
+        if (concat == "") {
+          buffer1.update(0, site)
+        }else if (site == "") {
+          buffer1.update(0, concat)
+        }else {
+          val res = concat+separator+site
+          buffer1.update(0, res.split(separator).distinct.mkString(separator))
+        }
+      }
+    }
+
+    // the aggregation buffer just has one value: so return it
+    def evaluate(buffer: Row): Any = {
+      buffer.getString(0)
+    }
+  }
+
   def retValue(value: String) = udf((colval: String) => value)
+
+  def countSeparator(splitcar: String) = udf(
+    (chaine: String) => chaine.split(splitcar).length
+  )
 }
