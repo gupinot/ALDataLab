@@ -182,21 +182,22 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
 
     //eval and write SiteCode file
-    val SiteCode = context.repo().readMDM()
+    val SiteCode = context.repo().readI_ID()
       .select(
-        $"mdm_loc_code".as("SiteCode"),
-        $"mdm_loc_name".as("SiteName"),
-        $"mdm_loc_country".as("CountryCode")
-      )
-      .distinct()
+        $"SiteCode",
+        $"SiteName",
+        $"CountryCode"
+      ).distinct()
       .unionAll(
-        context.repo().readI_ID()
-        .select(
-          $"SiteCode",
-          $"SiteName",
-          $"CountryCode"
-        ).distinct())
-      .distinct()
+        context.repo().readMDM()
+          .select(
+            $"mdm_loc_code".as("SiteCode"),
+            $"mdm_loc_name".as("SiteName"),
+            $"mdm_loc_country".as("CountryCode")
+          )
+          .distinct())
+      .groupBy("SiteCode")
+      .agg(first($"SiteName"), first($"CountryCode"))
 
     myIO.writeCsvToS3(SiteCode,
         dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
