@@ -9,6 +9,7 @@ else
 fi
 datH=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H")
 datM=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H%M")
+datMM=$(date --utc --date "now $TIMEDELTA" +"%Y-%m-%dT%H:%M")
 DIR_MONITOR=~/monitor && [[ -d $DIR_MONITOR ]] || mkdir -p $DIR_MONITOR
 DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
 MAX_SPACE_USED=1000000
@@ -21,13 +22,13 @@ export PATH=$PATH:/usr/sbin
 
 function monitor() {
 	sudo lsof -nPi4 | sed 1d | \
-	awk -vdat=$datM -vserver=$HOSTNAME \
-	'$8 ~ /UDP|TCP/ {print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
-	 $7 ~ /UDP|TCP/ {print server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
+	awk -vdat=$datMM -vserver=$HOSTNAME \
+	'$8 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
+	 $7 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
 
 	ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed 1d | \
 	sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | \
-	awk -vdat=$datM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
+	awk -vdat=$datMM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
 	sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR
 }
 
