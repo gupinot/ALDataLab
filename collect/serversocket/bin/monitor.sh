@@ -46,7 +46,7 @@ function free_space() {
 }
 
 function collect() {
-	ret=1
+	ret=0
 	for fic in $(ls $DIR_MONITOR | grep -v $(basename $LSOF_MONITOR) | grep -v $(basename $PS_MONITOR))
 	do
 		mv $DIR_MONITOR/$fic $DIR_COLLECT/. && ret=0

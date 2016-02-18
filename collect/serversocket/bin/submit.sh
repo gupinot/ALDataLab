@@ -10,8 +10,8 @@ function synchro() {
 	TIMEDELTA=""
 	deltatime_M=$((($(date --utc --date 'now' +'%s') - $(ssh datalab@$SERVER "date --utc --date 'now' +'%s'"))/60))
 	[[ $deltatime_M -eq 0 ]] && TIMEDELTA=""
-	[[ $deltatime_M -gt 0 ]] && TIMEDELTA="+ $deltatime_M minutes"
-	[[ $deltatime_M -lt 0 ]] && TIMEDELTA="- $(echo $deltatime_M | tr -d -) minutes"
+	[[ $deltatime_M -gt 0 ]] && TIMEDELTA="+$deltatime_M minutes"
+	[[ $deltatime_M -lt 0 ]] && TIMEDELTA="-$(echo $deltatime_M | tr -d -) minutes"
 	ssh datalab@$SERVER "echo TIMEDELTA=\\\"$TIMEDELTA\\\" > timedelta.sh" &&\
 	RET_SYNCHRO=0
 	return $RET_SYNCHRO
@@ -42,12 +42,16 @@ function undeploy() {
 
 function collect() {
 	SERVER=$1
+	HOST=$(grep -i ";$SERVER;" $SERVERLIST | awk -F';' '{print $1}')
+	DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 	RET_COLLECT=1
 	#collect data of server
 	ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "~/$(basename $SCRIPT_SERVER) collect" &&\
 	 scp datalab@$SERVER:~/collect/*.gz $DIR_COLLECT/. &&\
 	 ssh  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "rm -f ~/collect/*.gz" &&\
 	 RET_COLLECT=0
+	echo "$HOST;$SERVER;$RET_COLLECT;$DATECUR" >> $SERVERCOLLECT
+	echo "$HOST;$SERVER;$RET_COLLECT;$DATECUR" 
 	return $RET_COLLECT
 }
 
@@ -151,6 +155,7 @@ case $method in
     ;;
   collect)
     collect $server
+    synchro $server
     ;;
   synchro)
     synchro $server
