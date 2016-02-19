@@ -3,11 +3,11 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-CSC_IN=$ROOTDIR/conf/datalab_csc.csv
+CSC_IN=$ROOTDIR/conf/datalab_csc_done.csv
 DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 
 cp -f $SERVERSTATUS $SERVERSTATUS.$DATECUR
-for host in $(cat $CSC_IN | awk -F';' '{if ($3 == "yes") print $2}')
+for host in $(cat $CSC_IN | awk -F';' '{if ($3 = "done") print $1}')
 do 
 	status=0
 	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
