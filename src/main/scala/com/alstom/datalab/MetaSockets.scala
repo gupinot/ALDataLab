@@ -44,6 +44,5 @@ trait MetaSockets {
       "left_outer")
       .filter("metaDf2.dt is null")
       .select(metaDf1.columns.map(metaDf1.col):_*)
-
   }
 }

@@ -67,6 +67,7 @@ class EncodeServerSockets (implicit sqlContext: SQLContext) extends Pipeline wit
               .schema(lsofSchema)
               .load(record.filename)
               .withColumn("dt", regexp_replace($"dt", "(....)(..)(..)-(..)(..)", "$1-$2-$3T$4:$5"))
+              .withColumn("server_ip", regexp_replace($"server_ip", "(.*)\"", "$1"))  //verruca for malformed input
           case "ps" =>
             sqlContext.read.format("com.databricks.spark.csv")
               .option("header", "false")

@@ -18,9 +18,11 @@ class PipelineRegistry(implicit val sqlContext: SQLContext) {
   register("WebApp",classOf[WebApp].asInstanceOf[Class[Pipeline]])
   register("ServerUsage",classOf[EncodeServerUsage].asInstanceOf[Class[Pipeline]])
   register("EncodeServerSockets",classOf[EncodeServerSockets].asInstanceOf[Class[Pipeline]])
+  register("ResolveServerSockets",classOf[ResolveServerSockets].asInstanceOf[Class[Pipeline]])
   register("RepoProcessInFile",classOf[RepoProcessInFile].asInstanceOf[Class[Pipeline]])
   register("GenAIP",classOf[GenAIP].asInstanceOf[Class[Pipeline]])
   register("BuildMeta",classOf[BuildMeta].asInstanceOf[Class[Pipeline]])
+  register("BuildMetaSockets",classOf[BuildMetaSockets].asInstanceOf[Class[Pipeline]])
   register("BuildIP",classOf[BuildIP].asInstanceOf[Class[Pipeline]])
 
   def register(name: String, pipeline: Class[Pipeline]) = registered.put(name,pipeline)

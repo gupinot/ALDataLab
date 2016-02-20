@@ -29,9 +29,25 @@ class BuildMetaSockets(sqlContext: SQLContext) extends Pipeline {
       }
     }).reduce(_.unionAll(_))
 
+    val meta2 = {
+      try {
+        sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
+          .select(lit("lsof") as "filetype", lit(ResolveServerSockets.STAGE_NAME) as "stage", $"server_ip", to_date($"dt") as "dt")
+          .distinct()
+      }
+      catch {
+        case _: Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row], StructType(List(
+          StructField("filetype", StringType, true),
+          StructField("stage", StringType, true),
+          StructField("server_ip", StringType, true),
+          StructField("dt", DateType, true)
+        )))
+      }
+    }.unionAll(meta)
+
 
     // now merge all found dataframes and save it
-    meta.repartition(1)
+    meta2.repartition(1)
       .write.mode(SaveMode.Overwrite)
       .parquet(context.meta())
   }

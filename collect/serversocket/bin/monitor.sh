@@ -9,7 +9,7 @@ else
 fi
 datH=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H")
 datM=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H%M")
-datMM=$(date --utc --date "now $TIMEDELTA" +"%Y-%m-%dT%H:%M")
+datMM=$(date --utc --date "now $TIMEDELTA" +"%Y-%m-%dT%H:%M:00")
 DIR_MONITOR=~/monitor && [[ -d $DIR_MONITOR ]] || mkdir -p $DIR_MONITOR
 DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
 MAX_SPACE_USED=1000000
