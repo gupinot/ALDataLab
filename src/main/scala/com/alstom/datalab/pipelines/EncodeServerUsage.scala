@@ -61,7 +61,7 @@ import org.apache.spark.sql.functions._
     def aggregate(dirin: String, dirout: String) = {
       val dfStorage = context.repo().readMasterStorage()
 
-      val dfAIP = context.repo().readAIP()
+      val dfAIP = context.repo().readAIP().withColumnRenamed("aip_server_ip", "server_ip")
 
       def deviceFormat = udf(
         (device: String, mount: String) => if(device == null || device == "") mount else device
@@ -78,6 +78,8 @@ import org.apache.spark.sql.functions._
         .withColumn("server", lower($"server"))
         .withColumn("device", lower(deviceFormat($"device", $"mount")))
         .filter("total_mb is not null")
+        .withColumn("dt", to_date($"date"))
+        .withColumn("month", date_format(to_date($"NX_con_end_time"),"yyyy-MM"))
 
       val iostat = iostatorig
         .join(dfStorage, iostatorig("server") === dfStorage("server") && iostatorig("device") === dfStorage("mount"), "left_outer")
@@ -88,8 +90,9 @@ import org.apache.spark.sql.functions._
         .withColumn("percent_avail", round($"avail_mb"/$"total_mb", 2))
 
       iostat
-        .groupBy("server", "device")
+        .groupBy("server", "server_ip", "device", "dt", "month")
         .agg(
+          countDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -112,6 +115,130 @@ import org.apache.spark.sql.functions._
           first($"charged_used_mb").as("charged_used_mb"),
           first($"charged_total_mb").as("charged_total_mb")
           )
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_day")
+
+      iostat
+        .groupBy("server", "server_ip", "device", "month")
+        .agg(
+          countDistinct($"date").as("count_date"),
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          max($"total_mb").as("max_total_mb"),
+          min($"avail_mb").as("q0_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.10)), 2).as("q10_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.25)), 2).as("q25_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.50)), 2).as("q50_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.75)), 2).as("q75_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.90)), 2).as("q90_avail_mb"),
+          max($"avail_mb").as("q100_avail_mb"),
+          min($"percent_avail").as("q0_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.10)), 2).as("q10_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.25)), 2).as("q25_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.50)), 2).as("q50_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.75)), 2).as("q75_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.90)), 2).as("q90_percent_avail"),
+          max($"percent_avail").as("q100_percent_avail"),
+          first($"charged_used_mb").as("charged_used_mb"),
+          first($"charged_total_mb").as("charged_total_mb")
+        )
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_month")
+
+      iostat
+        .groupBy("server", "server_ip", "device")
+        .agg(
+          countDistinct($"date").as("count_date"),
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          max($"total_mb").as("max_total_mb"),
+          min($"avail_mb").as("q0_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.10)), 2).as("q10_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.25)), 2).as("q25_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.50)), 2).as("q50_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.75)), 2).as("q75_avail_mb"),
+          round(callUDF("percentile_approx", col("avail_mb"), lit(0.90)), 2).as("q90_avail_mb"),
+          max($"avail_mb").as("q100_avail_mb"),
+          min($"percent_avail").as("q0_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.10)), 2).as("q10_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.25)), 2).as("q25_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.50)), 2).as("q50_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.75)), 2).as("q75_percent_avail"),
+          round(callUDF("percentile_approx", col("percent_avail"), lit(0.90)), 2).as("q90_percent_avail"),
+          max($"percent_avail").as("q100_percent_avail"),
+          first($"charged_used_mb").as("charged_used_mb"),
+          first($"charged_total_mb").as("charged_total_mb")
+        )
         .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat")
+
+
+      // TODO : sysstat
+      val sysstatorig = sqlContext.read.parquet(s"${dirin}/sysstat")
+              .withColumn("dt", to_date($"date"))
+              .withColumn("month", date_format(to_date($"NX_con_end_time"),"yyyy-MM"))
+
+      val sysstat = sysstatorig
+        .join(dfAIP, sysstatorig("server") === dfAIP("aip_server_hostname"), "left_outer")
+
+
+      sysstat
+        .filter("cpu_percent is not null")
+        .groupBy("server", "server_ip", "dt", "month")
+        .agg(
+          countDistinct($"date").as("count_date"),
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          round(avg($"cpu_percent"),2).as("avg_cpu_percent"),
+          round(min($"cpu_percent"), 2).as("q0_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.10)), 2).as("q10_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.25)), 2).as("q25_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.50)), 2).as("q50_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.75)), 2).as("q75_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
+          round(max($"cpu_percent"),2).as("q100_cpu_percent")
+        )
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_day")
+      sysstat
+        .filter("cpu_percent is not null")
+        .groupBy("server", "server_ip", "month")
+        .agg(
+          countDistinct($"date").as("count_date"),
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          round(avg($"cpu_percent"),2).as("avg_cpu_percent"),
+          round(min($"cpu_percent"), 2).as("q0_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.10)), 2).as("q10_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.25)), 2).as("q25_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.50)), 2).as("q50_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.75)), 2).as("q75_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
+          round(max($"cpu_percent"),2).as("q100_cpu_percent")
+        )
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_month")
+      sysstat
+        .filter("cpu_percent is not null")
+        .groupBy("server", "server_ip")
+        .agg(
+          countDistinct($"date").as("count_date"),
+          first($"type").as("type"),
+          first($"aip_server_function").as("aip_server_function"),
+          first($"aip_app_name").as("aip_app_name"),
+          first($"aip_app_sector").as("aip_app_sector"),
+          round(avg($"cpu_percent"),2).as("avg_cpu_percent"),
+          round(min($"cpu_percent"), 2).as("q0_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.10)), 2).as("q10_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.25)), 2).as("q25_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.50)), 2).as("q50_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.75)), 2).as("q75_cpu_percent"),
+          round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
+          round(max($"cpu_percent"),2).as("q100_cpu_percent")
+        )
+        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat")
     }
   }
