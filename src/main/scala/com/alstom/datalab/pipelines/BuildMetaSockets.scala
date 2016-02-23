@@ -6,7 +6,7 @@ import org.apache.spark.sql.types.{DateType, StringType, StructField, StructType
 import org.apache.spark.sql.{Row, SQLContext, SaveMode}
 
 /**
-  * Created by raphael on 02/12/2015.
+  * Created by Guillaume on 02/02/2016.
   */
 class BuildMetaSockets(sqlContext: SQLContext) extends Pipeline {
 
@@ -32,7 +32,7 @@ class BuildMetaSockets(sqlContext: SQLContext) extends Pipeline {
     val meta2 = {
       try {
         sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
-          .select(lit("lsof") as "filetype", lit(ResolveServerSockets.STAGE_NAME) as "stage", $"server_ip", to_date($"dt") as "dt")
+          .select(lit("lsof") as "filetype", lit(ResolveServerSockets.STAGE_NAME) as "stage", $"engine" as "server_ip", to_date($"dt") as "dt")
           .distinct()
       }
       catch {

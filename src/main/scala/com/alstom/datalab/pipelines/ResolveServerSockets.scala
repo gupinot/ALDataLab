@@ -120,7 +120,7 @@ class ResolveServerSockets (implicit sqlContext: SQLContext) extends Pipeline wi
       $"source_app_paths" as "source_app_paths",
       lit("NA") as "source_app_version",
       $"source_ip" as "source_ip",
-      lit("linux") as "engine",
+      $"source_ip" as "engine",
       lit("NA") as "filedt",
       lit("linux") as "collecttype",
       to_date($"dt") as "dt",
