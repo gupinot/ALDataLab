@@ -38,12 +38,14 @@ object Main {
     val conf = new SparkConf()
       .setAppName("DataLab-"+options.method)
       .set("spark.serializer","org.apache.spark.serializer.KryoSerializer")
+      //.set("spark.KryoSerializer.buffer.max", "2048m")
+    //println(s"DLMain() : spark.kryoserializer.buffer.max : ${conf.get("spark.kryoserializer.buffer.max")}")
 
     implicit val sc = new SparkContext(conf)
     implicit val sqlContext = new HiveContext(sc)
 
     // use directcommiter for S3
-    sc.hadoopConfiguration.set("spark.sql.parquet.output.committer.class","org.apache.spark.sql.parquet.DirectParquetOutputCommitter")
+    //sc.hadoopConfiguration.set("spark.sql.parquet.output.committer.class","org.apache.spark.sql.parquet.DirectParquetOutputCommitter")
 
     implicit val repo = new Repo(options.context)
     val registry = new PipelineRegistry()

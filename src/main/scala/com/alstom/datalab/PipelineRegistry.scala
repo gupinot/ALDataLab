@@ -19,6 +19,7 @@ class PipelineRegistry(implicit val sqlContext: SQLContext) {
   register("ServerUsage",classOf[EncodeServerUsage].asInstanceOf[Class[Pipeline]])
   register("EncodeServerSockets",classOf[EncodeServerSockets].asInstanceOf[Class[Pipeline]])
   register("ResolveServerSockets",classOf[ResolveServerSockets].asInstanceOf[Class[Pipeline]])
+  register("Flow",classOf[Flow].asInstanceOf[Class[Pipeline]])
   register("RepoProcessInFile",classOf[RepoProcessInFile].asInstanceOf[Class[Pipeline]])
   register("GenAIP",classOf[GenAIP].asInstanceOf[Class[Pipeline]])
   register("BuildMeta",classOf[BuildMeta].asInstanceOf[Class[Pipeline]])
