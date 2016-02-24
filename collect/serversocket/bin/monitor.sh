@@ -22,13 +22,13 @@ export PATH=$PATH:/usr/sbin
 
 function monitor() {
 	sudo lsof -nPi4 | sed 1d | \
-	awk -vdat=$datMM -vserver=$HOSTNAME \
+	awk -vdat=${datMM} -vserver=$HOSTNAME \
 	'$8 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
 	 $7 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
 
 	ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed 1d | \
 	sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | \
-	awk -vdat=$datMM -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
+	awk -vdat=${datMM} -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
 	sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR
 }
 

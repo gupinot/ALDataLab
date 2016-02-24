@@ -89,4 +89,7 @@ do
   done
 done
 
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : call to send.sh script"
+$ROOTDIR/bin/send.sh
+
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : End"
