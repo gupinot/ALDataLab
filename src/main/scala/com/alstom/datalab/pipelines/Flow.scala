@@ -6,44 +6,6 @@ import org.apache.spark.sql.{SaveMode, SQLContext}
 import org.apache.spark.sql.functions._
 
 
-/**
-  * Created by guillaumepinot on 13/02/2016.
-  * Aim : create one file by server and by type of information (flow, cpu usage, storage usage)
-  *   - server list is from AIP-Server. Key : IP
-  *   - aggregated by day and by month
-
-  *   - flows relation
-  *     - source :
-  *       - device_type : laptop_desktop, server
-  *       - if server : ip
-  *       - site
-  *       - con_type : tcp, udp
-  *       - port
-  *       - con_traffic
-  *       - con_connection
-  *       - con_distinct_user
-  *     - destination :
-  *       - device_type : laptop_desktop, server
-  *       - if server : ip
-  *       - site
-  *       - con_type : tcp, udp
-  *       - port
-  *       - con_traffic
-  *       - con_connection
-  *       - con_distinct_user
-  *   - CPU usage or memory usage
-  *     - type : cpu, memory
-  *     - percentiles %used : q0, q10, q25, q50, q75, q90, q100
-  *   - Storage usage
-  *     - charged_type : SAN, NAS, ...
-  *     - percentiles %available : q0, q10, q25, q50, q75, q90, q100
-  *     - percentiles available mb : q0, q10, q25, q50, q75, q90, q100
-  *     - max_total_avail
-  *     - charged_used_mb
-  *     - charged_total_mb
-  **/
-
-
 class Flow(implicit sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
 
@@ -153,13 +115,6 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
     serverflow_detail.write.mode(SaveMode.Overwrite)
       .partitionBy("month").parquet(s"${context.diragg()}/flow_detail_day")
 
-    /* Aggregate serverflow : by month, server_ip, server_site, server_aip_app_name, server_aip_app_sector
-    *  - as_server :
-    *   - from device, by site and by sector : count_distinct_user, count_distinct_app_exec, traffic, con_number
-    *   - from server, by site and by sector : count_distinct_ip, count_distinct_app_exec, traffic, con_number
-    *  - as client : to server, by site and by sector : count_distinct_ip, count_distinct_app_exec, traffic, con_number
-    *
-     */
 
     serverflow_detail
       .groupBy("month",

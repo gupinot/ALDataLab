@@ -79,7 +79,7 @@ import org.apache.spark.sql.functions._
         .withColumn("device", lower(deviceFormat($"device", $"mount")))
         .filter("total_mb is not null")
         .withColumn("dt", to_date($"date"))
-        .withColumn("month", date_format(to_date($"NX_con_end_time"),"yyyy-MM"))
+        .withColumn("month", date_format(to_date($"date"),"yyyy-MM"))
 
       val iostat = iostatorig
         .join(dfStorage, iostatorig("server") === dfStorage("server") && iostatorig("device") === dfStorage("mount"), "left_outer")
@@ -92,7 +92,7 @@ import org.apache.spark.sql.functions._
       iostat
         .groupBy("server", "server_ip", "device", "dt", "month")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -115,12 +115,12 @@ import org.apache.spark.sql.functions._
           first($"charged_used_mb").as("charged_used_mb"),
           first($"charged_total_mb").as("charged_total_mb")
           )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_day")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_day")
 
       iostat
         .groupBy("server", "server_ip", "device", "month")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -143,12 +143,12 @@ import org.apache.spark.sql.functions._
           first($"charged_used_mb").as("charged_used_mb"),
           first($"charged_total_mb").as("charged_total_mb")
         )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_month")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat_month")
 
       iostat
         .groupBy("server", "server_ip", "device")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -171,13 +171,13 @@ import org.apache.spark.sql.functions._
           first($"charged_used_mb").as("charged_used_mb"),
           first($"charged_total_mb").as("charged_total_mb")
         )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat")
 
 
       // TODO : sysstat
       val sysstatorig = sqlContext.read.parquet(s"${dirin}/sysstat")
               .withColumn("dt", to_date($"date"))
-              .withColumn("month", date_format(to_date($"NX_con_end_time"),"yyyy-MM"))
+              .withColumn("month", date_format(to_date($"date"),"yyyy-MM"))
 
       val sysstat = sysstatorig
         .join(dfAIP, sysstatorig("server") === dfAIP("aip_server_hostname"), "left_outer")
@@ -187,7 +187,7 @@ import org.apache.spark.sql.functions._
         .filter("cpu_percent is not null")
         .groupBy("server", "server_ip", "dt", "month")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -201,12 +201,12 @@ import org.apache.spark.sql.functions._
           round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
           round(max($"cpu_percent"),2).as("q100_cpu_percent")
         )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_day")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_day")
       sysstat
         .filter("cpu_percent is not null")
         .groupBy("server", "server_ip", "month")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -220,12 +220,12 @@ import org.apache.spark.sql.functions._
           round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
           round(max($"cpu_percent"),2).as("q100_cpu_percent")
         )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_month")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat_month")
       sysstat
         .filter("cpu_percent is not null")
         .groupBy("server", "server_ip")
         .agg(
-          countDistinct($"date").as("count_date"),
+          approxCountDistinct($"date").as("count_date"),
           first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
@@ -239,6 +239,6 @@ import org.apache.spark.sql.functions._
           round(callUDF("percentile_approx", col("cpu_percent"), lit(0.90)), 2).as("q90_cpu_percent"),
           round(max($"cpu_percent"),2).as("q100_cpu_percent")
         )
-        .coalesce(1).write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat")
+        .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/sysstat")
     }
   }
