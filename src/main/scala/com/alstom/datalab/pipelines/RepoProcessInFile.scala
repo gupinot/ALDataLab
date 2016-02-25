@@ -4,12 +4,82 @@ import com.alstom.datalab.{Repo, Pipeline}
 import com.alstom.datalab.Util._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
 
 /**
   * Created by raphael on 02/12/2015.
   */
 class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   import sqlContext.implicits._
+
+  val aipserverSchema = StructType(Seq(
+    StructField("host_name", StringType, true),
+    StructField("function", StringType, true),
+    StructField("type", StringType, true),
+    StructField("subfunction", StringType, true),
+    StructField("skyscope", StringType, true),
+    StructField("vmw_host", StringType, true),
+    StructField("windfarm", StringType, true),
+    StructField("ip", StringType, true),
+    StructField("ipvalidation", StringType, true),
+    StructField("size", StringType, true),
+    StructField("SID", StringType, true),
+    StructField("decomdate", StringType, true),
+    StructField("status", StringType, true),
+    StructField("serial", StringType, true),
+    StructField("site_name", StringType, true),
+    StructField("site_code", StringType, true),
+    StructField("cpu_type", StringType, true),
+    StructField("cpu_num", IntegerType, true),
+    StructField("cpu_cores", IntegerType, true),
+    StructField("memory_mb", IntegerType, true),
+    StructField("owner", StringType, true),
+    StructField("owner_org_id", StringType, true),
+    StructField("owner_org_terranga_code", StringType, true),
+    StructField("owner_org_terranga_name", StringType, true),
+    StructField("admin_by", StringType, true),
+    StructField("adminby_org_id", StringType, true),
+    StructField("adminby_org_terranga", StringType, true),
+    StructField("adminby_org_name", StringType, true),
+    StructField("dt_purchase", StringType, true),
+    StructField("dt_install", StringType, true),
+    StructField("vendor", StringType, true),
+    StructField("model", StringType, true),
+    StructField("ola", StringType, true),
+    StructField("csc_costs", StringType, true),
+    StructField("dco_costs", StringType, true),
+    StructField("role", StringType, true),
+    StructField("linked_app", IntegerType, true),
+    StructField("platform", StringType, true),
+    StructField("ownership", StringType, true),
+    StructField("phys_host", StringType, true),
+    StructField("cat_india", StringType, true),
+    StructField("os_name", StringType, true),
+    StructField("os_edition", StringType, true),
+    StructField("os_version", StringType, true),
+    StructField("os_service_pack", StringType, true),
+    StructField("os_arch", StringType, true),
+    StructField("source", StringType, true)))
+
+  def gb2mb = udf(
+    (num: String) => try {
+      Math.round(num.replace(',', '.').toDouble*1000)
+    } catch {
+      case e:Throwable => 0
+    }
+  )
+
+  def transcodeTiers = udf(
+    (tier: String) => tier match {
+      case "Tier 1" => "SAN replicated DR"
+      case "Tier 2" => "SAN"
+      case "Tier 3" => "NAS"
+      case "DAS" => "DAS"
+      case "Local" => "Local"
+      case "Exclude" => "Exclude"
+      case _ => "Unknown"
+    }
+  )
 
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
@@ -34,6 +104,8 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .select(
             monotonicallyIncreasingId().as("mdm_id"),
             $"Location Code".as("mdm_loc_code"),
+            $"Location Name".as("mdm_loc_name"),
+            $"Country Code".as("mdm_loc_country"),
             regexp_replace($"IP Address", "[^0-9.]", "").as("mdm_ip_start"),
             regexp_replace($"Mask", "[^0-9]", "").cast("int").as("mdm_ip_range"),
             lit(filedate).as("filedate")
@@ -44,11 +116,27 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-Server" => res.select(
           $"Host name".as("aip_server_hostname"),
+          $"Physical Server name".as("aip_server_phys_host"),
+          $"Size".as("aip_server_size"),
           $"Function".as("aip_server_function"),
           $"Type".as("aip_server_type"),
           $"Sub-Function".as("aip_server_subfunction"),
           $"IP address".as("aip_server_ip"),
+          $"For Hosting Virtual Servers Only".as("aip_server_vmw_host"),
           $"Status".as("aip_server_status"),
+          $"Site code".as("aip_server_site"),
+          $"Site Name".as("aip_server_site_name"),
+          $"Leased or owned".as("aip_server_ownership"),
+          $"CPU Name".as("aip_server_cpu_type"),
+          $"CPUs number".as("aip_server_cpu_num"),
+          $"Core number".as("aip_server_cpu_cores"),
+          $"Owner".as("aip_server_owner"),
+          $"Owner Org UID".as("aip_server_owner_org_id"),
+          $"Vendor".as("aip_server_vendor"),
+          $"Model".as("aip_server_model"),
+          $"Installation date".as("aip_server_dt_install"),
+          $"Operational role".as("aip_server_role"),
+          $"Source".as("aip_server_source"),
           $"Administrated by".as("aip_server_adminby"),
           $"OS Name".as("aip_server_os_name"),
           lit(filedate).as("filedate")
@@ -76,9 +164,25 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
         case "I-ID" => res.select(
           $"I_ID",
           $"SiteCode",
+          $"SiteName",
+          $"CountryCode",
           $"Sector",
           lit(filedate).as("filedate")
         )
+        case "Storage-Master-Report" => res
+          .withColumn("server", lower($"sServerName"))
+          .withColumn("mount", lower($"sPartition"))
+          .withColumn("type", transcodeTiers($"StorageTier"))
+          .filter($"BillableForStorage" === "Yes")
+          .withColumn("charged_total_mb", gb2mb($"TotalMeassureGb"))
+          .withColumn("charged_used_mb", gb2mb($"UsedMeassureGb"))
+          .select(
+            $"server".as("server"),
+            $"mount".as("mount"),
+            $"type".as("type"),
+            $"charged_used_mb".as("charged_used_mb"),
+            $"charged_total_mb".as("charged_total_mb"),
+            lit(filedate).as("filedate"))
         case _ => println(s"RepoProcessInFile() : filetype ($filetype) not match")
           sys.exit(1)
       }

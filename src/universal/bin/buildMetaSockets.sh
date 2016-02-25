@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+#script to rebuild meta data from pipeline/out/ sub-directories content
 
-SUBMIT=/home/hadoop/shell/submit.sh
-CONF=/home/hadoop/conf/buildMeta.conf
+SUBMIT=$HOME/pipeline/bin/submit.sh
+CONF=$HOME/pipeline/conf/buildMetaSockets.conf
 submitArg=""
 DRYRUN=""
 VERBOSE=0

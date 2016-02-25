@@ -1,72 +1,95 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-HOSTNAME="HOST_NAME"
-DIR_MONITOR=~/monitor && [[ -d $DIR_MONITOR ]] || mkdir -p $DIR_MONITOR
-DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
-MAX_SPACE_USED=1000000
-MAX_SPACE_LEFT=100000
-LSOF_MONITOR=${DIR_MONITOR}/lsof_${HOSTNAME}_$(date +"%Y%m%d-%H").csv.gz
-PS_MONITOR=${DIR_MONITOR}/ps_${HOSTNAME}_$(date +"%Y%m%d-%H").csv.gz
+CONF=$(dirname $0)/../conf/conf.sh
+. $CONF
 
-export PATH=$PATH:/usr/sbin
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : Start"
+
+[[ $# -eq 0 ]] && echo "usage : $0 \"serverlist\"" && echo "ex : $0 \"1 2 3\"" && exit 1
+
+ListServer=$1
+InputFile=$SERVERSTATUS
+scriptToCall="$ROOTDIR/bin/submit.sh collect"
 
 
-function monitor() {
-	dat=$(date +"%Y%m%d%H%M")
-	sudo lsof -nPi4 | sed 1d | awk -vdat=$dat '{print dat";"$1";"$2";"$3";"$8";"$9";"$10}' | gzip -c >> $LSOF_MONITOR
-	ps -Ao "%U;%p;%P;%x;%a" | sed -e "s/; */;/g" | sed -e "s/ *;/;/g" | awk -vdat=$dat -F'\n' '{print dat";"$1}' | sed 1d | gzip -c >> $PS_MONITOR 
-}
-
-function server_info() {
-	echo ""
-	
-}
-
-function free_space() {
-	space_used=$(du -s ~ | awk '{print $1}')
-	space_left=$(($(stat -f --format="%a*%S" ~)))
-	([[ $space_used -gt $MAX_SPACE_USED ]] || [[ $space_left -lt $MAX_SPACE_LEFT  ]]) &&\
-	 find $DIR_MONITOR -maxdepth 1 -name "*.gz" -mtime +10 | xargs rm -f
-}
-
-function collect() {
-	for fic in $(ls $DIR_MONITOR | grep -v $LSOF_MONITOR | grep -v $PS_MONITOR)
-	do
-		mv $fic $DIR_COLLECT/.
-	done
-}
-
-########################################################################################################################
-#main
-
-usage="$0 monitor|collect|free_space"
-
-while [[ $# > 0 ]]
+NbServer=$(echo $ListServer | awk -F ' ' '{print NF}')
+for ((i=1; i<=$NbServer; i++))
 do
-   key="$1"
-
-   case ${key} in
-     -h|--help)
-        echo ${usage}
-        exit 0
-        ;;
-     monitor|collect|free_space)
-	method=$key
-        ;;
-    esac
-    shift # past argument or value
+	Server[$i]=$(echo $ListServer | awk -F ' ' -v NumRow=$i '{print $NumRow}')
 done
 
-case $method in
-  monitor)
-    #free_space &&\
-    monitor
-    ;;
-  collect)
-    collect
-    ;;
-  free_space)
-    free_space
-    ;;
-esac
-exit $?
+
+#init ServerPID
+for ((i=1; i<=$NbServer;i++))
+do
+	ServerPID[$i]=""
+done
+
+function waitServerIdle {
+	ServerIdle=0
+	while [[ $ServerIdle -eq 0 ]]
+	do
+		for ((i=1; i<=${#ServerPID[@]}; i++))
+		do
+			if [[ "${ServerPID[$i]}" == "" ]]
+			then
+				ServerIdle=$i
+				break
+			else
+				tmp=$(ps -p ${ServerPID[$i]} | wc -l)
+				if [[ "${tmp//[[:blank:]]/}" == "1" ]]
+				then
+					ServerIdle=$i
+					ServerPID[$i]=""
+					break
+				fi
+			fi
+		done
+		if [[ $ServerIdle -eq 0 ]]
+		then
+			sleep 10
+		fi
+	done
+	return $ServerIdle
+}
+
+function runscript {
+	waitServerIdle
+	ServerID=$?
+	CMD="$scriptToCall $1"
+	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : execute $CMD & ..."
+	$CMD &
+	ServerPID[$ServerID]=$!
+}
+
+for server in $(cat $InputFile | awk -F';' '{if ($3 == "2") print $2}')
+do
+	runscript $server
+done
+
+#wait all process terminate
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : nothing more to do. Waiting all process terminate..."
+for ((i=1; i<=${#ServerPID[@]}; i++))
+do
+  while true;do
+  	if [[ "${ServerPID[$i]}" != "" ]]
+  	then
+  		tmp=$(ps -p ${ServerPID[$i]} | wc -l)
+  		if [[ "${tmp//[[:blank:]]/}" == "1" ]]
+  		then
+  			ServerPID[$i]=""
+  			break
+  		else
+  		  echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : nothing more to do. Waiting all process terminate : ${ServerPID[$i]} still running"
+  		  sleep 10
+  		fi
+  	else
+  	  break
+  	fi
+  done
+done
+
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : call to send.sh script"
+$ROOTDIR/bin/send.sh
+
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : End"

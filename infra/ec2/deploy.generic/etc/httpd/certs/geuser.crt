@@ -1,0 +1,73 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=FR, L=Paris, O=GE-Alstom, OU=Datalab, CN=ca.gealstom.eu/name=changeme/emailAddress=webmaster@gealstom.eu
+        Validity
+            Not Before: Jan 26 16:20:13 2016 GMT
+            Not After : Jan 23 16:20:13 2026 GMT
+        Subject: C=FR, L=Paris, O=GE-Alstom, OU=Datalab, CN=geuser/name=Generic GE User/emailAddress=webmaster@gealstom.eu
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:d3:ef:ee:4d:4f:1e:7b:f7:46:60:ff:35:5a:52:
+                    b1:11:4f:71:6f:68:1c:92:c6:02:33:d2:78:de:a8:
+                    9a:18:59:4b:7f:b3:60:4d:82:ea:c7:ae:72:e3:0b:
+                    45:e6:c1:37:74:57:a0:41:c6:c3:80:5e:1e:c6:4e:
+                    25:81:b1:b2:c8:e1:66:1d:56:df:a0:27:7d:94:c4:
+                    d5:64:ce:dd:9e:30:16:82:37:b9:c6:1b:31:44:42:
+                    c1:b3:5a:98:dd:3e:30:97:ca:e3:3b:11:58:d4:b6:
+                    5e:e4:92:3a:0c:91:aa:fe:b3:ef:fa:1c:6d:55:23:
+                    6a:7b:ec:5d:6f:bb:4c:78:e3
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                Easy-RSA Generated Certificate
+            X509v3 Subject Key Identifier: 
+                F6:E3:92:78:0D:19:78:A6:D4:60:18:4E:C1:EA:E8:D1:C9:72:19:70
+            X509v3 Authority Key Identifier: 
+                keyid:89:7C:A4:B3:A1:56:93:32:3B:B3:C0:DE:A1:7E:6A:77:A4:BD:04:40
+                DirName:/C=FR/L=Paris/O=GE-Alstom/OU=Datalab/CN=ca.gealstom.eu/name=changeme/emailAddress=webmaster@gealstom.eu
+                serial:A1:D6:8B:E0:46:2C:3F:9F
+
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: sha1WithRSAEncryption
+        cf:fa:08:cf:7f:b5:7d:f4:4d:02:0e:f8:a0:80:17:a6:1e:f8:
+        aa:c9:2f:20:fc:e7:9a:6a:f8:11:15:69:0b:08:47:ac:37:14:
+        4e:cc:b6:52:17:39:bb:a4:3d:ab:5a:05:da:1c:22:25:df:b1:
+        20:9c:50:43:78:fe:d1:3f:d0:e9:86:bd:b3:a1:94:ad:1c:8a:
+        e3:a6:10:78:76:c9:7e:f9:08:16:d8:3c:7f:f8:ad:07:d9:f3:
+        1f:c8:57:ce:0f:12:ee:12:a8:3f:12:ee:d1:f8:df:fd:20:1c:
+        5f:82:47:bd:5e:16:4d:a3:2e:53:64:03:c6:73:e4:e0:03:ef:
+        54:b1
+-----BEGIN CERTIFICATE-----
+MIID7zCCA1igAwIBAgIBATANBgkqhkiG9w0BAQUFADCBlTELMAkGA1UEBhMCRlIx
+DjAMBgNVBAcTBVBhcmlzMRIwEAYDVQQKEwlHRS1BbHN0b20xEDAOBgNVBAsTB0Rh
+dGFsYWIxFzAVBgNVBAMTDmNhLmdlYWxzdG9tLmV1MREwDwYDVQQpEwhjaGFuZ2Vt
+ZTEkMCIGCSqGSIb3DQEJARYVd2VibWFzdGVyQGdlYWxzdG9tLmV1MB4XDTE2MDEy
+NjE2MjAxM1oXDTI2MDEyMzE2MjAxM1owgZQxCzAJBgNVBAYTAkZSMQ4wDAYDVQQH
+EwVQYXJpczESMBAGA1UEChMJR0UtQWxzdG9tMRAwDgYDVQQLEwdEYXRhbGFiMQ8w
+DQYDVQQDEwZnZXVzZXIxGDAWBgNVBCkTD0dlbmVyaWMgR0UgVXNlcjEkMCIGCSqG
+SIb3DQEJARYVd2VibWFzdGVyQGdlYWxzdG9tLmV1MIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQDT7+5NTx5790Zg/zVaUrERT3FvaBySxgIz0njeqJoYWUt/s2BN
+gurHrnLjC0XmwTd0V6BBxsOAXh7GTiWBsbLI4WYdVt+gJ32UxNVkzt2eMBaCN7nG
+GzFEQsGzWpjdPjCXyuM7EVjUtl7kkjoMkar+s+/6HG1VI2p77F1vu0x44wIDAQAB
+o4IBTDCCAUgwCQYDVR0TBAIwADAtBglghkgBhvhCAQ0EIBYeRWFzeS1SU0EgR2Vu
+ZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBT245J4DRl4ptRgGE7B6ujRyXIZ
+cDCBygYDVR0jBIHCMIG/gBSJfKSzoVaTMjuzwN6hfmp3pL0EQKGBm6SBmDCBlTEL
+MAkGA1UEBhMCRlIxDjAMBgNVBAcTBVBhcmlzMRIwEAYDVQQKEwlHRS1BbHN0b20x
+EDAOBgNVBAsTB0RhdGFsYWIxFzAVBgNVBAMTDmNhLmdlYWxzdG9tLmV1MREwDwYD
+VQQpEwhjaGFuZ2VtZTEkMCIGCSqGSIb3DQEJARYVd2VibWFzdGVyQGdlYWxzdG9t
+LmV1ggkAodaL4EYsP58wEwYDVR0lBAwwCgYIKwYBBQUHAwIwCwYDVR0PBAQDAgeA
+MA0GCSqGSIb3DQEBBQUAA4GBAM/6CM9/tX30TQIO+KCAF6Ye+KrJLyD855pq+BEV
+aQsIR6w3FE7MtlIXObukPataBdocIiXfsSCcUEN4/tE/0OmGvbOhlK0ciuOmEHh2
+yX75CBbYPH/4rQfZ8x/IV84PEu4SqD8S7tH43/0gHF+CR71eFk2jLlNkA8Zz5OAD
+71Sx
+-----END CERTIFICATE-----

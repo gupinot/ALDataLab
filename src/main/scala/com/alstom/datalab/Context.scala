@@ -9,17 +9,19 @@ import scala.collection.mutable.HashMap
   */
 object Context {
   val REPO="repo"
-  val DEFAULT_REPO="s3a://gedatalab/data/repo"
+  val DEFAULT_REPO="hdfs:///data/repo"
   val DIRERR="direrr"
-  val DEFAULT_DIRERR="s3a://gedatalab/data/err"
+  val DEFAULT_DIRERR="hdfs:///data/err"
   val DIROUT="dirout"
-  val DEFAULT_DIROUT="s3a://gedatalab/data/out/encoded"
+  val DEFAULT_DIROUT="hdfs:///data/out/encoded"
   val DIRIN="dirin"
-  val DEFAULT_DIRIN="s3a://gedatalab/data/out/encoded"
+  val DEFAULT_DIRIN="hdfs:///data/out/encoded"
+  val DIRAGG="diragg"
+  val DEFAULT_DIRAGG="hdfs:///data/out/aggregated"
   val CONTROL="control"
-  val DEFAULT_CONTROL="s3a://gedatalab/data/control"
+  val DEFAULT_CONTROL="hdfs:///data/control"
   val META="meta"
-  val DEFAULT_META="s3a://gedatalab/data/meta"
+  val DEFAULT_META="hdfs:///data/meta"
 }
 
 class Context(map: Map[String,String]) extends HashMap[String,String] {
@@ -31,6 +33,7 @@ class Context(map: Map[String,String]) extends HashMap[String,String] {
   def direrr() = this.getOrElse(Context.DIRERR,Context.DEFAULT_DIRERR)
   def dirout() = this.getOrElse(Context.DIROUT,Context.DEFAULT_DIROUT)
   def dirin() = this.getOrElse(Context.DIRIN,Context.DEFAULT_DIRIN)
+  def diragg() = this.getOrElse(Context.DIRAGG,Context.DEFAULT_DIRAGG)
   def control() = this.getOrElse(Context.CONTROL,Context.DEFAULT_CONTROL)
   def meta() = this.getOrElse(Context.META,Context.DEFAULT_META)
 

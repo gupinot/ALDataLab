@@ -15,6 +15,7 @@ do
 	then
 		echo "$CMV"
 	else
+		echo "$CMV"
 		$CMV
 	fi
 done < /dev/stdin
