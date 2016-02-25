@@ -69,7 +69,7 @@ function runscript {
 	ServerPID[$ServerID]=$!
 }
 
-for fichier in $(ls $ListInputFile)
+for fichier in $(ls -tr $ListInputFile)
 do
 	runscript $fichier
 done
