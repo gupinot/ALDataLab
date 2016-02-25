@@ -112,13 +112,13 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
         .withColumn("distinct_client_user", lit(null))
       )
 
-    serverflow_detail.write.mode(SaveMode.Overwrite)
+    serverflow_detail.cache().write.mode(SaveMode.Overwrite)
       .partitionBy("month").parquet(s"${context.diragg()}/flow_detail_day")
 
 
     serverflow_detail
       .groupBy("month",
-        "server_ip", "server_site", "server_aip_app_name", "server_aip_app_sector",
+        "server_ip", "server_site", "server_aip_app_name", "server_sector",
         "remote_type", "collecttype",
         "remote_site", "remote_sector")
       .agg(countDistinct($"remote_ip").as("count_distinct_remote_ip"),
@@ -129,11 +129,11 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
       )
       .withColumn("distinct_client_user", countSeparator(",")($"client_user"))
       .drop($"client_user")
-      .coalesce(1).write.mode(SaveMode.Overwrite)
+      .write.mode(SaveMode.Overwrite)
       .partitionBy("month").parquet(s"${context.diragg()}/flow_month")
 
     serverflow_detail
-      .groupBy("server_ip", "server_site", "server_aip_app_name", "server_aip_app_sector",
+      .groupBy("server_ip", "server_site", "server_aip_app_name", "server_sector",
         "remote_type", "collecttype",
         "remote_site", "remote_sector")
       .agg(countDistinct($"remote_ip").as("count_distinct_remote_ip"),
@@ -144,7 +144,7 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
       )
       .withColumn("distinct_client_user", countSeparator(",")($"client_user"))
       .drop($"client_user")
-      .coalesce(1).write.mode(SaveMode.Overwrite)
-      .partitionBy("month").parquet(s"${context.diragg()}/flow")
+      .write.mode(SaveMode.Overwrite)
+      .parquet(s"${context.diragg()}/flow")
   }
 }

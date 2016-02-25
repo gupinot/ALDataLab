@@ -55,6 +55,9 @@ import org.apache.spark.sql.functions._
         try {
           aggregate(context.dirout(), context.diragg())
         }
+        catch {
+          case _: Throwable => "ko"
+        }
       }
     }
 
@@ -188,7 +191,6 @@ import org.apache.spark.sql.functions._
         .groupBy("server", "server_ip", "dt", "month")
         .agg(
           approxCountDistinct($"date").as("count_date"),
-          first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
           first($"aip_app_sector").as("aip_app_sector"),
@@ -207,7 +209,6 @@ import org.apache.spark.sql.functions._
         .groupBy("server", "server_ip", "month")
         .agg(
           approxCountDistinct($"date").as("count_date"),
-          first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
           first($"aip_app_sector").as("aip_app_sector"),
@@ -226,7 +227,6 @@ import org.apache.spark.sql.functions._
         .groupBy("server", "server_ip")
         .agg(
           approxCountDistinct($"date").as("count_date"),
-          first($"type").as("type"),
           first($"aip_server_function").as("aip_server_function"),
           first($"aip_app_name").as("aip_app_name"),
           first($"aip_app_sector").as("aip_app_sector"),
