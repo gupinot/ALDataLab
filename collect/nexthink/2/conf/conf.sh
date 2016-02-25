@@ -44,3 +44,7 @@ export ANONYMIZEIDM_SHELL="${ROOTDIR}/bin/AnonymizeIDM.sh"
 export SENDMERGEDSPLITED_SHELL="${ROOTDIR}/bin/SendMergedSplited.sh"
 export R_WD="${ROOTDIR}/bin/R"
 export TMP=$HOME/tmp
+
+export http_proxy=http://10.249.49.100:3128
+export https_proxy=$http_proxy
+

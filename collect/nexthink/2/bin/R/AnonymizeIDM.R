@@ -32,7 +32,7 @@ IDMAnonymized <- function() {
   #Concatenate Sector with SubSector
   IDM[SubSector!="", Sector:=paste(Sector, SubSector, sep="/")]
   IDM<-IDM[, 
-            list(Sector, SiteCode, Login)]
+            list(Sector, SiteCode, Login, SiteName, CountryCode)]
   
   setkey(IDM,Login)
   IDM<-unique(IDM)
@@ -47,7 +47,7 @@ IDMAnonymized <- function() {
   IDM <- Dico[IDM, nomatch=0]
   
   
-  return(IDM[, list(I_ID, Sector, SiteCode)])
+  return(IDM[, list(I_ID, Sector, SiteCode, SiteName, CountryCode)])
   
 }
 
