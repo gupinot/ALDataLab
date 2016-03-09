@@ -24,12 +24,22 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
   Dico <- fread(DICTIONNARY, sep=";")
   setkey(Dico, I_ID)
 
-  I_ID <- fread(I_ID_REF, sep=";")
-  setkey(I_ID, I_ID)
+  if (file.exists(I_ID_REF)) {
+    I_ID <- fread(I_ID_REF, sep=";")
+    setkey(I_ID, I_ID)
 
-  I_ID_ok <- Dico[I_ID, nomatch=0]
+    I_ID_ok <- Dico[I_ID, nomatch=0][, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]
+  }
+  else {
+    I_ID_ok <- data.table(I_ID=as.character(),
+                Sector=as.character(),
+                SiteCode=as.character(),
+                SiteName=as.character(),
+                CountryCode=as.character(),
+                TerangaCode=as.character())
+  }
 
-  for (IDM in strsplit(IDMFILES, " ")[[1]]) {
+  for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
 
     #Read IDM
     IDM<-fread(paste("gunzip -c ", IDMFILE, sep=";"), sep=";")
@@ -46,7 +56,7 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
     #Concatenate Sector with SubSector
     IDM[SubSector!="", Sector:=paste(Sector, SubSector, sep="/")]
     IDM<-IDM[,
-              list(Sector, SiteCode, Login, SiteName, CountryCode)]
+              list(Sector, SiteCode, Login, SiteName, CountryCode, TerangaCode)]
 
     setkey(IDM,Login)
     IDM<-unique(IDM)
@@ -55,18 +65,20 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
     setkey(IDM, Login)
 
     IDM <- Dico[IDM, nomatch=0]
-    return(IDM[, list(I_ID, Sector, SiteCode, SiteName, CountryCode)])
-
+    I_ID_ok <- rbindlist(I_ID_ok, IDM[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)], use.names=TRUE)
+    setkey(I_ID_ok, I_ID)
+    I_ID_ok <- unique(I_ID_ok)
   }
   
-
-  
+  return(I_ID_ok)
 }
 
+################################################################################################
 IDMAnonymized_Write <- function(IDM_files, Dest_file, I_ID_REF) {
   Res <- IDMAnonymized(IDM_files, I_ID_REF)
   write.table(Res, gzfile(Dest_file), sep=";", row.names=FALSE)
   write.table(Res, gzfile(I_ID_REF), sep=";", row.names=FALSE)
 }
 
+################################################################################################
 IDMAnonymized_Write(IDMFiles, DestFile, I_ID_REF)
