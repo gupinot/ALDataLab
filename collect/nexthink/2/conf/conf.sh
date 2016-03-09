@@ -33,6 +33,8 @@ export DICTIONNARY="${REPO}/Dictionnary.csv"
 export DICTIONNARY_HIST="${REPO}/dictionnary-hist"
 
 export IDMFILE="${REPO}/IDM.csv"
+export IDMFILES="${REPO}/IDM_*.csv.gz"
+export I_ID_REF="${REPO}/I-ID.csv.gz"
 export I_ID="${OUTREPO}/I-ID"
 
 export DISTRIB_SHELL="${ROOTDIR}/bin/distribute.sh"

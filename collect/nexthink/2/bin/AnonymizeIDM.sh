@@ -14,7 +14,8 @@ echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : begin"
 #Create updated version of I-ID csv file and send to s3
 DestFile="${I_ID}_$(date +"%Y%m%d").csv"
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : DestFile = ${DestFile}"
-${ANONYMIZEIDM_RSHELL} "${DestFile}"
+IDMFileList=$(ls $IDMFILES | sort -t_ -k2)
+${ANONYMIZEIDM_RSHELL} "${IDMFileList}" "${DestFile}" "${I_ID_REF}"
 if [[ -f ${DestFile} ]]
 then
   echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : CMD : aws s3 cp ${DestFile} ${S3REPOIN}/$(basename ${DestFile})"
