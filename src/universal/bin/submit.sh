@@ -7,8 +7,8 @@ function spark() {
     conf=$1
     todofiles="$2"
 
-    sparkargs=$(cat ${conf} | egrep '^submit ' | sed 's/submit //')
-    cmdargs=$(cat ${conf} | egrep '^args ' | sed 's/args //')
+    sparkargs=$(cat ${conf} | egrep '^submit ' | sed 's/submit //' | xargs -I@ bash -c 'eval echo @')
+    cmdargs=$(cat ${conf} | egrep '^args ' | sed 's/args //' | xargs -I@ bash -c 'eval echo @')
     CLASS=$(grep -- '--class' <${conf} | awk '{print $3}')
     echo "Executing $CLASS from $JAR with config $conf for $todofiles..."
     spark-submit ${sparkargs} ${JAR} ${cmdargs} --filelist ${todofiles}
