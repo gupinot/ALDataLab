@@ -1,0 +1,1 @@
+export PS1="\e[36m({{cluster_name}})\e[0m \u@\h:\e[32m\W\e[0m \$ "

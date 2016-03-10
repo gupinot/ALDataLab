@@ -816,7 +816,7 @@ def get_existing_cluster(conn, opts, cluster_name, die_on_error=True):
 
 # Deploy configuration files and run setup scripts on a newly launched
 # or started EC2 cluster.
-def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key):
+def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_name):
     master = get_dns_name(master_nodes[0], opts.private_ips)
     if deploy_ssh_key:
         print("Generating cluster's SSH key on master...")
@@ -867,7 +867,8 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key):
         opts=opts,
         master_nodes=master_nodes,
         slave_nodes=slave_nodes,
-        modules=modules
+        modules=modules,
+        cluster_name=cluster_name
     )
 
     if opts.deploy_root_dir is not None:
@@ -1062,7 +1063,7 @@ def get_num_disks(instance_type):
 # script to be run on that instance to copy them to other nodes.
 #
 # root_dir should be an absolute path to the directory with the files we want to deploy.
-def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
+def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, cluster_name):
     active_master = get_dns_name(master_nodes[0], opts.private_ips)
 
     num_disks = get_num_disks(opts.instance_type)
@@ -1093,6 +1094,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
     template_vars = {
+        "cluster_name": cluster_name,
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
         "slave_list": '\n'.join(slave_addresses),
@@ -1402,7 +1404,7 @@ def real_main():
             cluster_instances=(master_nodes + slave_nodes),
             cluster_state='ssh-ready'
         )
-        setup_cluster(conn, master_nodes, slave_nodes, opts, True)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, True, cluster_name)
 
     elif action == "destroy":
         (master_nodes, slave_nodes) = get_existing_cluster(
@@ -1557,7 +1559,7 @@ def real_main():
         opts.master_instance_type = existing_master_type
         opts.instance_type = existing_slave_type
 
-        setup_cluster(conn, master_nodes, slave_nodes, opts, False)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, False, cluster_name)
 
     else:
         print("Invalid action: %s" % action, file=stderr)
