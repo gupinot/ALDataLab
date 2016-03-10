@@ -286,6 +286,10 @@ def parse_args():
         help="If specified, launch slaves as spot instances with the given " +
              "maximum price (in dollars)")
     parser.add_option(
+        "--master-spot-price", metavar="MASTER_PRICE", type="float", default="0.05",
+        help="If specified, launch master as spot instance with the given " +
+             "maximum price (in dollars)")
+    parser.add_option(
         "--zeppelin-bucket", default="gezeppelin",
         help="the s3 bucket name to use for zeppelin notebooks")
     parser.add_option(
@@ -734,22 +738,67 @@ def launch_cluster(conn, opts, cluster_name):
             master_type = opts.instance_type
         if opts.zone == 'all':
             opts.zone = random.choice(conn.get_all_zones()).name
-        master_res = image.run(
-            key_name=opts.key_pair,
-            security_group_ids=[master_group.id] + additional_group_ids,
-            instance_type=master_type,
-            placement=opts.zone,
-            min_count=1,
-            max_count=1,
-            block_device_map=block_map,
-            subnet_id=opts.subnet_id,
-            placement_group=opts.placement_group,
-            user_data=user_data_content,
-            instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
-            instance_profile_name=opts.instance_profile_name)
 
-        master_nodes = master_res.instances
-        print("Launched master in %s, regid = %s" % (zone, master_res.id))
+        if opts.spot_price is not None:
+            # Launch spot instance with the requested price
+            print("Requesting master as spot instance with price $%.3f" %
+                  (opts.master_spot_price))
+            master_reqs = conn.request_spot_instances(
+                    price=opts.master_spot_price,
+                    image_id=opts.ami,
+                    key_name=opts.key_pair,
+                    launch_group="master-group-%s" % cluster_name,
+                    security_group_ids=[master_group.id] + additional_group_ids,
+                    instance_type=master_type,
+                    placement=opts.zone,
+                    count=1,
+                    block_device_map=block_map,
+                    subnet_id=opts.subnet_id,
+                    placement_group=opts.placement_group,
+                    user_data=user_data_content,
+                    instance_profile_name=opts.instance_profile_name)
+            master_req_id = master_reqs[0].id
+
+            print("Waiting for spot instances to be granted...")
+            try:
+                while True:
+                    time.sleep(10)
+                    reqs = conn.get_all_spot_instance_requests()
+                    id_to_req = {}
+                    for r in reqs:
+                        id_to_req[r.id] = r
+                    master_instance_ids = []
+                    if master_req_id in id_to_req and id_to_req[master_req_id].state == "active":
+                        master_instance_ids.append(id_to_req[master_req_id].instance_id)
+                        print("Master granted")
+                        reservations = conn.get_all_reservations(master_instance_ids)
+                        master_nodes = []
+                        for r in reservations:
+                            master_nodes += r.instances
+                        break
+                    else:
+                        print("Master not granted yet, waiting longer")
+            except:
+                print("Canceling spot instance request for master")
+                conn.cancel_spot_instance_requests([master_req_id])
+                sys.exit(0)
+        else:
+            master_res = image.run(
+                key_name=opts.key_pair,
+                security_group_ids=[master_group.id] + additional_group_ids,
+                instance_type=master_type,
+                placement=opts.zone,
+                min_count=1,
+                max_count=1,
+                block_device_map=block_map,
+                subnet_id=opts.subnet_id,
+                placement_group=opts.placement_group,
+                user_data=user_data_content,
+                instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
+                instance_profile_name=opts.instance_profile_name)
+
+            master_nodes = master_res.instances
+            print("Launched master in %s, regid = %s" % (zone, master_res.id))
 
     # This wait time corresponds to SPARK-4983
     print("Waiting for AWS to propagate instance metadata...")
