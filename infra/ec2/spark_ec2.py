@@ -296,7 +296,7 @@ def parse_args():
         "--pipeline-bucket", default="gedatalab",
         help="the s3 bucket name to use for pipeline binaries")
     parser.add_option(
-        "--pipeline-version", default="1.3",
+        "--pipeline-version", default="1.3.1",
         help="the version of pipeline to use")
     parser.add_option(
         "--ganglia", action="store_true", default=False,
