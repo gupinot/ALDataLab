@@ -14,6 +14,7 @@ require(data.table)
 require(bit64)
 require(gsubfn)
 require(uuid)
+print("test")
 
 ################################################################################################
 ################################################################################################
@@ -23,7 +24,6 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
   #Read Dictionnary
   Dico <- fread(DICTIONNARY, sep=";")
   setkey(Dico, I_ID)
-  print(paste("str(Dico) : ",str(Dico), sep=""))
 
   if (file.exists(I_ID_REF)) {
     I_ID <- fread(paste("gunzip -c ", I_ID_REF, sep=""), sep=";")
@@ -42,6 +42,7 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
                 TerangaCode=as.character())
     I_ID_ko <- Dico
   }
+  print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
 
   for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
 
@@ -68,13 +69,15 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
 
     #join Dico and IDM
     setkey(IDM, Login)
-    setkey(I_ID_ko, I_ID)
+    setkey(I_ID_ko, name)
 
     tmp <- I_ID_ko[IDM, nomatch=0]
     I_ID_ok <- rbindlist(list(I_ID_ok, tmp[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]), use.names=TRUE)
     setkey(I_ID_ok, I_ID)
     I_ID_ok <- unique(I_ID_ok)
+    print(paste("dim(I_ID_ok) : ",dim(I_ID_ok), sep=""))
     I_ID_ko <- I_ID_ko[!IDM][, list(I_ID, name)]
+    print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
   }
 
   return(I_ID_ok)
@@ -88,6 +91,4 @@ IDMAnonymized_Write <- function(IDM_files, Dest_file, I_ID_REF) {
 }
 
 ################################################################################################
-print("IDMFiles : ")
-IDMFiles
 IDMAnonymized_Write(IDMFiles, DestFile, I_ID_REF)
