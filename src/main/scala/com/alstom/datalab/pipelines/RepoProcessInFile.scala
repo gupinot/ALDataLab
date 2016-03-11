@@ -159,6 +159,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Type".as("aip_appinstance_type"),
           $"Host name".as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
+          $"Application Sector".as("aip_appinstance_sector"),
           lit(filedate).as("filedate")
         )
         case "I-ID" => res.select(

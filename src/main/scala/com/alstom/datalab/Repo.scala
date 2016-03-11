@@ -29,7 +29,13 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
   def genAIP(currentDate:Date=null): Unit = {
 
     val aip_server = readAIPServer(currentDate)
+      .filter($"aip_server_status" !== "Disposed")
+      .filter($"aip_server_status" !== "Standby")
+      .filter($"aip_server_status" !== "Stock")
+      .filter($"aip_server_status" !== "Disposal")
+
     val aip_soft_instance = readAIPSoftInstance(currentDate)
+
     val aip_application = readAIPApplication(currentDate)
 
     val myConcat = new ConcatString("||")
@@ -50,6 +56,7 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
         myConcat($"aip_app_sensitive").as("aip_app_sensitive"),
         myConcat($"aip_app_criticality").as("aip_app_criticality"),
         myConcat($"aip_app_sector").as("aip_app_sector"),
+        myConcat($"aip_appinstance_sector").as("aip_appinstance_sector"),
         myConcat($"aip_appinstance_shared_unique_id").as("aip_app_shared_unique_id"))
       .filter(regexudf(ipinternalpattern)($"aip_server_ip"))
       .sort(desc("aip_app_name"), desc("aip_server_adminby"))
@@ -76,6 +83,7 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
         $"aip_app_sensitive".as("aip_app_sensitive"),
         $"aip_app_criticality".as("aip_app_criticality"),
         $"aip_app_sector".as("aip_app_sector"),
+        $"aip_appinstance_sector".as("aip_appinstance_sector"),
         $"aip_appinstance_shared_unique_id".as("aip_app_shared_unique_id"))
       .filter(regexudf(ipinternalpattern)($"aip_server_ip"))
       .sort(desc("aip_app_name"), desc("aip_server_adminby"))
