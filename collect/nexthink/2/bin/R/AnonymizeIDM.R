@@ -27,7 +27,8 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
   if (file.exists(I_ID_REF)) {
     I_ID <- fread(I_ID_REF, sep=";")
     setkey(I_ID, I_ID)
-
+    I_ID <- unique(I_ID)
+    setkey(I_ID, I_ID)
     I_ID_ok <- Dico[I_ID, nomatch=0][, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]
   }
   else {
@@ -69,7 +70,7 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
     setkey(I_ID_ok, I_ID)
     I_ID_ok <- unique(I_ID_ok)
   }
-  
+
   return(I_ID_ok)
 }
 
