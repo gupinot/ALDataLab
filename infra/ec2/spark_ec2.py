@@ -286,13 +286,17 @@ def parse_args():
         help="If specified, launch slaves as spot instances with the given " +
              "maximum price (in dollars)")
     parser.add_option(
+        "--master-spot-price", metavar="MASTER_PRICE", type="float", default="0.05",
+        help="If specified, launch master as spot instance with the given " +
+             "maximum price (in dollars)")
+    parser.add_option(
         "--zeppelin-bucket", default="gezeppelin",
         help="the s3 bucket name to use for zeppelin notebooks")
     parser.add_option(
         "--pipeline-bucket", default="gedatalab",
         help="the s3 bucket name to use for pipeline binaries")
     parser.add_option(
-        "--pipeline-version", default="1.3",
+        "--pipeline-version", default="1.3.1",
         help="the version of pipeline to use")
     parser.add_option(
         "--ganglia", action="store_true", default=False,
@@ -734,22 +738,67 @@ def launch_cluster(conn, opts, cluster_name):
             master_type = opts.instance_type
         if opts.zone == 'all':
             opts.zone = random.choice(conn.get_all_zones()).name
-        master_res = image.run(
-            key_name=opts.key_pair,
-            security_group_ids=[master_group.id] + additional_group_ids,
-            instance_type=master_type,
-            placement=opts.zone,
-            min_count=1,
-            max_count=1,
-            block_device_map=block_map,
-            subnet_id=opts.subnet_id,
-            placement_group=opts.placement_group,
-            user_data=user_data_content,
-            instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
-            instance_profile_name=opts.instance_profile_name)
 
-        master_nodes = master_res.instances
-        print("Launched master in %s, regid = %s" % (zone, master_res.id))
+        if opts.spot_price is not None:
+            # Launch spot instance with the requested price
+            print("Requesting master as spot instance with price $%.3f" %
+                  (opts.master_spot_price))
+            master_reqs = conn.request_spot_instances(
+                    price=opts.master_spot_price,
+                    image_id=opts.ami,
+                    key_name=opts.key_pair,
+                    launch_group="master-group-%s" % cluster_name,
+                    security_group_ids=[master_group.id] + additional_group_ids,
+                    instance_type=master_type,
+                    placement=opts.zone,
+                    count=1,
+                    block_device_map=block_map,
+                    subnet_id=opts.subnet_id,
+                    placement_group=opts.placement_group,
+                    user_data=user_data_content,
+                    instance_profile_name=opts.instance_profile_name)
+            master_req_id = master_reqs[0].id
+
+            print("Waiting for spot instances to be granted...")
+            try:
+                while True:
+                    time.sleep(10)
+                    reqs = conn.get_all_spot_instance_requests()
+                    id_to_req = {}
+                    for r in reqs:
+                        id_to_req[r.id] = r
+                    master_instance_ids = []
+                    if master_req_id in id_to_req and id_to_req[master_req_id].state == "active":
+                        master_instance_ids.append(id_to_req[master_req_id].instance_id)
+                        print("Master granted")
+                        reservations = conn.get_all_reservations(master_instance_ids)
+                        master_nodes = []
+                        for r in reservations:
+                            master_nodes += r.instances
+                        break
+                    else:
+                        print("Master not granted yet, waiting longer")
+            except:
+                print("Canceling spot instance request for master")
+                conn.cancel_spot_instance_requests([master_req_id])
+                sys.exit(0)
+        else:
+            master_res = image.run(
+                key_name=opts.key_pair,
+                security_group_ids=[master_group.id] + additional_group_ids,
+                instance_type=master_type,
+                placement=opts.zone,
+                min_count=1,
+                max_count=1,
+                block_device_map=block_map,
+                subnet_id=opts.subnet_id,
+                placement_group=opts.placement_group,
+                user_data=user_data_content,
+                instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
+                instance_profile_name=opts.instance_profile_name)
+
+            master_nodes = master_res.instances
+            print("Launched master in %s, regid = %s" % (zone, master_res.id))
 
     # This wait time corresponds to SPARK-4983
     print("Waiting for AWS to propagate instance metadata...")
@@ -816,7 +865,7 @@ def get_existing_cluster(conn, opts, cluster_name, die_on_error=True):
 
 # Deploy configuration files and run setup scripts on a newly launched
 # or started EC2 cluster.
-def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key):
+def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_name):
     master = get_dns_name(master_nodes[0], opts.private_ips)
     if deploy_ssh_key:
         print("Generating cluster's SSH key on master...")
@@ -867,7 +916,8 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key):
         opts=opts,
         master_nodes=master_nodes,
         slave_nodes=slave_nodes,
-        modules=modules
+        modules=modules,
+        cluster_name=cluster_name
     )
 
     if opts.deploy_root_dir is not None:
@@ -1062,7 +1112,7 @@ def get_num_disks(instance_type):
 # script to be run on that instance to copy them to other nodes.
 #
 # root_dir should be an absolute path to the directory with the files we want to deploy.
-def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
+def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, cluster_name):
     active_master = get_dns_name(master_nodes[0], opts.private_ips)
 
     num_disks = get_num_disks(opts.instance_type)
@@ -1093,6 +1143,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
     template_vars = {
+        "cluster_name": cluster_name,
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
         "slave_list": '\n'.join(slave_addresses),
@@ -1402,7 +1453,7 @@ def real_main():
             cluster_instances=(master_nodes + slave_nodes),
             cluster_state='ssh-ready'
         )
-        setup_cluster(conn, master_nodes, slave_nodes, opts, True)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, True, cluster_name)
 
     elif action == "destroy":
         (master_nodes, slave_nodes) = get_existing_cluster(
@@ -1557,7 +1608,7 @@ def real_main():
         opts.master_instance_type = existing_master_type
         opts.instance_type = existing_slave_type
 
-        setup_cluster(conn, master_nodes, slave_nodes, opts, False)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, False, cluster_name)
 
     else:
         print("Invalid action: %s" % action, file=stderr)

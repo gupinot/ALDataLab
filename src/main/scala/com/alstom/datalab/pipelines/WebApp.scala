@@ -197,7 +197,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
           )
           .distinct())
       .groupBy("SiteCode")
-      .agg(first($"SiteName"), first($"CountryCode"))
+      .agg(first($"SiteName").as("SiteName"), first($"CountryCode").as("CountryCode"))
 
     myIO.writeCsvToS3(SiteCode,
         dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)

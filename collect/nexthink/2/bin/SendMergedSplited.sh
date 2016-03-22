@@ -29,7 +29,7 @@ do
     then
       mv $fic ${DONEMERGEDSPLITED}/.
     else
-      echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : CMD : aws s3 cp $fic ${S3IN}/${var}/$(basename ${fic}) : KO" >2
+      echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : CMD : aws s3 cp $fic ${S3IN}/${var}/$(basename ${fic}) : KO" >&2
     fi
   done
 done

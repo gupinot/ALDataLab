@@ -33,6 +33,8 @@ export DICTIONNARY="${REPO}/Dictionnary.csv"
 export DICTIONNARY_HIST="${REPO}/dictionnary-hist"
 
 export IDMFILE="${REPO}/IDM.csv"
+export IDMFILES="${REPO}/IDM_*.csv.gz"
+export I_ID_REF="${REPO}/I-ID.csv.gz"
 export I_ID="${OUTREPO}/I-ID"
 
 export DISTRIB_SHELL="${ROOTDIR}/bin/distribute.sh"
@@ -44,3 +46,7 @@ export ANONYMIZEIDM_SHELL="${ROOTDIR}/bin/AnonymizeIDM.sh"
 export SENDMERGEDSPLITED_SHELL="${ROOTDIR}/bin/SendMergedSplited.sh"
 export R_WD="${ROOTDIR}/bin/R"
 export TMP=$HOME/tmp
+
+export http_proxy=http://10.249.49.100:3128
+export https_proxy=$http_proxy
+

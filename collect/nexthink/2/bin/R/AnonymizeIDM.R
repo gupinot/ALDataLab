@@ -4,7 +4,9 @@ R_WD<-Sys.getenv("R_WD")
 setwd(R_WD)
 
 args <- commandArgs(TRUE)
-DestFile <- args[1]
+IDMFiles <- args[1]
+DestFile <- args[2]
+I_ID_REF <- args[3]
 
 source("conf.R")
 
@@ -12,47 +14,81 @@ require(data.table)
 require(bit64)
 require(gsubfn)
 require(uuid)
+print("test")
 
 ################################################################################################
 ################################################################################################
 #Function to generate IDM file anonymized
-IDMAnonymized <- function() {
-  #Read IDM
-  IDM<-fread(IDMFILE, sep=";")
-  IDM<-IDM[, c(1, 6,7, 8, 9, 10, 11, 12, 13, 23, 22, 2, 18), with=FALSE]
-  setnames(IDM, 
-           c("ID", "Sector", "SubSector", "CountryCode", 
-             "CountryName", "SiteCode", "SiteName", "TerangaCode", 
-             "TerangaCountryCode", "ADLogin", "ADDomain", "FullName", "Status"))
-  
-  IDM<-IDM[ADLogin!="" & Status == "ACTIVE", ]
-  
-  IDM[, Login:=paste(tolower(ADLogin), "@", tolower(ADDomain), sep="")]
-  
-  #Concatenate Sector with SubSector
-  IDM[SubSector!="", Sector:=paste(Sector, SubSector, sep="/")]
-  IDM<-IDM[, 
-            list(Sector, SiteCode, Login)]
-  
-  setkey(IDM,Login)
-  IDM<-unique(IDM)
-  
+IDMAnonymized <- function(IDMFILES, I_ID_REF) {
+
   #Read Dictionnary
   Dico <- fread(DICTIONNARY, sep=";")
-  
-  #join Dico and IDM
-  setkey(Dico, name)
-  setkey(IDM, Login)
-  
-  IDM <- Dico[IDM, nomatch=0]
-  
-  
-  return(IDM[, list(I_ID, Sector, SiteCode)])
-  
+  setkey(Dico, I_ID)
+
+  if (file.exists(I_ID_REF)) {
+    I_ID <- fread(paste("gunzip -c ", I_ID_REF, sep=""), sep=";")
+    setkey(I_ID, I_ID)
+    I_ID <- unique(I_ID)
+    setkey(I_ID, I_ID)
+    I_ID_ok <- Dico[I_ID, nomatch=0][, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]
+    I_ID_ko <- Dico[!I_ID][, list(I_ID, name)]
+  }
+  else {
+    I_ID_ok <- data.table(I_ID=as.character(),
+                Sector=as.character(),
+                SiteCode=as.character(),
+                SiteName=as.character(),
+                CountryCode=as.character(),
+                TerangaCode=as.character())
+    I_ID_ko <- Dico
+  }
+  print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
+
+  for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
+
+    print(paste("IDMFILE used : ",IDMFILE, sep=""))
+    #Read IDM
+    IDM<-fread(paste("gunzip -c ", IDMFILE, sep=""), sep=";")
+    IDM<-IDM[, c(1, 6,7, 8, 9, 10, 11, 12, 13, 23, 22, 2, 18), with=FALSE]
+    setnames(IDM,
+             c("ID", "Sector", "SubSector", "CountryCode",
+               "CountryName", "SiteCode", "SiteName", "TerangaCode",
+               "TerangaCountryCode", "ADLogin", "ADDomain", "FullName", "Status"))
+
+    IDM<-IDM[ADLogin!="" & Status == "ACTIVE", ]
+
+    IDM[, Login:=paste(tolower(ADLogin), "@", tolower(ADDomain), sep="")]
+
+    #Concatenate Sector with SubSector
+    IDM[SubSector!="", Sector:=paste(Sector, SubSector, sep="/")]
+    IDM<-IDM[,
+              list(Sector, SiteCode, Login, SiteName, CountryCode, TerangaCode)]
+
+    setkey(IDM,Login)
+    IDM<-unique(IDM)
+
+    #join Dico and IDM
+    setkey(IDM, Login)
+    setkey(I_ID_ko, name)
+
+    tmp <- I_ID_ko[IDM, nomatch=0]
+    I_ID_ok <- rbindlist(list(I_ID_ok, tmp[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]), use.names=TRUE)
+    setkey(I_ID_ok, I_ID)
+    I_ID_ok <- unique(I_ID_ok)
+    print(paste("dim(I_ID_ok) : ",dim(I_ID_ok), sep=""))
+    I_ID_ko <- I_ID_ko[!IDM][, list(I_ID, name)]
+    print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
+  }
+
+  return(I_ID_ok)
 }
 
-IDMAnonymized_Write <- function(Dest) {
-  write.table(IDMAnonymized(), file=Dest, sep=";", row.names=FALSE)
+################################################################################################
+IDMAnonymized_Write <- function(IDM_files, Dest_file, I_ID_REF) {
+  Res <- IDMAnonymized(IDM_files, I_ID_REF)
+  write.table(Res, gzfile(Dest_file), sep=";", row.names=FALSE)
+  write.table(Res, gzfile(I_ID_REF), sep=";", row.names=FALSE)
 }
 
-IDMAnonymized_Write(DestFile)
+################################################################################################
+IDMAnonymized_Write(IDMFiles, DestFile, I_ID_REF)

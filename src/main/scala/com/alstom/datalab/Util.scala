@@ -1,6 +1,6 @@
 package com.alstom.datalab
 
-import org.apache.spark.sql.Row
+import org.apache.spark.sql.{SQLContext, DataFrame, Row}
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{DataType, StringType, StructType}
@@ -193,4 +193,17 @@ object Util {
   def countSeparator(splitcar: String) = udf(
     (chaine: String) => chaine.split(splitcar).length
   )
+
+  def resolveSiteFromAIPIp(df: DataFrame, AIPPath: String, sqlContext: SQLContext) = {
+    import sqlContext.implicits._
+
+    val AIP = sqlContext.read.parquet(AIPPath)
+      .select($"aip_server_ip" as "IP", $"aip_server_site" as "site")
+      .filter($"site" === null or $"site" === "")
+      .dropDuplicates(Array("IP"))
+
+    df.join(AIP, df("IP") === AIP("IP"), "left_outer")
+      .drop(AIP("IP"))
+
+  }
 }
