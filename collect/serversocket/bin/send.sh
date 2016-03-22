@@ -22,7 +22,7 @@ curdir=$(pwd)
 cd $DIR_COLLECT
 
 type="linux"
-for col in lsof ps
+for col in lsof ps netstat
 do
 	for filedt in $(ls ${col}_*.csv.gz | cut -d_ -f3 | cut -d. -f1 | sort -u)
 	do
