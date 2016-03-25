@@ -14,6 +14,7 @@ require(data.table)
 require(bit64)
 require(gsubfn)
 require(uuid)
+print("test")
 
 ################################################################################################
 ################################################################################################
@@ -25,11 +26,12 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
   setkey(Dico, I_ID)
 
   if (file.exists(I_ID_REF)) {
-    I_ID <- fread(I_ID_REF, sep=";")
+    I_ID <- fread(paste("gunzip -c ", I_ID_REF, sep=""), sep=";")
     setkey(I_ID, I_ID)
     I_ID <- unique(I_ID)
     setkey(I_ID, I_ID)
     I_ID_ok <- Dico[I_ID, nomatch=0][, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]
+    I_ID_ko <- Dico[!I_ID][, list(I_ID, name)]
   }
   else {
     I_ID_ok <- data.table(I_ID=as.character(),
@@ -38,12 +40,15 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
                 SiteName=as.character(),
                 CountryCode=as.character(),
                 TerangaCode=as.character())
+    I_ID_ko <- Dico
   }
+  print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
 
   for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
 
+    print(paste("IDMFILE used : ",IDMFILE, sep=""))
     #Read IDM
-    IDM<-fread(paste("gunzip -c ", IDMFILE, sep=";"), sep=";")
+    IDM<-fread(paste("gunzip -c ", IDMFILE, sep=""), sep=";")
     IDM<-IDM[, c(1, 6,7, 8, 9, 10, 11, 12, 13, 23, 22, 2, 18), with=FALSE]
     setnames(IDM,
              c("ID", "Sector", "SubSector", "CountryCode",
@@ -64,11 +69,15 @@ IDMAnonymized <- function(IDMFILES, I_ID_REF) {
 
     #join Dico and IDM
     setkey(IDM, Login)
+    setkey(I_ID_ko, name)
 
-    IDM <- Dico[IDM, nomatch=0]
-    I_ID_ok <- rbindlist(I_ID_ok, IDM[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)], use.names=TRUE)
+    tmp <- I_ID_ko[IDM, nomatch=0]
+    I_ID_ok <- rbindlist(list(I_ID_ok, tmp[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]), use.names=TRUE)
     setkey(I_ID_ok, I_ID)
     I_ID_ok <- unique(I_ID_ok)
+    print(paste("dim(I_ID_ok) : ",dim(I_ID_ok), sep=""))
+    I_ID_ko <- I_ID_ko[!IDM][, list(I_ID, name)]
+    print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
   }
 
   return(I_ID_ok)
