@@ -41,3 +41,7 @@ sbt assembly universal:packageZipTarball
 aws s3 cp target/scala-2.10/ALDataLab-assembly-1.3.1.jar s3://gedatalab/binaries/
 
 
+./slaves.sh ps -ef | grep java | grep 7077 | awk '{print "ssh root@" $1 " kill " $3}'
+
+
+aws ec2 describe-instances |jq  '.Reservations[] | .Instances[] | select(.Tags[] | .Value | contains("zeppelin")) | . | .NetworkInterfaces[] | .PrivateIpAddresses[] | .Association.PublicIp + "    " + .PrivateIpAddress'
