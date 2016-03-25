@@ -31,14 +31,14 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         {
           if (level == "detail") {
             if (resolution == "IDM") {
-              df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+              df.groupBy("source_sector", "source_I_ID_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
                 "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
                 "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
                 "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
             } else {
-              df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+              df.groupBy("source_sector", "source_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
                 "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
@@ -47,14 +47,14 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
             }
           } else {
             if (resolution == "IDM") {
-              df.groupBy("source_sector", "source_I_ID_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+              df.groupBy("source_sector", "source_I_ID_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
                 "con_status", "dest_site",
                 "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
                 "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
             } else {
-              df.groupBy("source_sector", "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
+              df.groupBy("source_sector", "source_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
                 "con_status", "dest_site",

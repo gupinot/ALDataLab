@@ -160,6 +160,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Host name".as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
           $"Application Sector".as("aip_appinstance_sector"),
+          $"Application current state".as("aip_appinstance_state"),
           lit(filedate).as("filedate")
         )
         case "I-ID" => res.select(
@@ -168,6 +169,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"SiteName",
           $"CountryCode",
           $"Sector",
+          $"TerangaCode",
           lit(filedate).as("filedate")
         )
         case "Storage-Master-Report" => res
