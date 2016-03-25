@@ -1,0 +1,11 @@
+Resolve data with repositories (IDM, AIP, MDM) in terms of date, minima by month
+prerequisite :
+- generate I-ID from dictionary for each version of IDM
+- generate again everytime AIP, MDM for each filedate
+
+Count users
+
+Multiple IPs
+
+Resolve sites from AIP (in addition to MDM)
+
