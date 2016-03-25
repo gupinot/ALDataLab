@@ -10,7 +10,7 @@ DATERANGE=0
 LOGERR=$(mktemp)
 echo "error log in $LOGERR"
 
-usage="$0 [-n|--dry-run] [-v|--verbose] [submitArg]"
+usage="$0 [-n|--dry-run] [-v|--verbose] [-d|--date-range begindate endate byNbDay] [submitArg]"
 while [[ $# > 0 ]]
 do
 key="$1"
@@ -30,7 +30,7 @@ case $key in
     DATERANGE=1
     begindate=$2
     enddate=$3
-    byday=$3
+    byday=$4
     shift
     shift
     shift
@@ -45,8 +45,25 @@ done
 
 tmpfile=$(mktemp)
 
-echo "nodaterange" > $tmpfile
-cat $tmpfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR; ret=$?
+if [[ $DATERANGE -eq 1 ]]
+then
+  dateto=$begindate
+  while [[ "$dateto" != "$enddate" ]]
+  do
+    datefrom=$dateto
+    echo "$datefrom" > $tmpfile
+    dateto=$(date -d "$datefrom +$byday days" +"%Y-%m-%d")
+    if [[ $(date -d $enddate '+%s') -lt $(date -d $dateto '+%s') ]]
+    then
+      dateto=$enddate
+    fi
+    echo "$dateto" >> $tmpfile
+    cat $tmpfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR; ret=$?
+  done
+else
+    echo "nodaterange" > $tmpfile
+    cat $tmpfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR; ret=$?
+fi
 
 echo "$0 : submit return : $ret"
 rm $tmpfile

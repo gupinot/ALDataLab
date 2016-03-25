@@ -45,6 +45,15 @@ class EncodeServerSockets (implicit sqlContext: SQLContext) extends Pipeline wit
     StructField("time", StringType, true),
     StructField("command", StringType, true)
   ))
+  val netstatSchema = StructType(Seq(
+    StructField("server_ip", StringType, true),
+    StructField("dt", StringType, true),
+    StructField("node", StringType, true),
+    StructField("local", StringType, true),
+    StructField("foreign", StringType, true),
+    StructField("status", StringType, true),
+    StructField("command", StringType, true)
+  ))
 
   override def execute(): Unit = {
 
@@ -74,6 +83,14 @@ class EncodeServerSockets (implicit sqlContext: SQLContext) extends Pipeline wit
               .option("delimiter", ";")
               .option("mode", "DROPMALFORMED")
               .schema(psSchema)
+              .load(record.filename)
+              .withColumn("dt", regexp_replace($"dt", "(....)(..)(..)-(..)(..)", "$1-$2-$3T$4:$5"))
+          case "netstat" =>
+            sqlContext.read.format("com.databricks.spark.csv")
+              .option("header", "false")
+              .option("delimiter", ";")
+              .option("mode", "DROPMALFORMED")
+              .schema(netstatSchema)
               .load(record.filename)
               .withColumn("dt", regexp_replace($"dt", "(....)(..)(..)-(..)(..)", "$1-$2-$3T$4:$5"))
         }
