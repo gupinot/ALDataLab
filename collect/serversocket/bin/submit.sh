@@ -117,11 +117,17 @@ function test() {
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		if [[ "$OSTYPE" == "linux" ]]
+		if ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "[[ -f /usr/sbin/lsof ]] ||[[ -f /usr/bin/lsof ]]"
 		then
-			ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "sudo -n /usr/sbin/lsof -nP -i || sudo -n /usr/bin/lsof -nP -i || yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+			if [[ "$OSTYPE" == "linux" ]]
+			then
+				ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "sudo -n /usr/sbin/lsof -nP -i || sudo -n /usr/bin/lsof -nP -i || yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+			else
+				ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+			fi
 		else
-			ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+			echo "no lsof found" > $errlog
+			echo "" > $stdoutlog
 		fi
 		return $LSOF_RET
 	) && LSOF_RET=$?

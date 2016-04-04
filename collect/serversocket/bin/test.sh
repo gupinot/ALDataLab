@@ -13,6 +13,7 @@ do
 	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
 	serverstatus=$(cat $SERVERSTATUS | grep "^$host;")
 	([[ "$serverstatus" == "" ]] || [[ $(echo $serverstatus | awk -F';' '{print $3}') -eq 0 ]]) &&\
+	echo "testing $host..." &&\
 	($ROOTDIR/bin/submit.sh test $ip $host && status=1
 	 tmpfile=$(mktemp)
 	 grep -v "^$host;" $SERVERSTATUS > $tmpfile
