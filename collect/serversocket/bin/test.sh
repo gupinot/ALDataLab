@@ -3,7 +3,7 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-CSC_IN=$ROOTDIR/conf/datalab_csc_done.csv
+CSC_IN=$ROOTDIR/conf/datalab_csc.csv
 DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 
 cp -f $SERVERSTATUS $SERVERSTATUS.$DATECUR

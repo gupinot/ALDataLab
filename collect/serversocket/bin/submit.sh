@@ -45,7 +45,6 @@ function update() {
 	 cat $SCRIPT_SERVER | sed -e "s/HOST_NAME/${SERVER}/" | sed -e "s/OS_TYPE/${OSTYPE}/" > $TMP_SCRIPT &&\
 	 scp $TMP_SCRIPT datalab@$SERVER:~/$(basename $SCRIPT_SERVER) &&\
 	 rm $TMP_SCRIPT &&\
-	 ssh -o ConnectTimeout=10  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVER "chmod +x ~/$(basename $SCRIPT_SERVER) && echo \"*/5 * * * * ~/$(basename $SCRIPT_SERVER) monitor 2>~/monitor.err 1>~/monitor.out\" >> mycron && crontab -r && crontab mycron" &&\
 	 RET_UPDATE=0
 	return $RET_UPDATE
 }
