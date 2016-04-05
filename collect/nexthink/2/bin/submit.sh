@@ -11,7 +11,7 @@ fi
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : begin"
 ########################################################
 #Parse repo in files, validate and send to s3 (expect I-ID)
-${REPO_SHELL}
+#${REPO_SHELL}
 
 ########################################################
 #Parse Nexthink csv files (connection and webrequest) list and :
