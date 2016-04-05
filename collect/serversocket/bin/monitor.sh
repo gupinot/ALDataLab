@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 HOSTNAME="HOST_NAME"
+OSTYPE="OS_TYPE"
 if [[ -f $HOME/timedelta.sh ]]
 then
 	. $HOME/timedelta.sh
@@ -15,13 +16,14 @@ DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
 MAX_SPACE_USED=1000000
 MAX_SPACE_LEFT=100000
 LSOF_MONITOR=${DIR_MONITOR}/lsof_${HOSTNAME}_${datH}.csv.gz
+NETSTAT_MONITOR=${DIR_MONITOR}/netstat_${HOSTNAME}_${datH}.csv.gz
 PS_MONITOR=${DIR_MONITOR}/ps_${HOSTNAME}_${datH}.csv.gz
 
 export PATH=$PATH:/usr/sbin
 
 
 function monitor() {
-	sudo lsof -nPi4 | sed 1d | \
+	sudo lsof -nPi | sed 1d | \
 	awk -vdat=${datMM} -vserver=$HOSTNAME \
 	'$8 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
 	 $7 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
@@ -30,11 +32,21 @@ function monitor() {
 	sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | \
 	awk -vdat=${datMM} -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
 	sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR
+
+	if [[ "$OSTYPE" == "linux" ]]
+	then
+		sudo netstat --ip -anp | sed 1d | \
+		awk -vdat=${datMM} -vserver=$HOSTNAME \
+		'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $7 != "" {print "\""server"\";\""dat"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\""$7"\""}' | gzip -c >> $NETSTAT_MONITOR
+	else
+		sudo netstat --ip -an | sed 1d | \
+		awk -vdat=${datMM} -vserver=$HOSTNAME \
+		'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $6 != "" {print "\""server"\";\""dat"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\"-\""}' | gzip -c >> $NETSTAT_MONITOR
+	fi
 }
 
 function server_info() {
 	echo ""
-	
 }
 
 function free_space() {
@@ -47,7 +59,7 @@ function free_space() {
 
 function collect() {
 	ret=0
-	for fic in $(ls $DIR_MONITOR | grep -v $(basename $LSOF_MONITOR) | grep -v $(basename $PS_MONITOR))
+	for fic in $(ls $DIR_MONITOR | grep -v $(basename $LSOF_MONITOR) | grep -v $(basename $PS_MONITOR) | grep -v $(basename $NETSTAT_MONITOR))
 	do
 		mv $DIR_MONITOR/$fic $DIR_COLLECT/. && ret=0
 	done

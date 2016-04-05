@@ -3,7 +3,7 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-CSC_IN=$ROOTDIR/conf/datalab_csc_done.csv
+CSC_IN=$ROOTDIR/conf/datalab_csc.csv
 DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 
 cp -f $SERVERSTATUS $SERVERSTATUS.$DATECUR
@@ -13,6 +13,7 @@ do
 	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
 	serverstatus=$(cat $SERVERSTATUS | grep "^$host;")
 	([[ "$serverstatus" == "" ]] || [[ $(echo $serverstatus | awk -F';' '{print $3}') -eq 0 ]]) &&\
+	echo "testing $host..." &&\
 	($ROOTDIR/bin/submit.sh test $ip $host && status=1
 	 tmpfile=$(mktemp)
 	 grep -v "^$host;" $SERVERSTATUS > $tmpfile
