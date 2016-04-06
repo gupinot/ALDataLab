@@ -3,18 +3,31 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-function merge_send() {
+function merge_sockets() {
 	filein=$1
 	fileout=$2
 	for fic in $(cat $filein)
         do
-		cat $fic >> $fileout &&\
-                CMD="mv $fic $DIR_DONECOLLECT/." &&\
-                echo "$CMD" && $CMD
-        done &&\
-        CMD="aws s3 cp $fileout $S3_DIR_COLLECT/$(basename $fileout)" &&\
-        echo "$CMD" && $CMD &&\
-        mv $fileout $DIR_SENT/.
+		if gunzip -t $fic
+		then
+			cat $fic >> $fileout &&\
+                	CMD="mv $fic $DIR_DONECOLLECT/." &&\
+                	echo "$CMD" && $CMD
+		else
+			CMD="mv $fic $DIR_ERRCOLLECT/." &&\
+			echo "$CMD" && $CMD
+		fi
+        done
+}
+
+function send_sockets() {
+	cd ${DIR_TOSEND}
+	for fic in $(ls *.csv.gz)
+        do
+        	CMD="aws s3 cp $fic $S3_DIR_COLLECT/$(basename $fic)" &&\
+        	echo "$CMD" && $CMD &&\
+        	mv $fic $DIR_SENT/.
+        done 
 }
 
 DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
@@ -31,9 +44,10 @@ do
 		do
 			echo $fic >> $tmpfile
 		done &&\
-		CMD="merge_send $tmpfile ${DIR_TOSEND}/${col}_${type}_${filedt}_${DATECUR}.csv.gz" &&\
+		CMD="merge_sockets $tmpfile ${DIR_TOSEND}/${col}_${type}_${filedt}_${DATECUR}.csv.gz" &&\
 		echo "$CMD" && $CMD
 		rm -f $tmpfile
 	done
 done
+send_sockets
 cd $curdir
