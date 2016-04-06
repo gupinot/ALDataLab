@@ -2,7 +2,7 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.{Repo, Pipeline}
 import com.alstom.datalab.Util._
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SaveMode, SQLContext}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
 
@@ -134,7 +134,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Owner Org UID".as("aip_server_owner_org_id"),
           $"Vendor".as("aip_server_vendor"),
           $"Model".as("aip_server_model"),
-          $"Installation date".as("aip_server_dt_install"),
+          //$"Installation date".as("aip_server_dt_install"),
           $"Operational role".as("aip_server_role"),
           $"Source".as("aip_server_source"),
           $"Administrated by".as("aip_server_adminby"),
@@ -146,10 +146,22 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Application Name".as("aip_app_name"),
           $"Shared Unique ID".as("aip_app_shared_unique_id"),
           $"Type".as("aip_app_type"),
+          $"Validation".as("aip_app_validation"),
           $"Current State".as("aip_app_state"),
           $"Sensitive Application".as("aip_app_sensitive"),
           $"Alstom Criticality".as("aip_app_criticality"),
           $"Sector".as("aip_app_sector"),
+          $"IT Owner".as("aip_app_it_owner"),
+          $"IS Owner".as("aip_app_is_owner"),
+          lit(filedate).as("filedate")
+        )
+
+        case "AIP-AppGFtoApp" => res.select(
+          $"Name".as("aip_appgf_name"),
+          $"Shared Unique ID".as("aip_appgf_shared_unique_id"),
+          $"Type".as("aip_appgf_type"),
+          $"GridFusion Application Name".as("aip_appgf_grid_app_name"),
+          $"Billing Code".as("aip_appgf_billing_code"),
           lit(filedate).as("filedate")
         )
 
@@ -176,7 +188,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .withColumn("server", lower($"sServerName"))
           .withColumn("mount", lower($"sPartition"))
           .withColumn("type", transcodeTiers($"StorageTier"))
-          .filter($"BillableForStorage" === "Yes")
+          .filter($"ServerBillableForStorage" === "Yes")
           .withColumn("charged_total_mb", gb2mb($"TotalMeassureGb"))
           .withColumn("charged_used_mb", gb2mb($"UsedMeassureGb"))
           .select(
@@ -190,7 +202,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           sys.exit(1)
       }
 
-      res2.write.mode("append").partitionBy("filedate").parquet(respath)
+      res2.write.mode(SaveMode.Overwrite).partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
   }

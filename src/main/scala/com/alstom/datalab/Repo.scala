@@ -21,6 +21,7 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
   val AIPServer = context.repodir() + "/AIP-Server"
   val AIPSoftInstance = context.repodir() + "/AIP-SoftInstance"
   val AIPApplication = context.repodir() + "/AIP-Application"
+  val AIPGridFusion = context.repodir() + "/AIP-AppGFtoApp"
   val AIP = context.repodir() + "/AIP"
   val AIPExplode = context.repodir() + "/AIPExplode"
   // register this object as the repo in the context
@@ -38,6 +39,8 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
 
     val aip_application = readAIPApplication(currentDate)
 
+    val aip_grid_fusion = readAIPGridFusion(currentDate)
+
     val myConcat = new ConcatString("||")
 
     val dfres = aip_server
@@ -45,20 +48,28 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
         aip_server("aip_server_hostname") === aip_soft_instance("aip_appinstance_hostname"), "left_outer")
       .join(aip_application,
         aip_soft_instance("aip_appinstance_shared_unique_id") === aip_application("aip_app_shared_unique_id"), "left_outer")
+      .join(aip_grid_fusion,
+        aip_application("aip_app_shared_unique_id") === aip_grid_fusion("aip_appgf_shared_unique_id"), "left_outer")
       .groupBy("aip_server_ip", "aip_server_hostname", "aip_server_adminby", "aip_server_function", "aip_server_subfunction",
         "aip_server_phys_host", "aip_server_size", "aip_server_type", "aip_server_vmw_host", "aip_server_status", "aip_server_site", "aip_server_site_name",
         "aip_server_ownership", "aip_server_cpu_type", "aip_server_cpu_num", "aip_server_cpu_cores", "aip_server_owner", "aip_server_owner_org_id", "aip_server_vendor",
-        "aip_server_model", "aip_server_dt_install", "aip_server_role", "aip_server_source", "aip_server_os_name")
+        "aip_server_model", "aip_server_role", "aip_server_source", "aip_server_os_name")
       .agg(myConcat($"aip_appinstance_name").as("aip_app_name"),
         myConcat($"aip_appinstance_type").as("aip_appinstance_type"),
         myConcat($"aip_app_type").as("aip_app_type"),
         myConcat($"aip_app_state").as("aip_app_state"),
+        myConcat($"aip_app_validation").as("aip_app_validation"),
+        myConcat($"aip_app_it_owner").as("aip_app_it_owner"),
+        myConcat($"aip_app_is_owner").as("aip_app_is_owner"),
         myConcat($"aip_appinstance_state").as("aip_appinstance_state"),
         myConcat($"aip_app_sensitive").as("aip_app_sensitive"),
         myConcat($"aip_app_criticality").as("aip_app_criticality"),
         myConcat($"aip_app_sector").as("aip_app_sector"),
         myConcat($"aip_appinstance_sector").as("aip_appinstance_sector"),
-        myConcat($"aip_appinstance_shared_unique_id").as("aip_app_shared_unique_id"))
+        myConcat($"aip_appinstance_shared_unique_id").as("aip_app_shared_unique_id"),
+        myConcat($"aip_appgf_grid_app_name").as("aip_appgf_grid_app_name"),
+        myConcat($"aip_appgf_billing_code").as("aip_appgf_billing_code"),
+        first(aip_server("filedate")).as("filedate"))
       .filter(regexudf(ipinternalpattern)($"aip_server_ip"))
       .sort(desc("aip_app_name"), desc("aip_server_adminby"))
       .dropDuplicates(Array("aip_server_ip"))
@@ -71,22 +82,29 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
         aip_server("aip_server_hostname") === aip_soft_instance("aip_appinstance_hostname"), "left_outer")
       .join(aip_application,
         aip_soft_instance("aip_appinstance_shared_unique_id") === aip_application("aip_app_shared_unique_id"), "left_outer")
+      .join(aip_grid_fusion,
+        aip_application("aip_app_shared_unique_id") === aip_grid_fusion("aip_appgf_shared_unique_id"), "left_outer")
       .select(
         $"aip_server_ip", $"aip_server_hostname", $"aip_server_adminby", $"aip_server_function", $"aip_server_subfunction",
         $"aip_server_phys_host", $"aip_server_size", $"aip_server_type", $"aip_server_vmw_host", $"aip_server_status",
         $"aip_server_site", $"aip_server_site_name", $"aip_server_ownership", $"aip_server_cpu_type", $"aip_server_cpu_num",
         $"aip_server_cpu_cores", $"aip_server_owner", $"aip_server_owner_org_id", $"aip_server_vendor",
-        $"aip_server_model", $"aip_server_dt_install", $"aip_server_role", $"aip_server_source", $"aip_server_os_name",
+        $"aip_server_model", $"aip_server_role", $"aip_server_source", $"aip_server_os_name",
         $"aip_appinstance_name".as("aip_app_name"),
         $"aip_appinstance_type".as("aip_appinstance_type"),
         $"aip_app_type".as("aip_app_type"),
+        $"aip_app_validation".as("aip_app_validation"),
         $"aip_app_state".as("aip_app_state"),
+        $"aip_app_it_owner".as("aip_app_it_owner"),
+        $"aip_app_is_owner".as("aip_app_is_owner"),
         $"aip_appinstance_state".as("aip_appinstance_state"),
         $"aip_app_sensitive".as("aip_app_sensitive"),
         $"aip_app_criticality".as("aip_app_criticality"),
         $"aip_app_sector".as("aip_app_sector"),
         $"aip_appinstance_sector".as("aip_appinstance_sector"),
-        $"aip_appinstance_shared_unique_id".as("aip_app_shared_unique_id"))
+        $"aip_appinstance_shared_unique_id".as("aip_app_shared_unique_id"),
+        $"aip_appgf_grid_app_name".as("aip_appgf_grid_app_name"),
+        $"aip_appgf_billing_code".as("aip_appgf_billing_code"))
       .filter(regexudf(ipinternalpattern)($"aip_server_ip"))
       .sort(desc("aip_app_name"), desc("aip_server_adminby"))
       .dropDuplicates(Array("aip_server_ip", "aip_app_name"))
@@ -102,6 +120,8 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
 
   def readAIPApplication(currentDate:Date=null): DataFrame = readRepo(AIPApplication,currentDate)
 
+  def readAIPGridFusion(currentDate:Date=null): DataFrame = readRepo(AIPGridFusion,currentDate)
+
   def readMDM(currentDate:Date=null): DataFrame = readRepo(MDMRepository,currentDate)
 
   def readI_ID(currentDate:Date=null): DataFrame = readRepo(I_IDRepository,currentDate)
@@ -110,7 +130,7 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
 
   def readRepo(reponame: String, currentDate:Date): DataFrame = {
 
-    val df = sqlContext.read.parquet(reponame)
+    val df = sqlContext.read.option("mergeSchema", "true").parquet(reponame)
 
     val maxDf = if (currentDate == null) {
       df.select(max(to_date($"filedate")).as("maxdate"))
