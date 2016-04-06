@@ -14,7 +14,6 @@ $HOME/pipeline/bin/pipe3to4.sh &&\
 $HOME/pipeline/bin/resolveserversockets.sh &&\
 $HOME/pipeline/bin/pipe4to5.sh &&\
 $HOME/pipeline/bin/webapp.sh &&\
-$HOME/pipeline/bin/flow.sh &&\
 $HOME/pipeline/bin/serverusage.sh &&\
 $HOME/pipeline/bin/flow.sh &&\
 $HOME/pipeline/bin/syncHdfsS3.sh toS3; ret=$?

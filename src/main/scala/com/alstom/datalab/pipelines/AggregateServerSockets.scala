@@ -26,13 +26,13 @@ class AggregateServerSockets(implicit sqlContext: SQLContext) extends Pipeline w
         //read meta to compute
         val meta_delta_ok = deltaMetaResolvedToAggregated(context.meta())
 
-        val meta = broadcast(meta_delta_ok)
+        val meta = meta_delta_ok.cache()
 
         val resolved = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}")
 
         //Read resolved to compute
         val resolved_filtered = resolved
-          .join(meta, resolved("server_ip") === meta("server_ip")
+          .join(meta, resolved("engine") === meta("server_ip")
             && resolved("dt") === meta("dt"), "inner")
           .select(resolved.columns.map(resolved.col): _*).as("resolved")
 
