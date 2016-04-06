@@ -64,7 +64,7 @@ done
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
 
-for var in lsof ps
+for var in lsof ps netstat
 do
     hdfs dfs -ls ${dirin}/${var}_*.gz | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
 	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}"

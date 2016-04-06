@@ -23,7 +23,8 @@ class ResolveServerSockets (implicit sqlContext: SQLContext) extends Pipeline wi
 
     //read meta to compute
     val meta_delta_ok = deltaMetaEncodedToResolved(context.meta())
-    val meta = broadcast(meta_delta_ok)
+    val meta = meta_delta_ok.cache()
+
 
     val all_dt = {
       if (this.inputFiles.length == 2) {
@@ -164,6 +165,7 @@ class ResolveServerSockets (implicit sqlContext: SQLContext) extends Pipeline wi
       val ip = context.repo().readMDM().select($"mdm_loc_code", explode(range($"mdm_ip_start_int", $"mdm_ip_end_int")).as("mdm_ip"))
       ip.registerTempTable("ip")
       broadcast(sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip""").cache())
+      //sqlContext.sql("""select mdm_ip, concat_ws('_',collect_set(mdm_loc_code)) as site from ip group by mdm_ip""").cache()
   }
 
   def resolveSite(df: DataFrame): DataFrame = {
@@ -183,6 +185,7 @@ class ResolveServerSockets (implicit sqlContext: SQLContext) extends Pipeline wi
   def resolveAIP(df: DataFrame): DataFrame = {
 
     val dfAIP = broadcast(context.repo().readAIP().cache())
+    //val dfAIP = context.repo().readAIP().cache()
 
     df.join(dfAIP.as("destAip"), $"dest_ip" === $"destAip.aip_server_ip", "left_outer")
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")

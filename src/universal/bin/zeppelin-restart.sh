@@ -9,7 +9,7 @@ echo "$(date +"%Y-%m-%dT%H:%M") : begin"
 /root/zeppelin/bin/zeppelin-daemon.sh restart
 
 #run all notebook which name contains "prod - "
-sleep 15
+sleep 20
 curl http://localhost:8080/api/notebook \
 | jq -c '.body | sort_by(.name) | map(select(.name | contains("- prod"))) | .[] | .id'\
 | tr -d '"' | xargs -I@ curl -d '' http://localhost:8080/api/notebook/job/@
