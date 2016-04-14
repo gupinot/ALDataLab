@@ -332,7 +332,7 @@ outputClusterNumber {
   
 }
 
-#SectorNADiv {
+#SectorNADiv, #SectorNADivTo  {
   float: right;
   margin-right:15px;
 }

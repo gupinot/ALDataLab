@@ -12,26 +12,34 @@ source("./R/conf.R")
 ################################################################################################
 
 ################################################################################################
-readNxStatsAppliFiles <- function(FromSite = "IDM", withDate = FALSE, ServerDetail = FALSE, DateRange = "") {  
+readNxStatsAppliFiles <- function(deviceOrServer = "Device", FromSite = "IDM", withDate = FALSE, ServerDetail = FALSE, DateRange = "") {
   
-  if (FromSite == "IDM") {
-    Method="IDM"
+  if (deviceOrServer == "Device") {
+    if (FromSite == "IDM") {
+      Method="IDM"
+    }
+    else {
+      Method="Device"
+    }
+    if (ServerDetail)
+      Type="Server"
+    else
+      Type=""
+
+    if (withDate)
+      Day="Day"
+    else
+      Day=""
+
+    filename=paste("Stat", Method, "AppliSite", Type, Day, DateRange, ".csv.gz", sep="")
   }
-  else {
-    Method="Device"
+  else
+  {
+    filename=paste("StatAppliDetailServer2Server", DateRange, ".csv.gz", sep="")
+
   }
-  if (ServerDetail)
-    Type="Server"
-  else
-    Type=""
-  
-  if (withDate)
-    Day="Day"
-  else
-    Day=""
-  
-  
-  filename=paste("Stat", Method, "AppliSite", Type, Day, DateRange, ".csv.gz", sep="")
+
+
   print(paste("readNxStatsAppliFiles() : read file : ", filename, sep=""))
   filein=paste(NXDataDir4, filename, sep="/")
   Stat<-fread(paste("gunzip -c ", filein, sep=""), sep=";")
@@ -39,7 +47,6 @@ readNxStatsAppliFiles <- function(FromSite = "IDM", withDate = FALSE, ServerDeta
   #verrue : suppress special character in NX_bin* : '"', '\'
   Stat[, source_app_name:=gsub("\"","", source_app_name)]
   Stat[, source_app_name:=gsub("\\", "", source_app_name, fixed=TRUE)]
-
   return(Stat)
 }
 
@@ -60,8 +67,8 @@ Read_SitesSectorScenario <- function(File = SitesSectorScenarioFile) {
 
 ################################################################################################
 ################################################################################################
-StatFiltering <- function(Data,
-                          Sector = c(""), SectorNA = TRUE, 
+StatFiltering <- function(Data, deviceOrServer = "Device",
+                          Sector = c(""), SectorNA = TRUE, SectorTo = c(""), SectorNATo = TRUE,
                           InterIntraSite = c(TRUE, FALSE),
                           SiteSelectIn = c(""), SiteSelectOut = c(""), SiteSelectOperand="OR",
                           CountrySiteFilterIn = c(""), CountrySiteFilterOut = c(""), CountrySelectOperand = "AND",
@@ -84,6 +91,10 @@ StatFiltering <- function(Data,
   if (is.null(Sector) | Sector[1] == "" | Sector[1] == "All" | is.null(Sector[1])) {
     Sector=c("")
   }
+  if (is.null(SectorTo) | SectorTo[1] == "" | SectorTo[1] == "All" | is.null(SectorTo[1])) {
+    SectorTo=c("")
+  }
+
   if (is.null(RemovedSiteSelectIn) | RemovedSiteSelectIn[1] == "" | RemovedSiteSelectIn[1] == "All" | is.null(RemovedSiteSelectIn[1])) {
     RemovedSiteSelectIn=c("")
   }
@@ -122,22 +133,52 @@ StatFiltering <- function(Data,
   print("   StatFiltering() : keep only connection status closed...")
   setkey(Stat, con_status)
   Stat<-Stat["closed",]
-  
+
   print("    StatFiltering() : Sector filtering...")
   print(paste("StatFiltering() : ", Sys.time(), sep=";"))
-  setkey(Stat, source_sector)
   if (!SectorNA) {
-    Stat <- Stat[!is.na(source_sector), ]
+    print(paste("StatFiltering() : SectorNA not true. Value : ", SectorNA, sep=""))
+    if (deviceOrServer == "Device") {
+      setkey(Stat, source_sector)
+      Stat <- Stat[!is.na(source_sector), ]
+    }
+    else {
+      setkey(Stat, source_aip_app_sector)
+      Stat <- Stat[!is.na(source_aip_app_sector), ]
+    }
   }
-  
+
+
+  tmpReformatStat <- copy(Stat)
+
   if (Sector[1] != "") {
-    setkey(Stat, source_sector)
-    tmpReformatStat <- copy(Stat[Sector, nomatch=0])
-  } else {
-    tmpReformatStat <- copy(Stat)
+    print(paste("StatFiltering() : Sector not empty", sep=""))
+
+    if (deviceOrServer == "Device") {
+      setkey(tmpReformatStat, source_sector)
+      tmpReformatStat <- tmpReformatStat[Sector, nomatch=0]
+    } else {
+      SectorPattern <- paste(Sector, collapse="|")
+      SectorPattern <- paste("(", SectorPattern, ")", sep="")
+      tmpReformatStat <- tmpReformatStat[grepl(SectorPattern, source_aip_app_sector), ]
+    }
   }
-  
-  print("    StatFiltering() : Site filtering...")
+
+  if (!SectorNATo) {
+  print("StatFiltering() : SectorNATo not true")
+    setkey(tmpReformatStat, dest_aip_app_sector)
+    tmpReformatStat <- tmpReformatStat[!is.na(dest_aip_app_sector), ]
+  }
+
+
+  if (SectorTo[1] != "") {
+    SectorPattern <- paste(SectorTo, collapse="|")
+    SectorPattern <- paste("(", SectorPattern, ")", sep="")
+    tmpReformatStat <- tmpReformatStat[grepl(SectorPattern, dest_aip_app_sector), ]
+  }
+
+
+print("    StatFiltering() : Site filtering...")
   print(paste("StatFiltering() : ", Sys.time(), sep=";"))
   if (SiteSelectIn[1] != "" & SiteSelectOut[1] != "") {
     if (SiteSelectOperand == "AND") {
@@ -357,7 +398,7 @@ StatFiltering <- function(Data,
 ################################################################################################
 ################################################################################################
 #Function to generate the matrix in circos format.
-reformatStat <- function(Stat, 
+reformatStat <- function(Stat, deviceOrServer = "Device",
                          MaxMatrix = 50, 
                          unit = 0,
                          DEBUG = FALSE, 
@@ -389,31 +430,46 @@ reformatStat <- function(Stat,
   #suppress rows with null traffic
   print("    reformatStat() : Agregate...")
   tmpReformatStat <- tmpReformatStat[Traffic!=0,]
-  
-  if (!DetailledFlow) {
-    tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0)), 
-                                            by=list(SiteCode_Source, SiteName_Source, SiteCategory_Source, source_sector, source_teranga,
-                                                    SiteCode_Destination, SiteName_Destination, SiteCategory_Destination,
-                                                    source_app_name, source_app_exec, url,
-                                                    dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
-                                                    dest_aip_app_sector, dest_aip_app_shared_unique_id,
-                                                    dest_aip_appinstance_type, dest_aip_server_adminby)]
+
+  if (deviceOrServer == "Device" ) {
+    if (!DetailledFlow) {
+      tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0)),
+                                              by=list(SiteCode_Source, SiteName_Source, SiteCategory_Source, source_sector, source_teranga,
+                                                      SiteCode_Destination, SiteName_Destination, SiteCategory_Destination,
+                                                      source_app_name, source_app_exec, url,
+                                                      dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
+                                                      dest_aip_app_sector, dest_aip_app_shared_unique_id,
+                                                      dest_aip_appinstance_type, dest_aip_server_adminby)]
+    }
+    else {
+      tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0),
+                                                     I_ID=paste(unique(unlist(strsplit(I_ID_U, ","))), collapse=",")),
+                                              by=list(SiteCode_Source, SiteName_Source, SiteCategory_Source,source_sector, source_teranga,
+                                                      SiteCode_Destination, SiteName_Destination, SiteCategory_Destination,
+                                                      source_app_name, source_app_exec, url,
+                                                      dest_ip, dest_port, con_protocol,
+                                                      dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
+                                                      dest_aip_app_sector, dest_aip_app_shared_unique_id,
+                                                      dest_aip_appinstance_type, dest_aip_server_adminby)]
+    }
+  } else {
+    tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0)),
+                                    by=list(
+                                      source_ip, source_app_name, source_app_exec, url,
+                                      source_aip_app_name, source_aip_server_function, source_aip_server_subfunction, source_aip_app_criticality, source_aip_app_type,
+                                      source_aip_app_sector, source_aip_app_shared_unique_id,
+                                      source_aip_appinstance_type, source_aip_server_adminby,
+                                      dest_ip, dest_port, con_protocol,
+                                      dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
+                                      dest_aip_app_sector, dest_aip_app_shared_unique_id,
+                                      dest_aip_appinstance_type, dest_aip_server_adminby,
+                                      SiteCode_Source, SiteName_Source, SiteCategory_Source,
+                                      SiteCode_Destination, SiteName_Destination, SiteCategory_Destination)]
+
   }
-  else {
-    tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0),
-                                                   I_ID=paste(unique(unlist(strsplit(I_ID_U, ","))), collapse=",")),
-                                            by=list(SiteCode_Source, SiteName_Source, SiteCategory_Source,source_sector, source_teranga,
-                                                    SiteCode_Destination, SiteName_Destination, SiteCategory_Destination,
-                                                    source_app_name, source_app_exec, url,
-                                                    dest_ip, dest_port, con_protocol,
-                                                    dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
-                                                    dest_aip_app_sector, dest_aip_app_shared_unique_id,
-                                                    dest_aip_appinstance_type, dest_aip_server_adminby)]
-  }
-  
   tmpReformatStat <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0)), 
                                      by=list(SiteCode_Source, SiteCode_Destination)]
-  
+
   if (DEBUG == TRUE) {
     cat("reformatStat :\n\tdim(tmpReformatStat) : ", dim(tmpReformatStat), "\n") 
   }
@@ -526,6 +582,20 @@ LstSector <- function(file = SectorCodeFile) {
 }
 
 ############################################################################
+LstSectorServer <- function(file = ServerSectorCodeFile) {
+  if (file.exists(file))
+{
+  return(fread(paste("gunzip -c ", file, sep=""), sep="\n")$Sector)
+}
+else
+{
+  #Error
+return(NULL)
+}
+
+}
+
+############################################################################
 LstFromSite <- function() {
   return(c("IDM", "Last Device IP"))
 }
@@ -594,14 +664,20 @@ LstPannelSetting <- function() {
               LstSiteCategory(), 
               LstDateRange(DateRange="6Weeks"), 
               LstDateRange(DateRange="LastWeek"),
-              LstDateRange(DateRange="DayOne")
+              LstDateRange(DateRange="DayOne"),
+              LstDateRange(DeviceOrServer="Server"),
+              LstDateRange(DeviceOrServer="Server", DateRange="6Weeks"),
+              LstDateRange(DeviceOrServer="Server", DateRange="LastWeek"),
+              LstDateRange(DeviceOrServer="Server", DateRange="DayOne"),
+              LstSectorServer()
               ))
 }
 
 ############################################################################
 ############################################################################
-siteMap <- function(FromSite = "IDM", 
-                    Sector = c(""), SectorNA = TRUE, 
+siteMap <- function(deviceOrServer = "Device", FromSite = "IDM",
+                    SourceCollectSelect = "Windows",
+                    Sector = c(""), SectorNA = TRUE, SectorTo = c(""), SectorNATo = TRUE,
                     VolumeUnit = "ConnectTimesData", MaxMatrix = 50,
                     InterIntraSite = c(TRUE, FALSE),
                     SiteSelectIn = c(""), SiteSelectOut = c(""), SiteSelectOperand="OR",
@@ -620,11 +696,11 @@ siteMap <- function(FromSite = "IDM",
   print(paste("siteMap() : ", Sys.time(), sep=";"))
   print("   siteMap() : read data...")
   
-  Data <-  readNxStatsAppliFiles(FromSite, ServerDetail = DetailledFlow, DateRange = DateRange)
+  Data <-  readNxStatsAppliFiles(deviceOrServer, FromSite, ServerDetail = DetailledFlow, DateRange = DateRange)
   
   print(paste("siteMap() : ", Sys.time(), sep=";"))
   
-  if (FromSite == "IDM") {
+  if (deviceOrServer == "Device" && FromSite == "IDM") {
     setnames(Data, "source_I_ID_site", "SiteCode_Source")
   }
   else {
@@ -637,8 +713,8 @@ siteMap <- function(FromSite = "IDM",
   }
   
   #Filter Data
-  Data <- StatFiltering(Data, 
-                        Sector = Sector, SectorNA = SectorNA, InterIntraSite = InterIntraSite,
+  Data <- StatFiltering(Data, deviceOrServer = deviceOrServer,
+                        Sector = Sector, SectorNA = SectorNA, SectorTo = SectorTo, SectorNATo = SectorNATo, InterIntraSite = InterIntraSite,
                         SiteSelectIn = SiteSelectIn, SiteSelectOut = SiteSelectOut, SiteSelectOperand=SiteSelectOperand,
                         CountrySiteFilterIn = CountrySiteFilterIn, CountrySiteFilterOut = CountrySiteFilterOut, CountrySelectOperand = CountrySelectOperand,
                         CountryExcludeSelectIn = CountryExcludeSelectIn, CountryExcludeSelectOut = CountryExcludeSelectOut, CountryExcludeSelectOperand = CountryExcludeSelectOperand,
@@ -649,26 +725,31 @@ siteMap <- function(FromSite = "IDM",
                         portsfilterIncludeOrExclude = portsfilterIncludeOrExclude, portsfiltering = portsfiltering)
   
   print(paste("siteMap() : ", Sys.time(), sep=";"))
-  
+
   MaxMatrix <- as.integer(MaxMatrix)
-  switch(VolumeUnit,
+  unit <- 0
+  if ( deviceOrServer != "Device" ) {
+    setnames(Data, "con_number", "Traffic")
+  } else {
+    switch(VolumeUnit,
          SumConnect = {
            setnames(Data, "con_number", "Traffic")
-           unit <- 0 },
+           },
          SumData = {
            setnames(Data, "con_traffic","Traffic")
-           unit <- 0 },
+           },
          ConnectTimesData = {
            setnames(Data, "con_times_traffic","Traffic")
-           unit <- 0 },
+           },
          CountSumUniqueLogin = {
            setnames(Data, "distinct_I_ID_U","Traffic")
-           unit <- 0 },
+           },
          stop)
-  
+  }
+
   print("   siteMap() : reformatStat() call...")
   print(paste("siteMap() : ", Sys.time(), sep=";"))
-  output <- try(reformatStat(Stat = Data, 
+  output <- try(reformatStat(Stat = Data, deviceOrServer = deviceOrServer,
                              MaxMatrix = MaxMatrix, 
                              unit = unit,
                              DEBUG=FALSE,
@@ -746,7 +827,7 @@ siteMap <- function(FromSite = "IDM",
     ResBeforeSpread <- RenameColumns(ResBeforeSpread, Type="Device")
     setnames(ResBeforeSpread, c("Traffic"), c(VolumeUnit))
     
-    statfileName <- paste("statDevice_", sessionId, ".csv", sep="")
+    statfileName <- paste("stat", deviceOrServer, "_", sessionId, ".csv", sep="")
     statfile <- paste(Dir, "/", statfileName, sep="")
     write.table(ResBeforeSpread, file=statfile, row.names=FALSE, sep=",")
     statfilesize <- format(structure(file.info(statfile)$size, class="object_size"), units="auto")

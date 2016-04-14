@@ -48,10 +48,10 @@
 				<td id="col1g" >Data source</td>
 				<td id="col2g" name="datacollectionsourceSelect">
 				  <form name="datacollectionsource" style="text-align:center;">
-					<div id="datacollectionsourcefilter">
-					  <input type="radio" name="datacollectionsourcefilter" value="Device" checked disabled>
+					<div id="datacollectionsourcediv">
+					  <input type="radio" name="datacollectionsourcefilter" value="Device" checked>
 					  <label class="labelRadio">Device</label>
-					  <input type="radio" name="datacollectionsourcefilter" value="Server" disabled>
+					  <input type="radio" name="datacollectionsourcefilter" value="Server">
 					  <label class="labelRadio">Server</label><br/>
 					</div>
 				  </form>
@@ -64,14 +64,25 @@
 	      				<input type="text" name="daterange" style="font-size: small;width: 90%;text-align: center;margin-left: 10px;"/><br/>
 				        <select name="daterangeweekSelect" id="daterangeweekSelect" dir="rtl" style="width:auto;">
 				        	<option value="" checked>Full range</option>
-				        	<option value="6Weeks" checked>Last 6 weeks</option>
+				        	<option value="6Weeks">Last 6 weeks</option>
 				        	<option value="LastWeek">Last week</options>
 				        	<option value="DayOne">From Day One</options>
 				        </select>
 				    </form>
       			</td>
       		</tr>
-      		<tr>
+			<tr id="OSTypeTr">
+				<td id="col1g">Source collect</td>
+				<td id="col2g">
+					<form name="Source collect">
+						<select name="SourceCollectSelect" id="SourceCollectSelect" dir="rtl" disabled>
+							<option value="Windows" checked>Windows >= 2003</option>
+							<option value="X">Unix/Linux</option>
+						</select>
+					</form>
+				</td>
+			</tr>
+      		<tr id="TrafficBasedOnTr">
       			<td id="col1g">Traffic based on</td>
       			<td id="col2g">
 				  <form name="VolumeUnit">
@@ -80,7 +91,7 @@
 				  </form>
 				</td>
 			</tr>
-			<tr>
+			<tr id="deviceSiteResolMethod">
 				<td id="col1g">Device Site resolution method</td>
 				<td id="col2g">
 			      <form name="FromSiteMethod">
@@ -180,12 +191,12 @@
     	<table>
 			<tr>
 				<td id="col1"></td>
-				<td id="col2" style="font-size: medium"><br/>Device Filtering<br/></td>
+				<td id="col2" style="font-size: medium"><br/>Source Filtering<br/></td>
 				<td id="col3" style="font-size: medium"><br/>Operand<br/></td>
-				<td id="col4" style="font-size: medium"><br/>Server Filtering<br/></td>
+				<td id="col4" style="font-size: medium"><br/>Destination Filtering<br/></td>
 			</tr>
       		<tr>
-      			<td id="col1">Device sector filtering (based on login in IDM)</td>
+      			<td id="col1">Sector filtering</td>
       			<td id="col2" name="SectorSelect">
 					<form name="SectorSelectForm">
 						<div id="SectorNADiv">
@@ -201,7 +212,20 @@
 					</form>
 				</td>
       			<td id="col3"></td>
-      			<td id="col4"></td>
+				<td id="col4" name="SectorSelectTo">
+					<form name="SectorSelectFormTo">
+						<div id="SectorNADivTo">
+							<input type="checkbox" class="SectorNATo" value="TRUE" checked>
+							<label class="labelCheckBox">Sector NA</label>
+						</div>
+						<div id="SectorFilterAllTo" style="text-align:initial">
+							<input type="checkbox" class="sectorAllTo" value="All" checked>
+							<label class="labelCheckBox">All</label><br/>
+						</div>
+						<div id="SectorFilterTo" style="text-align:initial">
+						</div>
+					</form>
+				</td>
       		</tr>
       		<tr>
       			<td id="col1">Country filtering</td>

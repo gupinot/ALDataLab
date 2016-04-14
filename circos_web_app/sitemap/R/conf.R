@@ -38,6 +38,7 @@ SitesSectorScenarioFile <- paste(NXDataDir, "Sites_sector_scenario.csv", sep="/"
 
 SitesCodeFile <- paste(NXDataDir4, "SiteCode.csv.gz", sep="/")
 SectorCodeFile <- paste(NXDataDir4, "SectorCode.csv.gz", sep="/")
+ServerSectorCodeFile <- paste(NXDataDir4, "SectorCodeServer.csv.gz", sep="/")
 DateRangeFile <- paste(NXDataDir4, "/DateRange.csv.gz", sep="")
 DateRangeFile6Weeks <- paste(NXDataDir4, "/DateRange6Weeks.csv.gz", sep="")
 DateRangeFileLastWeek <- paste(NXDataDir4, "/DateRangeLastWeek.csv.gz", sep="")

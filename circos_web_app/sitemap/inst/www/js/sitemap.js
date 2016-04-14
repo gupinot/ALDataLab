@@ -7,16 +7,19 @@ var temp=null;
 
 var LstPannelSetting=null;
 var datapath="/data/";
-var AppDeviceFilterFileInclude="AppliDeviceFilterInclude.csv";
-var AppDeviceFilterFileExclude="AppliDeviceFilterExclude.csv";
-var AppFilterDeviceFile=AppDeviceFilterFileExclude;
-var AppFilterDeviceFileUserUploaded=null;
+var AppDeviceFilterFileInclude="AppliSourceDeviceFilterInclude.csv";
+var AppDeviceFilterFileExclude="AppliSourceDeviceFilterExclude.csv";
+var AppFilterSourceFile=AppDeviceFilterFileExclude;
+//var AppFilterDeviceFile=AppDeviceFilterFileExclude;
+var AppFilterSourceFileUserUploaded=null;
+//var AppFilterDeviceFileUserUploaded=null;
 
-var AppServerFilterFileInclude="AppliServerFilterInclude.csv";
-var AppServerFilterFileExclude="AppliServerFilterExclude.csv";
-var AppFilterServerFile=AppServerFilterFileExclude;
-var AppFilterServerFileUserUploaded=null;
-
+var AppServerFilterFileInclude="AppliDestFilterInclude.csv";
+var AppServerFilterFileExclude="AppliDestFilterExclude.csv";
+var AppFilterDestFile=AppServerFilterFileExclude;
+//var AppFilterServerFile=AppServerFilterFileExclude;
+var AppFilterDestFileUserUploaded=null;
+//var AppFilterServerFileUserUploaded=null;
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +93,8 @@ var AppFilterServerFileUserUploaded=null;
 	    	    LstDateRange(LstPannelSetting[0]);
 	    	    LstFromSite();
 	    	    LstVolumeUnit();
-	    	    LstSector();
+	    	    LstSector(LstPannelSetting[3]);
+	    	    sectorInteraction();
 	    	    LstCountry();
 	    	    LstSite();
 	    	    LstSiteCategory();
@@ -126,7 +130,7 @@ var AppFilterServerFileUserUploaded=null;
 	function LstCountry() {
   		data=LstPannelSetting[4];
         
-		for (i=1; i<data.length; i++)
+		for (i=0; i<data.length; i++)
     	{
 					if (data[i] != "") {
           				createSelectList(data[i], 'CountrySelectIn', data[i]);
@@ -141,12 +145,14 @@ var AppFilterServerFileUserUploaded=null;
     	$("#CountryExcludeSelectOut").chosen({width: "100%"});
 	}
       
-	function LstSector() {
-		data=LstPannelSetting[3];
+	function LstSector(data) {
    		//data is the object returned by the R function
-    	for (i=1; i<data.length; i++)
+   		$("#SectorFilter").empty()
+   		$("#SectorFilterTo").empty()
+    	for (i=0; i<data.length; i++)
 		{
     	    createCheckBox(data[i], 'sectorselect', 'SectorFilter', true, true, i);
+    	    createCheckBox(data[i], 'sectorselectTo', 'SectorFilterTo', true, true, i);
         }
 	}
 
@@ -238,26 +244,150 @@ var AppFilterServerFileUserUploaded=null;
   function populateNavigation() {
 	LstPannelSettingFunc();       
   }
-    
+
+  function sectorInteraction() {
+    $('.sectorAll').change(function(){
+          if(this.checked) {
+                $('.SectorNA').attr("disabled", false);
+                $('#SectorNADiv').show();
+                $('.sectorselect').each(function (){
+                  this.checked=true;
+                })
+              }
+              else {
+                $('.sectorselect').each(function (){
+                  this.checked=false;
+                })
+                $('.SectorNA').prop("checked", false);
+                $('#SectorNADiv').hide();
+                $('.SectorNA').attr("disabled", true);
+              }
+        });
+
+        $(".sectorselect").change(function() {
+          if ($('.sectorselect:checked').length == $('.sectorselect').length) { //all checked
+              $('.sectorAll').prop("checked", true);
+              $('#SectorNADiv').show();
+          }
+          else
+          {
+            $('.sectorAll').prop("checked", false);
+            $('#SectorNADiv').hide();
+            $('.SectorNA').trigger('change').attr("checked", false);
+          }
+
+          if(!this.checked) {
+            if ($('.sectorselect:checked').length == 0) // One box checked minimum
+            {
+                this.checked=true;
+                $(this).trigger('change');
+            }
+          }
+        });
+
+        $('.sectorAllTo').change(function(){
+          if(this.checked) {
+                $('.SectorNATo').attr("disabled", false);
+                $('#SectorNADivTo').show();
+                $('.sectorselectTo').each(function (){
+                  this.checked=true;
+                })
+              }
+              else {
+                $('.sectorselectTo').each(function (){
+                  this.checked=false;
+                })
+                $('.SectorNATo').prop("checked", false);
+                $('#SectorNADivTo').hide();
+                $('.SectorNATo').attr("disabled", true);
+              }
+        });
+
+        $(".sectorselectTo").change(function() {
+          if ($('.sectorselectTo:checked').length == $('.sectorselectTo').length) { //all checked
+              $('.sectorAllTo').prop("checked", true);
+              $('#SectorNADivTo').show();
+          }
+          else
+          {
+            $('.sectorAllTo').prop("checked", false);
+            $('#SectorNADivTo').hide();
+            $('.SectorNATo').trigger('change').attr("checked", false);
+          }
+
+          if(!this.checked) {
+            if ($('.sectorselectTo:checked').length == 0) // One box checked minimum
+            {
+                this.checked=true;
+                $(this).trigger('change');
+            }
+          }
+        });
+
+  }
     
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   function start_interaction() {
       
-      
+    $('input[name="datacollectionsourcefilter"]').change(function(){
+  		var valof = $(this).val();
+  		switch(valof) {
+          case "Device":
+          	$("#deviceSiteResolMethod").show();
+          	$("#TrafficBasedOnTr").show();
+          	$("#OSTypeTr").hide();
+          	$('.DetailledFlowSelect').prop("disabled", false);
+          	$('.DetailledFlowSelect').trigger('change');
+          	LstSector(LstPannelSetting[3]);
+            break;
+          case "Server":
+          	$("#deviceSiteResolMethod").hide();
+          	$("#TrafficBasedOnTr").hide();
+          	$("#OSTypeTr").show();
+          	$('.DetailledFlowSelect').prop("checked", true);
+          	$('.DetailledFlowSelect').prop("disabled", true);
+          	$('.DetailledFlowSelect').trigger('change');
+          	LstSector(LstPannelSetting[14]);
+            break;
+        }
+        sectorInteraction();
+        $('.sectorAll').prop("checked", true);
+        $('.sectorAllTo').prop("checked", true);
+        $('#SectorNADiv').show();
+        $('#SectorNADivTo').show();
+        $('#daterangeweekSelect').trigger('change');
+  	});
+
       
     $('#daterangeweekSelect').change(function(){
 	    var valof = $(this).val();
-	    switch(valof) {
-	    	case "": LstDateRange(LstPannelSetting[0]);
-	    		break;
-	    	case "6Weeks": LstDateRange(LstPannelSetting[7]);
-	    		break;
-	    	case "LastWeek": LstDateRange(LstPannelSetting[8]);
-	    		break;
-	    	case "DayOne": LstDateRange(LstPannelSetting[9]);
-	    		break;
-	    }
+	    var deviceOrServer = $('input[name="datacollectionsourcefilter"]:checked').val();
+        if (deviceOrServer == "Device") {
+            switch(valof) {
+                case "": LstDateRange(LstPannelSetting[0]);
+                    break;
+                case "6Weeks": LstDateRange(LstPannelSetting[7]);
+                    break;
+                case "LastWeek": LstDateRange(LstPannelSetting[8]);
+                    break;
+                case "DayOne": LstDateRange(LstPannelSetting[9]);
+                    break;
+            }
+          }
+          else
+          {
+            switch(valof) {
+                case "": LstDateRange(LstPannelSetting[10]);
+                    break;
+                case "6Weeks": LstDateRange(LstPannelSetting[11]);
+                    break;
+                case "LastWeek": LstDateRange(LstPannelSetting[12]);
+                    break;
+                case "DayOne": LstDateRange(LstPannelSetting[13]);
+                    break;
+            }
+          }
     });
 
     $('#ClusteringActivated').change(function(){
@@ -270,8 +400,13 @@ var AppFilterServerFileUserUploaded=null;
     });
 
     $('.DetailledFlowSelect').change(function(){
+    	var deviceOrServer = $('input[name="datacollectionsourcefilter"]:checked').val();
     	if(this.checked) {
-        	$('tr[id="Server2ServerTr"]').show();
+    	    if (deviceOrServer == "Device") {
+        	    $('tr[id="Server2ServerTr"]').show();
+        	} else {
+        	    $('tr[id="Server2ServerTr"]').hide();
+        	}
         	$('tr[id="PortFilteringTr"]').show();
     	}
         else {
@@ -281,45 +416,7 @@ var AppFilterServerFileUserUploaded=null;
         }
     });
 
-    $('.sectorAll').change(function(){
-      if(this.checked) {
-            $('.SectorNA').attr("disabled", false);
-            $('#SectorNADiv').show();
-            $('.sectorselect').each(function (){
-              this.checked=true;
-            })
-          }
-          else {
-            $('.sectorselect').each(function (){
-              this.checked=false;
-            })
-            $('.SectorNA').prop("checked", false);
-            $('#SectorNADiv').hide();
-            $('.SectorNA').attr("disabled", true);
-          }
-    });
 
-    $(".sectorselect").change(function() {
-      if ($('.sectorselect:checked').length == $('.sectorselect').length) { //all checked
-          $('.sectorAll').prop("checked", true);
-          $('#SectorNADiv').show();
-      }
-      else
-      {
-        $('.sectorAll').prop("checked", false);
-        $('#SectorNADiv').hide();
-        $('.SectorNA').trigger('change').attr("checked", false);
-      }
-      
-      if(!this.checked) {
-        if ($('.sectorselect:checked').length == 0) // One box checked minimum
-        {
-            this.checked=true;
-            $(this).trigger('change');
-        }
-      }
-    });
-    
     
     $('.SiteCategoryAllIn').change(function(){
       if(this.checked) {
@@ -398,24 +495,31 @@ var AppFilterServerFileUserUploaded=null;
 
 
     $("#AppFilterDeviceFileSelect").change(function() {
+        var DeviceOrServer = $('input[name="datacollectionsourcefilter"]:checked').val();
     	if ($(this).val() == "app") {
     		$("#divuserdevicefile").hide();
     		if ($("#AppFilterDeviceTypeSelect").val() == "include") {
-	    		$("#AppliFilterDeviceFile").attr('href', datapath + AppDeviceFilterFileInclude);
-	    		AppFilterDeviceFile=AppDeviceFilterFileInclude;
-
+    		    if (DeviceOrServer == "Device") {
+    		        AppFilterSourceFile=AppDeviceFilterFileInclude;
+    		    } else {
+    		        AppFilterSourceFile=AppServerFilterFileInclude;
+    		    }
 	    	}
 	    	else
 	    	{
-	    		$("#AppliFilterDeviceFile").attr('href', datapath + AppDeviceFilterFileExclude);
-	    		AppFilterDeviceFile=AppDeviceFilterFileExclude;
+    		    if (DeviceOrServer == "Device") {
+    		        AppFilterSourceFile=AppDeviceFilterFileExclude;
+    		    } else {
+    		        AppFilterSourceFile=AppServerFilterFileExclude;
+    		    }
 	    	}
+	    	$("#AppliFilterDeviceFile").attr('href', datapath + AppFilterSourceFile);
 	    	$("#AppliFilterDeviceFile").show();
     	}
     	else
     	{
     			//Afficher le champ input file userdevicefile
-    			AppFilterDeviceFile=AppFilterDeviceFileUserUploaded;
+    			AppFilterSourceFile=AppFilterSourceFileUserUploaded;
 	    		$("#AppliFilterDeviceFile").hide();
     			$("#divuserdevicefile").show();
     	}
@@ -437,21 +541,19 @@ var AppFilterServerFileUserUploaded=null;
     	if ($(this).val() == "app") {
     		$("#divuserserverfile").hide();
     		if ($("#AppFilterServerTypeSelect").val() == "include") {
-	    		$("#AppliFilterServerFile").attr('href', datapath + AppServerFilterFileInclude);
-	    		AppFilterServerFile=AppServerFilterFileInclude;
-
+	    		AppFilterDestFile=AppServerFilterFileInclude;
 	    	}
 	    	else
 	    	{
-	    		$("#AppliFilterServerFile").attr('href', datapath + AppServerFilterFileExclude);
-	    		AppFilterServerFile=AppServerFilterFileExclude;
+	    		AppFilterDestFile=AppServerFilterFileExclude;
 	    	}
+	    	$("#AppliFilterServerFile").attr('href', datapath + AppFilterDestFile);
 	    	$("#AppliFilterServerFile").show();
     	}
     	else
     	{
     			//Afficher le champ input file userserverfile
-    			AppFilterServerFile=AppFilterServerFileUserUploaded;
+    			AppFilterDestFile=AppFilterDestFileUserUploaded;
 	    		$("#AppliFilterServerFile").hide();
     			$("#divuserserverfile").show();
     	}
@@ -514,18 +616,7 @@ var AppFilterServerFileUserUploaded=null;
 		} 
   	});
 
-    /*$('input[name="datacollectionsourcefilter"]').change(function(){
-  		var valof = $(this).val();
-  		switch(valof) { 
-          case "Device":
-          	LstDateRange(false, "Device");
-            break;
-          case "Server":
-          	LstDateRange(false, "Server");
-            break;
-        }
-  	});*/
-    
+
     ///////////////////////////////////////////////////////////
     $("#userdevicefile").change(function(e) {
 	
@@ -533,20 +624,28 @@ var AppFilterServerFileUserUploaded=null;
 			var ext = $("input#userdevicefile").val().split(".").pop().toLowerCase();
 			if($.inArray(ext, ["csv"]) == -1) {
 				alert('Upload CSV');
-				AppFilterDeviceFileUserUploaded=null;
+				AppFilterSourceFileUserUploaded=null;
 				return false;
 			}
 		}
 		else { // no file selected
 			switch($("#AppFilterDeviceTypeSelect").val()) {
 				case "include":
-					AppFilterDeviceFile=AppDeviceFilterFileInclude;
+				    if (DeviceOrServer == "Device") {
+					    AppFilterSourceFile=AppDeviceFilterFileInclude;
+					} else {
+					    AppFilterSourceFile=AppServerFilterFileInclude;
+					}
 					break;
 				case "exclude":
-					AppFilterDeviceFile=AppDeviceFilterFileExclude;
+				    if (DeviceOrServer == "Device") {
+					    AppFilterSourceFile=AppDeviceFilterFileExclude;
+					} else {
+					    AppFilterSourceFile=AppServerFilterFileExclude;
+					}
 					break;
 			}
-			AppFilterDeviceFileUserUploaded=null;
+			AppFilterSourceFileUserUploaded=null;
 	  		$("#AppFilterDeviceFileSelect option[value='app']").attr('selected', 'selected');
 	  		$("#AppFilterDeviceFileSelect").trigger('change');
 			return true;
@@ -559,8 +658,8 @@ var AppFilterServerFileUserUploaded=null;
 			"file" : myfile,
 			}, function(session){
 				session.getObject(function(outtxt){
-					  AppFilterDeviceFile = outtxt[0];
-					  AppFilterDeviceFileUserUploaded=AppFilterDeviceFile;
+					  AppFilterSourceFile = outtxt[0];
+					  AppFilterSourceFileUserUploaded=AppFilterSourceFile;
 				});
 		});
 		
@@ -569,13 +668,21 @@ var AppFilterServerFileUserUploaded=null;
 			alert("Error downloading file");
 			switch($("#AppFilterDeviceTypeSelect").val()) {
 				case "include":
-					AppFilterDeviceFile=AppDeviceFilterFileInclude;
+				    if (DeviceOrServer == "Device") {
+					    AppFilterSourceFile=AppDeviceFilterFileInclude;
+					} else {
+					    AppFilterSourceFile=AppServerFilterFileInclude;
+					}
 					break;
 				case "exclude":
-					AppFilterDeviceFile=AppDeviceFilterFileExclude;
+				    if (DeviceOrServer == "Device") {
+					    AppFilterSourceFile=AppDeviceFilterFileExclude;
+					} else {
+					    AppFilterSourceFile=AppServerFilterFileExclude;
+					}
 					break;
 			}
-			AppFilterDeviceFileUserUploaded=null;
+			AppFilterSourceFileUserUploaded=null;
 	  		$("#AppFilterDeviceFileSelect option[value='app']").attr('selected', 'selected');
 	  		$("#AppFilterDeviceFileSelect").trigger('change');
 			return false
@@ -590,20 +697,20 @@ var AppFilterServerFileUserUploaded=null;
 			var ext = $("input#userserverfile").val().split(".").pop().toLowerCase();
 			if($.inArray(ext, ["csv"]) == -1) {
 				alert('Upload CSV');
-				AppFilterServerFileUserUploaded=null;
+				AppFilterDestFileUserUploaded=null;
 				return false;
 			}
 		}
 		else { // no file selected
 			switch($("#AppFilterServerTypeSelect").val()) {
 				case "include":
-					AppFilterServerFile=AppServerFilterFileInclude;
+					AppFilterDestFile=AppServerFilterFileInclude;
 					break;
 				case "exclude":
-					AppFilterServerFile=AppServerFilterFileExclude;
+					AppFilterDestFile=AppServerFilterFileExclude;
 					break;
 			}
-			AppFilterServerFileUserUploaded=null;
+			AppFilterDestFileUserUploaded=null;
 	  		$("#AppFilterServerFileSelect option[value='app']").attr('selected', 'selected');
 	  		$("#AppFilterServerFileSelect").trigger('change');
 			return true;
@@ -616,8 +723,8 @@ var AppFilterServerFileUserUploaded=null;
 			"file" : myfile,
 			}, function(session){
 				session.getObject(function(outtxt){
-					  AppFilterServerFile = outtxt[0];
-					  AppFilterServerFileUserUploaded=AppFilterServerFile;
+					  AppFilterDestFile = outtxt[0];
+					  AppFilterDestFileUserUploaded=AppFilterDestFile;
 				});
 		});
 		
@@ -626,13 +733,13 @@ var AppFilterServerFileUserUploaded=null;
 			alert("Error downloading file");
 			switch($("#AppFilterServerTypeSelect").val()) {
 				case "include":
-					AppFilterServerFile=AppServerFilterFileInclude;
+					AppFilterDestFile=AppServerFilterFileInclude;
 					break;
 				case "exclude":
-					AppFilterServerFile=AppServerFilterFileExclude;
+					AppFilterDestFile=AppServerFilterFileExclude;
 					break;
 			}
-			AppFilterServerFileUserUploaded=null;
+			AppFilterDestFileUserUploaded=null;
 	  		$("#AppFilterServerFileSelect option[value='app']").attr('selected', 'selected');
 	  		$("#AppFilterServerFileSelect").trigger('change');
 			return false
@@ -640,7 +747,8 @@ var AppFilterServerFileUserUploaded=null;
 		return true;
 	});
 
-    
+    $("input[name='datacollectionsourcefilter']:checked").trigger('change')
+
     SetPanelParameters(GetUrlParameters());
     
     $('form').change(function() {
@@ -648,6 +756,7 @@ var AppFilterServerFileUserUploaded=null;
     });
     
     $('input[name="daterange"]').prop('disabled', 'disabled');
+
     $('#navigation').show("slow");
     
     //circosGenerate();
@@ -687,6 +796,10 @@ var AppFilterServerFileUserUploaded=null;
       
       /////////////////////////////////////////////////
       // get setting parameters
+      var deviceOrServer = $('input[name="datacollectionsourcefilter"]:checked').val();
+
+      var SourceCollectSelect = $("#SourceCollectSelect").val();
+
       var SectorSelect = new Array;
         SectorSelect = [];
         if (!$('.sectorAll').is(':checked') & $('.sectorselect:checked').length > 0) {
@@ -694,6 +807,16 @@ var AppFilterServerFileUserUploaded=null;
             SectorSelect.push($(this).val());
           });  
         } else {SectorSelect=[""]}
+      var SectorNA = Boolean($('.SectorNA:checked').val());
+
+      var SectorSelectTo = new Array;
+        SectorSelectTo = [];
+        if (!$('.sectorAllTo').is(':checked') & $('.sectorselectTo:checked').length > 0) {
+          $('.sectorselectTo:checked').each(function() {
+            SectorSelectTo.push($(this).val());
+          });
+        } else {SectorSelectTo=[""]}
+      var SectorNATo = Boolean($('.SectorNATo:checked').val());
 
 	  var SiteCategorySelectIn = new Array;
         SiteCategorySelectIn = [];
@@ -711,8 +834,7 @@ var AppFilterServerFileUserUploaded=null;
           });  
         } else {SiteCategorySelectOut=[""]}
 
-      var SectorNA = Boolean($('.SectorNA:checked').val());
-      
+
       var SiteSelectIn = $('#SiteSelectIn').val();
       if (SiteSelectIn == null) {
           SiteSelectIn=[""];
@@ -778,13 +900,13 @@ var AppFilterServerFileUserUploaded=null;
 		var AppFilterDeviceFileType = $("#AppFilterDeviceFileSelect").val();
 		var AppliFilteringServerType = $("#AppFilterServerTypeSelect").val();
 		var AppFilterServerFileType = $("#AppFilterServerFileSelect").val();
-		if (AppliFilteringDeviceType != "none" && AppFilterDeviceFileType == "server" && AppFilterDeviceFileUserUploaded == null) {
+		if (AppliFilteringDeviceType != "none" && AppFilterDeviceFileType == "server" && AppFilterSourceFileUserUploaded == null) {
 			alert("You must upload your application filter device file or choose the application file in select list");
 			$("#SendButton").attr('onclick',"circosGenerate()");
             $("#LoadingResult").hide();
 			return(false);
 		}
-		if (AppliFilteringServerType != "none" && AppFilterServerFileType == "server" && AppFilterServerFileUserUploaded == null) {
+		if (AppliFilteringServerType != "none" && AppFilterServerFileType == "server" && AppFilterDestFileUserUploaded == null) {
 			alert("You must upload your application filter server file or choose the application file in select list");
 			$("#SendButton").attr('onclick',"circosGenerate()");
             $("#LoadingResult").hide();
@@ -815,7 +937,7 @@ var AppFilterServerFileUserUploaded=null;
       
       /////////////////////////////////////////////////
       // cal siteMap() R function to generate results
-      var req = ocpu.call("siteMap", {"Sector":SectorSelect, "SectorNA":SectorNA, 
+      var req = ocpu.call("siteMap", {"deviceOrServer":deviceOrServer, "SourceCollectSelect":SourceCollectSelect, "Sector":SectorSelect, "SectorNA":SectorNA, "SectorTo":SectorSelectTo, "SectorNATo":SectorNATo,
       		"MaxMatrix":MaxMatrix, "VolumeUnit":VolumeUnit, "InterIntraSite":InterIntraSelectRes, 
       		"FromSite":FromSiteMethod, 
       		"SiteSelectIn":SiteSelectIn, "SiteSelectOut":SiteSelectOut, "SiteSelectOperand":SiteSelectOperand, 
@@ -824,8 +946,8 @@ var AppFilterServerFileUserUploaded=null;
       		"RemovedSiteSelectIn":RemovedSiteSelectIn, "RemovedSiteSelectOut":RemovedSiteSelectOut, "RemovedSiteSelectOperand":RemovedSiteSelectOperand, 
       		"SitesSectorScenarioFilterIn":SiteCategorySelectIn, "SitesSectorScenarioFilterOut":SiteCategorySelectOut, "SiteCategorySelectOperand":SiteCategorySelectOperand, 
       		"Clustering": Clustering, "ClusteringAlgo": ClusteringAlgoParam, "DirectedGraphClustering": DirectedGraphClusteringParam, "mclClusterParam":MCLClusteringParam, "kmeanClusterParam":KmeanClusterNumberParam,
-      		"AppliFilteringDeviceType":AppliFilteringDeviceType, "AppFilterDeviceFileType":AppFilterDeviceFileType, "AppFilterDeviceFile":AppFilterDeviceFile,
-      		"AppliFilteringServerType":AppliFilteringServerType, "AppFilterServerFileType":AppFilterServerFileType, "AppFilterServerFile":AppFilterServerFile,
+      		"AppliFilteringDeviceType":AppliFilteringDeviceType, "AppFilterDeviceFileType":AppFilterDeviceFileType, "AppFilterDeviceFile":AppFilterSourceFile,
+      		"AppliFilteringServerType":AppliFilteringServerType, "AppFilterServerFileType":AppFilterServerFileType, "AppFilterServerFile":AppFilterDestFile,
       		"DetailledFlow":DetailledFlow, "Server2Server":Server2Server, "portsfilterIncludeOrExclude":portsfilterIncludeOrExclude, "portsfiltering":portsfiltering,
       		"DateRange":DateRange}, function(session){
       		//retrieve the returned object async
@@ -1170,7 +1292,16 @@ function GetPanelParameters() {
         } else {SectorSelect=[""]}
 
       var SectorNA = Boolean($('.SectorNA:checked').val());
-      
+
+      var SectorSelectTo = [];
+        if (!$('.sectorAllTo').is(':checked') && $('.sectorselectTo:checked').length > 0) {
+          $('.sectorselectTo:checked').each(function() {
+            SectorSelectTo.push($(this).val());
+          });
+        } else {SectorSelectTo=[""]}
+
+      var SectorNATo = Boolean($('.SectorNATo:checked').val());
+
       var RemovedSiteSelectIn = $('#RemovedSiteSelectIn').val();
       if (RemovedSiteSelectIn == null) {
           RemovedSiteSelectIn=[""];
@@ -1246,13 +1377,15 @@ function GetPanelParameters() {
 	  var Server2Server = Boolean($('.Server2ServerSelect:checked').val());
 	  
 	  var DateRangeWeek = $("#daterangeweekSelect").val();
+
+	  var SourceCollectSelect = $("#SourceCollectSelect").val();
 	  
 	  var portsfiltering = $("#PortFilterServerSelect").val();
 	  var portsfilterIncEx=$("#PortServerFilterIncSelect").val();
 	  
 
-	  var Parameters = {DeviceOrServer:DeviceOrServer, VolumeUnit:VolumeUnit, FromSiteMethod:FromSiteMethod,  
-		  MaxMatrix:MaxMatrix, InterIntraSelectRes:InterIntraSelectRes, SectorSelect:SectorSelect, SectorNA:SectorNA, 
+	  var Parameters = {DeviceOrServer:DeviceOrServer, SourceCollectSelect:SourceCollectSelect, VolumeUnit:VolumeUnit, FromSiteMethod:FromSiteMethod,
+		  MaxMatrix:MaxMatrix, InterIntraSelectRes:InterIntraSelectRes, SectorSelect:SectorSelect, SectorNA:SectorNA, SectorSelectTo:SectorSelectTo, SectorNATo:SectorNATo,
 		  RemovedSiteSelectIn:RemovedSiteSelectIn, RemovedSiteSelectOut:RemovedSiteSelectOut, RemovedSiteSelectOperand:RemovedSiteSelectOperand,
 		  CountrySelectIn:CountrySelectIn, CountrySelectOut:CountrySelectOut, CountrySelectOperand:CountrySelectOperand,
 		  CountryExcludeSelectIn:CountryExcludeSelectIn, CountryExcludeSelectOut:CountryExcludeSelectOut, CountryExcludeSelectOperand:CountryExcludeSelectOperand,
@@ -1277,7 +1410,7 @@ function SetPanelParameters(Parameters) {
 	  	switch(key) {
 	  		case "DeviceOrServer":
 	  			$("input[name='datacollectionsourcefilter'][value='" + Parameters.DeviceOrServer + "']").prop('checked', true);
-	  			$("#datacollectionsourcefilter").trigger('change');
+	  			$("input[name='datacollectionsourcefilter']:checked").trigger('change')
 	  			break;
 	  		case "VolumeUnit":
 	  			$("#VolumeUnitSelect option[value='" + Parameters.VolumeUnit + "']").attr('selected', 'selected');
@@ -1329,6 +1462,33 @@ function SetPanelParameters(Parameters) {
 	  				$('.SectorNA').prop("checked", true);
 	  			else
 	  				$('.SectorNA').prop("checked", false);
+	  			break;
+	  		case "SectorSelectTo":
+	  			$('.sectorselectTo').each(function (){
+	              this.checked = false;
+    	        })
+    	        if (Parameters.SectorSelectTo == "") {
+    	        	//all selected
+		  			$('.sectorselectTo').each(function (){
+		              this.checked = true;
+    		        })
+    		        $('.sectorAllTo').prop("checked", true);
+    		        $('#SectorNADivTo').show();
+    	        }
+    	        else {
+    	        	$('.sectorAllTo').prop("checked", false);
+					for (sector_ in Parameters.SectorSelectTo) {
+						$(".sectorselectTo[value='" + Parameters.SectorSelectTo[sector_] + "']").prop('checked', true);
+					}
+					$('#SectorNADivTo').hide();
+    	        }
+
+	  			break;
+	  		case "SectorNATo":
+	  			if (Parameters.SectorNATo == "true")
+	  				$('.SectorNATo').prop("checked", true);
+	  			else
+	  				$('.SectorNATo').prop("checked", false);
 	  			break;
 	  		case "RemovedSiteSelectIn":
 	  		  	//deselect all options of RemovedSiteSelectIn menu
@@ -1541,6 +1701,9 @@ function SetPanelParameters(Parameters) {
 	  			$("#daterangeweekSelect option[value='" + Parameters.DateRangeWeek + "']").attr('selected', 'selected');
 	  			$("#daterangeweekSelect").trigger('change');
 	  			break;
+	  		case "SourceCollectSelect":
+            	$("#SourceCollectSelect option[value='" + Parameters.SourceCollectSelect + "']").attr('selected', 'selected');
+            	break;
 	  		case "Server2Server":
 	  			if (Parameters.Server2Server == "true")
 	  				$('.Server2ServerSelect').prop("checked", true);
@@ -1579,6 +1742,7 @@ function GetUrlParameters() {
     		case "CountryExcludeSelectIn":
     		case "RemovedSiteSelectIn":
     		case "SectorSelect":
+    		case "SectorSelectTo":
     		case "SiteCategorySelectIn":
     		case "SiteSelectIn":
     		case "CountrySelectOut":
