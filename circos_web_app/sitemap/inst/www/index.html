@@ -211,7 +211,20 @@
 						</div>
 					</form>
 				</td>
-      			<td id="col3"></td>
+				<td id="col3" name="SectorSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+							<div id="item">
+								<input type="radio" id = "SectorAndOperand" name="SectorSelectOperand" value="AND" checked disabled>
+								<label for="SectorAndOperand" style="font-size: x-small;">AND</label>
+							</div>
+							<div id="item">
+								<input type="radio" id = "SectorOrOperand" name="SectorSelectOperand" value="OR" disabled>
+								<label for="SectorOrOperand"  style="font-size: x-small;">OR</label>
+							</div>
+						</form>
+					</div>
+				</td>
 				<td id="col4" name="SectorSelectTo">
 					<form name="SectorSelectFormTo">
 						<div id="SectorNADivTo">
@@ -386,7 +399,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td id="col1">Application filtering</td>
+				<td id="col1">Specific filtering</td>
 				<td id="col2" name="AppFilterSetting">
 				  <form name="AppDeviceFilterSettingFormIn">
 					<div id="AppFilterSettingDiv">
@@ -404,10 +417,29 @@
 					    	<input type="file" id="userdevicefile">
 					    </div>
 						<br/>
+						<div id="AppFilterDeviceTypeSelectLogicalOperandDiv" hidden>Operand between columns :
+							<input type="radio" id = "AppFilterDeviceTypeSelectLogicalOperand" name="AppFilterDeviceTypeSelectLogicalOperand" value="OR" checked>
+							<label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">OR</label>
+							<input type="radio" id = "AppFilterDeviceTypeSelectLogicalOperand" name="AppFilterDeviceTypeSelectLogicalOperand" value="AND">
+							<label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">AND</label>
+						</div>
 					</div>
 				  </form>
 				</td>
-				<td></td>
+				<td id="col3" name="AppFilterSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+							<div id="item">
+								<input type="radio" id = "AppFilterSelectAndOperand" name="AppFilterSelectOperand" value="AND" checked>
+								<label for="AppFilterSelectAndOperand" style="font-size: x-small;">AND</label>
+							</div>
+							<div id="item">
+								<input type="radio" id = "AppFilterSelectOrOperand" name="AppFilterSelectOperand" value="OR">
+								<label for="AppFilterSelectOrOperand"  style="font-size: x-small;">OR</label>
+							</div>
+						</form>
+					</div>
+				</td>
 				<td id="col4" name="AppFilterSetting">
 				  <form name="AppServerFilterSettingFormIn">
 						<select name="AppFilterServerTypeSelect" id="AppFilterServerTypeSelect" style="width:auto;margin-left:22px;">
@@ -424,6 +456,12 @@
 						    <input type="file" id="userserverfile">
 						</div>
 					    <br/>
+					  <div id="AppFilterServerTypeSelectLogicalOperandDiv" hidden>Operand between columns :
+						  <input type="radio" id = "AppFilterServerTypeSelectLogicalOperand" name="AppFilterServerTypeSelectLogicalOperand" value="OR" checked>
+						  <label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">OR</label>
+						  <input type="radio" id = "AppFilterServerTypeSelectLogicalOperand" name="AppFilterServerTypeSelectLogicalOperand" value="AND">
+						  <label for="AppFilterServerTypeSelectLogicalOperand" style="font-size: x-small;">AND</label>
+					  </div>
 					</div>
 				  </form>
 				</td>

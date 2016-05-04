@@ -340,6 +340,7 @@ var AppFilterDestFileUserUploaded=null;
           	$('.DetailledFlowSelect').prop("disabled", false);
           	$('.DetailledFlowSelect').trigger('change');
           	LstSector(LstPannelSetting[3]);
+          	$("#AppFilterDeviceTypeSelect").trigger('change');
             break;
           case "Server":
           	$("#deviceSiteResolMethod").hide();
@@ -349,6 +350,7 @@ var AppFilterDestFileUserUploaded=null;
           	$('.DetailledFlowSelect').prop("disabled", true);
           	$('.DetailledFlowSelect').trigger('change');
           	LstSector(LstPannelSetting[14]);
+          	$("#AppFilterDeviceTypeSelect").trigger('change');
             break;
         }
         sectorInteraction();
@@ -483,14 +485,22 @@ var AppFilterDestFileUserUploaded=null;
 	/// Appli filters rules
 	//////////////////////////////////////////////////////////////////////    
     $("#AppFilterDeviceTypeSelect").change(function() {
-    	if ($(this).val() == "none") {
-    		$("#AppFilterDeviceFileSelect").hide();
-    		$("#AppliFilterDeviceFile").hide();
-    		$("#divuserdevicefile").hide();
-    	}
-    	else {
-    		$("#AppFilterDeviceFileSelect").trigger('change').show();
-		}
+        switch($(this).val()) {
+              case "none":
+                $("#AppFilterDeviceFileSelect").hide();
+                $("#AppliFilterDeviceFile").hide();
+                $("#divuserdevicefile").hide();
+                $("#AppFilterDeviceTypeSelectLogicalOperandDiv").hide()
+                break;
+              case "include":
+                $("#AppFilterDeviceTypeSelectLogicalOperandDiv").show()
+        		$("#AppFilterDeviceFileSelect").trigger('change').show();
+                break;
+              case "exclude":
+                $("#AppFilterDeviceTypeSelectLogicalOperandDiv").hide()
+        		$("#AppFilterDeviceFileSelect").trigger('change').show();
+                break;
+            }
     });
 
 
@@ -526,14 +536,22 @@ var AppFilterDestFileUserUploaded=null;
     });
 
     $("#AppFilterServerTypeSelect").change(function() {
-    	if ($(this).val() == "none") {
-    		$("#AppFilterServerFileSelect").hide();
-    		$("#AppliFilterServerFile").hide();
-    		$("#divuserserverfile").hide();
-    	}
-    	else {
-    		$("#AppFilterServerFileSelect").trigger('change').show();
-		}
+        switch($(this).val()) {
+              case "none":
+                $("#AppFilterServerFileSelect").hide();
+                $("#AppliFilterServerFile").hide();
+                $("#divuserserverfile").hide();
+                $("#AppFilterServerTypeSelectLogicalOperandDiv").hide()
+                break;
+              case "include":
+                $("#AppFilterServerTypeSelectLogicalOperandDiv").show()
+        		$("#AppFilterServerFileSelect").trigger('change').show();
+                break;
+              case "exclude":
+                $("#AppFilterServerTypeSelectLogicalOperandDiv").hide()
+        		$("#AppFilterServerFileSelect").trigger('change').show();
+                break;
+            }
     });
 
 
@@ -906,13 +924,16 @@ var AppFilterDestFileUserUploaded=null;
             $("#LoadingResult").hide();
 			return(false);
 		}
+		var AppFilterDeviceTypeSelectLogicalOperand = $('input[name="AppFilterDeviceTypeSelectLogicalOperand"]:checked').val();
+
 		if (AppliFilteringServerType != "none" && AppFilterServerFileType == "server" && AppFilterDestFileUserUploaded == null) {
 			alert("You must upload your application filter server file or choose the application file in select list");
 			$("#SendButton").attr('onclick',"circosGenerate()");
             $("#LoadingResult").hide();
 			return(false);
 		}
-
+		var AppFilterServerTypeSelectLogicalOperand = $('input[name="AppFilterServerTypeSelectLogicalOperand"]:checked').val();
+		var AppFilterSourceDestOperand = $('input[name="AppFilterSelectOperand"]:checked').val();
 
         var Clustering = Boolean($("#ClusteringActivated:checked").val());
 	        	
@@ -946,8 +967,9 @@ var AppFilterDestFileUserUploaded=null;
       		"RemovedSiteSelectIn":RemovedSiteSelectIn, "RemovedSiteSelectOut":RemovedSiteSelectOut, "RemovedSiteSelectOperand":RemovedSiteSelectOperand, 
       		"SitesSectorScenarioFilterIn":SiteCategorySelectIn, "SitesSectorScenarioFilterOut":SiteCategorySelectOut, "SiteCategorySelectOperand":SiteCategorySelectOperand, 
       		"Clustering": Clustering, "ClusteringAlgo": ClusteringAlgoParam, "DirectedGraphClustering": DirectedGraphClusteringParam, "mclClusterParam":MCLClusteringParam, "kmeanClusterParam":KmeanClusterNumberParam,
-      		"AppliFilteringDeviceType":AppliFilteringDeviceType, "AppFilterDeviceFileType":AppFilterDeviceFileType, "AppFilterDeviceFile":AppFilterSourceFile,
-      		"AppliFilteringServerType":AppliFilteringServerType, "AppFilterServerFileType":AppFilterServerFileType, "AppFilterServerFile":AppFilterDestFile,
+      		"AppliFilteringDeviceType":AppliFilteringDeviceType, "AppFilterDeviceFileType":AppFilterDeviceFileType, "AppFilterDeviceFile":AppFilterSourceFile, "AppFilterDeviceTypeSelectLogicalOperand":AppFilterDeviceTypeSelectLogicalOperand,
+      		"AppliFilteringServerType":AppliFilteringServerType, "AppFilterServerFileType":AppFilterServerFileType, "AppFilterServerFile":AppFilterDestFile, "AppFilterServerTypeSelectLogicalOperand":AppFilterServerTypeSelectLogicalOperand,
+      		"AppFilterSourceDestOperand":AppFilterSourceDestOperand,
       		"DetailledFlow":DetailledFlow, "Server2Server":Server2Server, "portsfilterIncludeOrExclude":portsfilterIncludeOrExclude, "portsfiltering":portsfiltering,
       		"DateRange":DateRange}, function(session){
       		//retrieve the returned object async
@@ -1361,6 +1383,9 @@ function GetPanelParameters() {
 	  var AppFilterDeviceFileSelect = $("#AppFilterDeviceFileSelect").val();
       var AppliFilteringServerType = $("#AppFilterServerTypeSelect").val();
 	  var AppFilterServerFileSelect = $("#AppFilterServerFileSelect").val();
+	  var AppFilterDeviceTypeOp = $('input[name="AppFilterDeviceTypeSelectLogicalOperand"]:checked').val();
+	  var AppFilterServerTypeOp = $('input[name="AppFilterServerTypeSelectLogicalOperand"]:checked').val();
+	  var AppFilterSelectOperand = $('input[name="AppFilterSelectOperand"]:checked').val();
 
 	  var Clustering = Boolean($("#ClusteringActivated:checked").val());
 	        	
@@ -1391,8 +1416,9 @@ function GetPanelParameters() {
 		  CountryExcludeSelectIn:CountryExcludeSelectIn, CountryExcludeSelectOut:CountryExcludeSelectOut, CountryExcludeSelectOperand:CountryExcludeSelectOperand,
 		  SiteSelectIn:SiteSelectIn, SiteSelectOperand:SiteSelectOperand, SiteSelectOut:SiteSelectOut,
 		  SiteCategorySelectIn:SiteCategorySelectIn, SiteCategorySelectOut:SiteCategorySelectOut, SiteCategorySelectOperand:SiteCategorySelectOperand, 
-		  AppliFilteringDeviceType:AppliFilteringDeviceType, AppFilterDeviceFileSelect:AppFilterDeviceFileSelect, 
-		  AppliFilteringServerType:AppliFilteringServerType, AppFilterServerFileSelect:AppFilterServerFileSelect,
+		  AppliFilteringDeviceType:AppliFilteringDeviceType, AppFilterDeviceFileSelect:AppFilterDeviceFileSelect, AppFilterDeviceTypeOp:AppFilterDeviceTypeOp,
+		  AppliFilteringServerType:AppliFilteringServerType, AppFilterServerFileSelect:AppFilterServerFileSelect, AppFilterServerTypeOp:AppFilterServerTypeOp,
+		  AppFilterSelectOperand:AppFilterSelectOperand,
 		  Clustering:Clustering, ClusteringAlgoParam:ClusteringAlgoParam, DirectedGraphClusteringParam:DirectedGraphClusteringParam,
 		  MCLClusteringParam:MCLClusteringParam, KmeanClusterNumberParam:KmeanClusterNumberParam, 
 		  DetailledFlow:DetailledFlow, Server2Server:Server2Server, portsfiltering:portsfiltering, portsfilterIncEx:portsfilterIncEx, 
@@ -1653,6 +1679,9 @@ function SetPanelParameters(Parameters) {
 	  			$("#AppFilterDeviceTypeSelect option[value='" + Parameters.AppliFilteringDeviceType + "']").attr('selected', 'selected');
 	  			$("#AppFilterDeviceTypeSelect").trigger('change');
 	  			break;
+	  		case "AppFilterDeviceTypeOp":
+	  			$("input[name='AppFilterDeviceTypeSelectLogicalOperand'][value='" + Parameters.AppFilterDeviceTypeOp + "']").prop('checked', true);
+	  			break;
 	  		case "AppFilterServerFileSelect":
 	  			$("#AppFilterServerFileSelect option[value='" + Parameters.AppFilterServerFileSelect + "']").attr('selected', 'selected');
 	  			$("#AppFilterServerFileSelect").trigger('change');
@@ -1661,6 +1690,12 @@ function SetPanelParameters(Parameters) {
 	  		case "AppliFilteringServerType":
 	  			$("#AppFilterServerTypeSelect option[value='" + Parameters.AppliFilteringServerType + "']").attr('selected', 'selected');
 	  			$("#AppFilterServerTypeSelect").trigger('change');
+	  			break;
+	  		case "AppFilterServerTypeOp":
+	  			$("input[name='AppFilterServerTypeSelectLogicalOperand'][value='" + Parameters.AppFilterServerTypeOp + "']").prop('checked', true);
+	  			break;
+	  		case "AppFilterSelectOperand":
+	  			$("input[name='AppFilterSelectOperand'][value='" + Parameters.AppFilterSelectOperand + "']").prop('checked', true);
 	  			break;
 	  		case "Clustering":
 	  			if (Parameters.Clustering == "true")

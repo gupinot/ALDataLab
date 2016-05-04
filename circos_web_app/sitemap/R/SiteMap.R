@@ -75,17 +75,20 @@ StatFiltering <- function(Data, deviceOrServer = "Device",
                           CountryExcludeSelectIn = c(""), CountryExcludeSelectOut = c(""), CountryExcludeSelectOperand = "AND",
                           RemovedSiteSelectIn = c(""), RemovedSiteSelectOut = c(""), RemovedSiteSelectOperand="AND",
                           SitesSectorScenarioFilterIn = c(""), SitesSectorScenarioFilterOut = c(""), SiteCategorySelectOperand = "AND",
-                          AppliFilteringDeviceType = "none", AppFilterDeviceFileType, AppFilterDeviceFile,
-                          AppliFilteringServerType = "none", AppFilterServerFileType, AppFilterServerFile, 
+                          AppliFilteringDeviceType = "none", AppFilterDeviceFileType, AppFilterDeviceFile, AppFilterDeviceTypeSelectLogicalOperand = "OR",
+                          AppliFilteringServerType = "none", AppFilterServerFileType, AppFilterServerFile, AppFilterServerTypeSelectLogicalOperand = "OR",
+                          AppFilterSourceDestOperand = "AND",
                           ForceAppFilter=FALSE, LstAppNameToFilter=c("Age of Empires", "Amazon Music", "Torrent", "Dropbox", "Super Mario", "age of empires"), 
                           LstAppExecToFiler = c("torrent"),
                           portsfilterIncludeOrExclude = "include", portsfiltering = "") {
   
   #Application Filtering
   print(paste("StatFiltering() : ", Sys.time(), sep=";"))
-  Data <- AppliFilter(Data, DeviceOrServer="Device", FilteringType=AppliFilteringDeviceType, AppFilterFileName=AppFilterDeviceFile, 
-                      ForceAppFilter = ForceAppFilter, LstAppNameToFilter=LstAppNameToFilter, LstAppExecToFiler=LstAppExecToFiler)
-  Data <- AppliFilter(Data, DeviceOrServer="Server", FilteringType=AppliFilteringServerType, AppFilterFileName=AppFilterServerFile)
+  #Data <- AppliFilter(Data, deviceOrServer = deviceOrServer, SourceOrDestination="Source", FilteringType=AppliFilteringDeviceType, AppFilterFileName=AppFilterDeviceFile,
+  #                    ForceAppFilter = ForceAppFilter, LstAppNameToFilter=LstAppNameToFilter, LstAppExecToFiler=LstAppExecToFiler)
+  Data <- AppliFilter(Data, deviceOrServer = deviceOrServer, AppliFilteringDeviceType = AppliFilteringDeviceType, AppFilterDeviceFileType = AppFilterDeviceFileType, AppFilterDeviceFile=AppFilterDeviceFile, AppFilterDeviceTypeSelectLogicalOperand=AppFilterDeviceTypeSelectLogicalOperand,
+          AppliFilteringServerType = AppliFilteringServerType, AppFilterServerFileType=AppFilterServerFileType, AppFilterServerFile=AppFilterServerFile, AppFilterServerTypeSelectLogicalOperand=AppFilterServerTypeSelectLogicalOperand,
+          AppFilterSourceDestOperand=AppFilterSourceDestOperand)
   
   print("   StatFiltering() : prepare filtering...")
   if (is.null(Sector) | Sector[1] == "" | Sector[1] == "All" | is.null(Sector[1])) {
@@ -324,7 +327,7 @@ print("    StatFiltering() : Site filtering...")
     SitesFilterListIn <- SitesSectorScenarioList[SitesSectorScenarioFilterIn, SiteCode, nomatch=0]
     SitesFilterListOut <- SitesSectorScenarioList[SitesSectorScenarioFilterOut, SiteCode, nomatch=0]
     if (SiteCategorySelectOperand == "AND") {
-      tmpReformatStat <- tmpReformatStat[SiteCode_Source %in% SitesFilterListIn & SiteCode_Destination %in% SitesFilterListOut, ]
+        tmpReformatStat <- tmpReformatStat[SiteCode_Source %in% SitesFilterListIn & SiteCode_Destination %in% SitesFilterListOut, ]
     }
     else {
       tmpReformatStat <- tmpReformatStat[SiteCode_Source %in% SitesFilterListIn | SiteCode_Destination %in% SitesFilterListOut, ]
@@ -408,7 +411,7 @@ reformatStat <- function(Stat, deviceOrServer = "Device",
   print("reformatStat() : begin")
   
   ColForVolume <- "Traffic"
-  ColForSiteFromResolution="SiteCode_Source"
+    ColForSiteFromResolution="SiteCode_Source"
   
   tmpReformatStat <- Stat
   
@@ -686,8 +689,9 @@ siteMap <- function(deviceOrServer = "Device", FromSite = "IDM",
                     RemovedSiteSelectIn = c(""), RemovedSiteSelectOut = c(""), RemovedSiteSelectOperand="AND",
                     SitesSectorScenarioFilterIn = c(""), SitesSectorScenarioFilterOut = c(""), SiteCategorySelectOperand = "AND",
                     Clustering = FALSE, ClusteringAlgo = "mcl", DirectedGraphClustering = FALSE, mclClusterParam = c(1.5, 4), kmeanClusterParam = 100,
-                    AppliFilteringDeviceType = "none", AppFilterDeviceFileType, AppFilterDeviceFile,
-                    AppliFilteringServerType = "none", AppFilterServerFileType, AppFilterServerFile,
+                    AppliFilteringDeviceType = "none", AppFilterDeviceFileType, AppFilterDeviceFile, AppFilterDeviceTypeSelectLogicalOperand= "OR",
+                    AppliFilteringServerType = "none", AppFilterServerFileType, AppFilterServerFile, AppFilterServerTypeSelectLogicalOperand = "OR",
+                    AppFilterSourceDestOperand = "AND",
                     DetailledFlow = FALSE, Server2Server = FALSE, portsfilterIncludeOrExclude = "include", portsfiltering = "",
                     DateRange = "") 
 {
@@ -720,8 +724,9 @@ siteMap <- function(deviceOrServer = "Device", FromSite = "IDM",
                         CountryExcludeSelectIn = CountryExcludeSelectIn, CountryExcludeSelectOut = CountryExcludeSelectOut, CountryExcludeSelectOperand = CountryExcludeSelectOperand,
                         RemovedSiteSelectIn = RemovedSiteSelectIn, RemovedSiteSelectOut = RemovedSiteSelectOut, RemovedSiteSelectOperand=RemovedSiteSelectOperand,
                         SitesSectorScenarioFilterIn = SitesSectorScenarioFilterIn, SitesSectorScenarioFilterOut = SitesSectorScenarioFilterOut, SiteCategorySelectOperand = SiteCategorySelectOperand,
-                        AppliFilteringDeviceType = AppliFilteringDeviceType, AppFilterDeviceFileType=AppFilterDeviceFileType, AppFilterDeviceFile=AppFilterDeviceFile,
-                        AppliFilteringServerType = AppliFilteringServerType, AppFilterServerFileType=AppFilterServerFileType, AppFilterServerFile=AppFilterServerFile,
+                        AppliFilteringDeviceType = AppliFilteringDeviceType, AppFilterDeviceFileType=AppFilterDeviceFileType, AppFilterDeviceFile=AppFilterDeviceFile, AppFilterDeviceTypeSelectLogicalOperand=AppFilterDeviceTypeSelectLogicalOperand,
+                        AppliFilteringServerType = AppliFilteringServerType, AppFilterServerFileType=AppFilterServerFileType, AppFilterServerFile=AppFilterServerFile, AppFilterServerTypeSelectLogicalOperand=AppFilterServerTypeSelectLogicalOperand,
+                        AppFilterSourceDestOperand = AppFilterSourceDestOperand,
                         portsfilterIncludeOrExclude = portsfilterIncludeOrExclude, portsfiltering = portsfiltering)
   
   print(paste("siteMap() : ", Sys.time(), sep=";"))
@@ -961,113 +966,181 @@ clustering <- function(stat, mclClusterParam = c(1.5, 4), directed = FALSE, algo
 
 ############################################################################
 ############################################################################
-AppliFilter <- function(Stat, DeviceOrServer = "Device", FilteringType = "include", AppFilterFileName, 
-                        ForceAppFilter=FALSE, LstAppNameToFilter=c("Age of Empires", "Amazon Music", "Torrent", "Dropbox", "Super Mario", "age of empires"), 
-                        LstAppExecToFiler = c("torrent")) {
-  
-  
+AppliFilter <- function(Stat, deviceOrServer = "Device",   AppliFilteringDeviceType = "none",
+    AppFilterDeviceFileType ="app", AppFilterDeviceFile, AppFilterDeviceTypeSelectLogicalOperand="OR",
+    AppliFilteringServerType = "none", AppFilterServerFileType="app", AppFilterServerFile, AppFilterServerTypeSelectLogicalOperand="OR",
+    AppFilterSourceDestOperand="AND")
+{
   print("AppliFilter() : Begin...")
   print(paste("AppliFilter() : ", Sys.time(), sep=";"))
-  
-  if (ForceAppFilter) {
-    print("         AppliFilter() : ForceAppFilter...")
-    print(paste("      AppliFilter() : ", Sys.time(), sep=";"))
-    
-    if (!is.null(LstAppNameToFilter) && LstAppNameToFilter[1] != "") {
-      pattern <- paste(LstAppNameToFilter, collapse="|")
-      pattern <- paste("(", pattern, ")", sep="")
-      setkey(Stat, source_app_name)
-      Stat <- Stat[!grepl(pattern, source_app_name), ]
-    }
-    
-    if (!is.null(LstAppExecToFiler) && LstAppExecToFiler[1] != "") {
-      pattern <- paste(LstAppExecToFiler, collapse="|")
-      pattern <- paste("(", pattern, ")", sep="")
-      setkey(Stat, source_app_exec)
-      Stat <- Stat[!grepl(pattern, source_app_exec), ]
-    }
-  }
-  print(paste("      AppliFilter() : ", Sys.time(), sep=";"))
-  
-  if (FilteringType == "none") {
-    print("         AppliFilter() : none... End")
+
+  if (AppliFilteringDeviceType == "none" && AppliFilteringServerType == "none") {
+    print("AppliFilter() : no filtering")
     return(Stat)
   }
-  
-  
-  file<-paste(ResultDir, AppFilterFileName, sep="/")
-  if (!file.exists(file)) {
-    print(paste("AppliFilter : following file not found : ", file, sep=""))
-    return(Stat)
+
+  if (AppliFilteringDeviceType == "none" || AppliFilteringServerType == "none") {
+    AppFilterSourceDestOperand <- "AND"
   }
-  else {
-    appfilterData <- fread(file, sep="\n")
-    appfilterColumnName <- colnames(appfilterData)[1]
-    appfilter <- appfilterData[[1]]
-    appfilter <- gsub("^0+", "", appfilter)
-    filterNA = FALSE
-    if (length(appfilter[is.na(appfilter)]) > 0) {
-      filterNA = TRUE
+
+  Data <- copy(Stat)
+  Data <- RenameColumns(Data)
+
+  if (AppFilterSourceDestOperand == "AND") vecSourceDest <- Data[, vec:=TRUE]$vec
+  else vecSourceDest <- Data[, vec:=FALSE]$vec
+  Data[, vec:=NULL]
+
+  #Source filtering
+  if (AppliFilteringDeviceType != "none") {
+    print("         AppliFilter() : Filtering source...")
+    if (AppliFilteringDeviceType == "exclude" || AppFilterDeviceTypeSelectLogicalOperand == "AND") vecSource <- Data[, vec:=TRUE]$vec
+    else vecSource <- Data[, vec:=FALSE]$vec
+    Data[, vec:=NULL]
+
+    file<-paste(ResultDir, AppFilterDeviceFile, sep="/")
+    if (!file.exists(file)) {
+      print(paste("AppFilterDeviceFile : following file not found : ", file, sep=""))
+      return(Stat)
     }
-    #pattern setting :
-    pattern <- paste(appfilter, collapse="|")
-    pattern <- paste("(", pattern, ")", sep="")
-    print(paste("         AppliFilter() : pattern : ", pattern, sep=""))
-    
-    switch(DeviceOrServer,
-           Device = {
-             setkey(Stat, source_app_exec)
-             switch(FilteringType,
-                    include = {
-                      #result <- Stat[(source_app_exec %in% appfilter$app.name), ]
-                      result <- Stat[grepl(pattern, source_app_exec), ]
-                    },
-                    exclude = {
-                      #result <- Stat[!(source_app_exec %in% appfilter$app.name), ]
-                      result <- Stat[!grepl(pattern, source_app_exec), ]
-                      if (filterNA) {
-                        result <- result[!is.na(source_app_exec), ]
-                      }
-                    })
-           },
-           Server = {
-             if (appfilterColumnName == "dest_aip_app_shared_unique_id") {
-               setkey(Stat, dest_aip_app_shared_unique_id)
-               switch(FilteringType,
-                      include = {
-                        result <- Stat[grepl(pattern, dest_aip_app_shared_unique_id), ]
-                      },
-                      exclude = {
-                        result <- Stat[!grepl(pattern, dest_aip_app_shared_unique_id), ]
-                        if (filterNA) {
-                          result <- result[!is.na(dest_aip_app_shared_unique_id), ]
-                        }
-                      }
-               )
-               
-             }
-             else {
-               #dest_aip_app_name by default
-               setkey(Stat, dest_aip_app_name)
-               switch(FilteringType,
-                      include = {
-                        #result <- Stat[(dest_aip_app_name %in% appfilter$app.name), ]
-                        result <- Stat[grepl(pattern, dest_aip_app_name), ]
-                      },
-                      exclude = {
-                        #result <- Stat[!(dest_aip_app_name %in% appfilter$app.name), ]
-                        result <- Stat[!grepl(pattern, dest_aip_app_name), ]
-                        if (filterNA) {
-                          result <- result[!is.na(dest_aip_app_name), ]
-                        }
-                      }
-               )
-             }
-           })
-    print(paste("      AppliFilter() : ", Sys.time(), sep=";"))
-    return(result)
+
+    appfilterData <- tryCatch(
+      {
+        fread(file, sep=";")
+      },
+      error=function(cond) {
+          return(fread(file, sep="\n"))},
+      warning=function(cond) {
+          print(cond)
+      }
+    )
+
+    if (nrow(appfilterData) == 0) {
+      vecDest = vecSourceDest
+    }
+
+
+    appfilterColumnName <- colnames(appfilterData)
+    for(col in appfilterColumnName) {
+      appfilter <- appfilterData[, col, with=FALSE][[1]]
+      col <- switch(col,
+        source_aip_app_shared_unique_id = "Source.AIP.Shared.Unique.ID",
+        AIP.Shared.Unique.ID = "Source.AIP.Shared.Unique.ID",
+        source_aip_app_name = "Source.AIP.App.Name",
+        aip_app_name = "Source.AIP.App.Name",
+        AIPSharedUniqueId = "Source.AIP.Shared.Unique.ID",
+        AIPAppName = "Source.AIP.App.Name",
+        AIPip = "Source.IP",
+        NX_bin_exec_name = "Source.App.Exec.Name",
+        col
+      )
+
+      if(! col %in% colnames(Data))
+      {
+        print(paste("         AppliFilter() : column ", col, " to filter not in data source", sep=""))
+        next
+      }
+      appfilter <- appfilter[!is.na(appfilter)]
+      if (length(appfilter) == 0) next
+      pattern <- paste(appfilter, collapse="|")
+      print(paste("col : ", col, "; pattern : ", pattern, sept=""))
+      if (AppliFilteringDeviceType == "exclude" || AppFilterDeviceTypeSelectLogicalOperand == "AND") vecSource <- vecSource & grepl(pattern, Data[, col, with=FALSE][[1]])
+      else vecSource <- vecSource | grepl(pattern, Data[, col, with=FALSE][[1]])
+    }
+    if (AppliFilteringDeviceType == "exclude") vecSource <- !vecSource
+    print("         AppliFilter() : Filtering source : end")
   }
+  else
+  {
+    vecSource = vecSourceDest
+  }
+
+
+  #Source filtering
+  if (AppliFilteringServerType != "none") {
+    print("         AppliFilter() : Filtering destinatino...")
+    if (AppliFilteringServerType == "exclude" || AppFilterServerTypeSelectLogicalOperand == "AND") vecDest <- Data[, vec:=TRUE]$vec
+    else vecDest <- Data[, vec:=FALSE]$vec
+    Data[, vec:=NULL]
+
+    file<-paste(ResultDir, AppFilterServerFile, sep="/")
+    if (!file.exists(file)) {
+      print(paste("AppFilterServerFile : following file not found : ", file, sep=""))
+      return(Stat)
+    }
+
+    appfilterData <- tryCatch(
+      {
+        fread(file, sep=";")
+      },
+      error=function(cond) {
+        return(fread(file, sep="\n"))},
+      warning=function(cond) {
+        print(cond)
+      }
+    )
+    if (nrow(appfilterData) == 0) {
+      vecDest = vecSourceDest
+    }
+
+    appfilterColumnName <- colnames(appfilterData)
+    for(col in appfilterColumnName) {
+      appfilter <- appfilterData[, col, with=FALSE][[1]]
+      col <- switch(col,
+          dest_aip_app_shared_unique_id = {
+          "Dest.AIP.Shared.Unique.ID"
+          },
+            AIP.Shared.Unique.ID = {
+            "Dest.AIP.Shared.Unique.ID"
+          },
+            dest_aip_app_name = {
+              "Dest.AIP.App.Name"
+          },
+          aip_app_name = {
+            "Dest.AIP.App.Name"
+          },
+          AIPSharedUniqueId = {
+            "Dest.AIP.Shared.Unique.ID"
+          },
+          AIPAppName = {
+            "Dest.AIP.App.Name"
+          },
+          AIPip = {
+            "Dest.IP"
+          },
+          NX_bin_exec_name = {
+            "Dest.App.Exec.Name"
+          },
+          {col}
+      )
+
+      if(! col %in% colnames(Data))
+      {
+        print(paste("         AppliFilter() : column ", col, " to filter not in data source", sep=""))
+        next
+      }
+      appfilter <- appfilter[!is.na(appfilter)]
+      if (length(appfilter) == 0) next
+      pattern <- paste(appfilter, collapse="|")
+      print(paste("col : ", col, "; pattern : ", pattern, sept=""))
+      if (AppliFilteringServerType == "exclude" || AppFilterServerTypeSelectLogicalOperand == "AND") vecDest <- vecDest & grepl(pattern, Data[, col, with=FALSE][[1]])
+      else vecDest <- vecDest | grepl(pattern, Data[, col, with=FALSE][[1]])
+    }
+    if (AppliFilteringServerType == "exclude") vecDest <- !vecDest
+  }
+  else
+  {
+    vecDest = vecSourceDest
+  }
+
+
+
+  if (AppFilterSourceDestOperand == "AND") vecRes <- vecSource & vecDest
+  else vecRes <- vecSource | vecDest
+
+  result <- Stat[vecRes]
+
   print(paste("      AppliFilter() : ", Sys.time(), sep=";"))
+  return(result)
 }
 
 
@@ -1075,12 +1148,21 @@ AppliFilter <- function(Stat, DeviceOrServer = "Device", FilteringType = "includ
 ############################################################################
 UploadAppFilterFile <- function(file) {
   #read and check format of file
-  data <- read.csv(file=file, header= TRUE, sep="\n")
-  
+  data <- tryCatch(
+    {
+      fread(file, sep=";")
+    },
+    error=function(cond) {
+      return(fread(file, sep="\n"))},
+    warning=function(cond) {
+      print(cond)
+    }
+  )
+
   #create corresponding file
   sessionId <- ceiling(runif(1, 0, 10^10))
   filename=paste("AppliFilter-", sessionId, ".csv", sep="")
-  write.table(data, file=paste(ResultDir, "/", filename, sep=""), row.names=FALSE, sep=",")
+  write.table(data, file=paste(ResultDir, "/", filename, sep=""), row.names=FALSE, sep=";")
   return(filename);
 }
 
