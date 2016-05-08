@@ -1,0 +1,6 @@
+# Heap size defaults to 256m min, 1g max
+# Set ES_HEAP_SIZE to 50% of available RAM, but no more than 31g
+ES_HEAP_SIZE=${ES_HEAP}
+MAX_OPEN_FILES=65535
+MAX_LOCKED_MEMORY=unlimited
+MAX_MAP_COUNT=262144
