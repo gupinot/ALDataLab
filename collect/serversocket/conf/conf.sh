@@ -12,5 +12,6 @@ DIR_SENT=/datalab3/DATA/SOCKET/SENT && [[ -d $DIR_SENT ]] || mkdir -p $DIR_SENT
 S3_DIR_COLLECT="s3://gedatalab/in/serversockets"
 SERVERLIST=$ROOTDIR/conf/ServerListToCollect.csv
 SERVERSTATUS=$ROOTDIR/conf/serverstatus.csv
+SERVERCOLLECTSTATUSALL=$ROOTDIR/conf/server-collect-status.csv
 SERVERCOLLECT=$ROOTDIR/log/servercollect.csv && [[ -d $ROOTDIR/log ]] || mkdir -p $ROOTDIR/log
 CSC_DONE=$ROOTDIR/conf/datalab_csc_done.csv
