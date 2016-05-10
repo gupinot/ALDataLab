@@ -12,7 +12,7 @@ fi
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : begin"
 ########################################################
 #Create updated version of I-ID csv file and send to s3
-DestFile="${I_ID}_$(date +"%Y%m%d").csv"
+DestFile="${I_ID}_$(date +"%Y%m%d").csv.gz"
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : DestFile = ${DestFile}"
 IDMFileList=$(ls $IDMFILES | sort -t_ -k2 -r | tr '\n' ' ')
 ${ANONYMIZEIDM_RSHELL} "${IDMFileList}" "${DestFile}" "${I_ID_REF}"

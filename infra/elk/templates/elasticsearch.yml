@@ -1,0 +1,28 @@
+##################### Elasticsearch Configuration #####################
+
+cluster.name: ${ES_CLUSTER_NAME}
+node.master: ${ES_MASTER}
+node.data: ${ES_DATA}
+
+# our init.d script sets the default to this as well
+path.data: ${ES_DATA_DIR}
+
+bootstrap.mlockall: true
+network.host: ["_ec2:privateIpv4_","_local_"]
+
+discovery:
+    type: ec2
+    ec2:
+        groups: ${ES_SECURITY_GROUPS}
+        availability_zones: ${ES_AVAILABILITY_ZONES}
+
+cloud:
+    aws:
+        region: ${ES_AWS_REGION}
+        access_key: ${ES_AWS_KEY}
+        secret_key: ${ES_AWS_SECRET}
+
+repositories:
+    s3:
+        bucket: ${ES_SNAPSHOT_BUCKET}
+        base_path: ${ES_SNAPSHOT_PATH}
