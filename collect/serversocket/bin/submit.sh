@@ -181,6 +181,8 @@ do
     shift # past argument or value
 done
 
+ServerType=$(echo $ServerType | tr '[:upper:]' '[:lower:]')
+
 case $method in
   test)
     test $server $host $ServerType

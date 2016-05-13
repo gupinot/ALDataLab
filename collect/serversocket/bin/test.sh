@@ -3,22 +3,21 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
-CSC_IN=$ROOTDIR/conf/datalab_csc.csv
+
 DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 
-cp -f $SERVERSTATUS $SERVERSTATUS.$DATECUR
-for host in $(cat $CSC_IN | awk -F';' '{if ($3 = "done") print $1}')
+aws s3 cp ${SERVERTOTEST_S3} ${SERVERTOTEST}
+aws s3 cp ${SERVERREPOSITORY_S3} ${SERVERREPOSITORY}
+
+OutputReport="${TESTREPORT}_${DATECUR}.csv"
+
+for host in $(cat $SERVERTOTEST | awk -F';' 'print $1}')
 do 
 	status=0
-	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
-	serverstatus=$(cat $SERVERSTATUS | grep "^$host;")
-	([[ "$serverstatus" == "" ]] || [[ $(echo $serverstatus | awk -F';' '{print $3}') -eq 0 ]]) &&\
+	ip=$(grep -i "^$host;" $SERVERREPOSITORY | awk -F';' '{print $2}')
 	echo "testing $host..." &&\
-	($ROOTDIR/bin/submit.sh test $ip $host && status=1
-	 tmpfile=$(mktemp)
-	 grep -v "^$host;" $SERVERSTATUS > $tmpfile
-	 echo "$host;$ip;$status;$DATECUR" >> $tmpfile
-	 cp -f $tmpfile $SERVERSTATUS
-	)
+	$ROOTDIR/bin/submit.sh test $ip $host 1>${OutputReport}
 done
+
+aws s3 cp ${OutputReport} ${TESTREPORT_S3}_${DATECUR}.csv
 
