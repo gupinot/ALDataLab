@@ -93,8 +93,14 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
       val respath = s"${context.dirout()}/$filetype"
       println("RepoProcessInFile() : respath = " + respath)
 
-      val res = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").option("delimiter", ";")
-        .option("inferSchema", "true").option("mode", "DROPMALFORMED").option("parserLib", "UNIVOCITY")
+      val res = sqlContext.read
+        .format("com.databricks.spark.csv")
+        .option("header", "true")
+        .option("delimiter", ";")
+        .option("inferSchema", "true")
+        .option("mode", "DROPMALFORMED")
+        .option("parserLib", "UNIVOCITY")
+        .option("charset", "windows-1252")
         .load(filein)
 
       val res2 = filetype match {
@@ -175,6 +181,33 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Application current state".as("aip_appinstance_state"),
           lit(filedate).as("filedate")
         )
+
+        case "AIP-OrgDeploy" => res.select(
+          $"Application Name".as("aip_orgdeploy_name"),
+          $"Shared Unique ID".as("aip_orgdeploy_shared_unique_id"),
+          $"Org unit UID".as("aip_orgdeploy_unit_uid"),
+          $"Org unit Name".as("aip_orgdeploy_unit_name"),
+          $"Org unit Teranga code".as("aip_orgdeploy_unit_terranga_code"),
+          $"Org unit Type".as("aip_orgdeploy_unit_type"),
+          $"Expected number of users".as("aip_orgdeploy_users_nb"),
+          lit(filedate).as("filedate")
+        )
+
+        case "AIP-Software" => res.select(
+          $"Application".as("aip_software_name"),
+          $"Unique ID".as("aip_software_shared_unique_id"),
+          $"GAPM ID".as("aip_software_gapm_id"),
+          $"ADC Support".as("aip_software_adc_support"),
+          $"Application Based on".as("aip_software_app_based_on"),
+          $"Main Product ?".as("aip_software_main_product"),
+          $"Editor".as("aip_software_editor"),
+          $"Product Name".as("aip_software_product_name"),
+          $"Product Type".as("aip_software_product_type"),
+          $"Product Version".as("aip_software_product_version"),
+          $"Product Edition".as("aip_software_product_edition"),
+          lit(filedate).as("filedate")
+        )
+
         case "I-ID" => res.select(
           $"I_ID",
           $"SiteCode",
@@ -202,7 +235,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           sys.exit(1)
       }
 
-      res2.write.mode(SaveMode.Overwrite).partitionBy("filedate").parquet(respath)
+      res2.write.mode(SaveMode.Append).partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
   }

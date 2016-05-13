@@ -63,7 +63,7 @@ class BuildMetaSockets(sqlContext: SQLContext) extends Pipeline {
     }.unionAll(meta)
 
     // now merge all found dataframes and save it
-    meta2.repartition(1)
+    meta3.repartition(1)
       .write.mode(SaveMode.Overwrite)
       .parquet(context.meta())
   }

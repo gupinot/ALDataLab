@@ -16,3 +16,4 @@ chmod 777 /mnt/ephemeral-hdfs/s3
 
 yum -y install jq
 
+mkdir $HOME/log; chmod 777 $HOME/log

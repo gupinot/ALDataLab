@@ -51,6 +51,7 @@ case $method in
     fromS3)
         DATE=$(date +"%Y%m%d-%H%M%S")
         CMD="hadoop distcp ${dirpipelines3}/ ${dirpipelinesaves3}/$DATE/" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
+        CMD="aws s3 rm ${dirpipelines3/s3n:/s3:}/done/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         CMD="aws s3 mv ${dircollectserverusages3/s3n:/s3:}/ ${dirins3/s3n:/s3:}/serverusage/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         ret=0 &&\
         (for var in connection webrequest repo serverusage serversockets
@@ -69,6 +70,11 @@ case $method in
         [[ $ret -eq 0 ]] && CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
         hdfs dfs -rm -f -R ${dirpipelinehdfs} && $CMD; ret=$?
+        hdfs dfs -mkdir -p ${dirpipelinehdfs}/done &&\
+        for var in connection webrequest repo serverusage serversockets
+        do
+            hdfs dfs -mkdir -p ${dirpipelinehdfs}/done/$var
+        done
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 exit with $ret"
     ;;
     fromS3Simple)

@@ -44,9 +44,9 @@ class AggregateServerSockets(implicit sqlContext: SQLContext) extends Pipeline w
               "dest_ip", "dest_site", "dest_port", "con_protocol", "con_status", "dest_aip_server_hostname",
               "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type", "dest_aip_app_sector",
               "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type", "dt", "month", "engine", "filedt")
-          .agg(sum($"con_number").as("con_number"),
-              sum($"con_traffic_in").as("con_traffic_in"),
-              sum($"con_traffic_out").as("con_traffic_out"),
+          .agg(sum($"con_number").cast("bigint").as("con_number"),
+              sum($"con_traffic_in").cast("bigint").as("con_traffic_in"),
+              sum($"con_traffic_out").cast("bigint").as("con_traffic_out"),
               mean($"con_duration").as("con_duration"))
           .write.mode(SaveMode.Append)
           .partitionBy("month").parquet(s"${context.dirout()}")

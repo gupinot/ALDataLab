@@ -34,14 +34,14 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
               df.groupBy("source_sector", "source_I_ID_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-                "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
+                "dest_ip", "dest_aip_server_hostname", "dest_port", "con_protocol", "dest_site", "con_status",
                 "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
                 "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
             } else {
               df.groupBy("source_sector", "source_site", "source_teranga", "source_app_name", "source_app_category", "source_app_exec", "url",
                 "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
                 "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-                "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
+                "dest_ip", "dest_aip_server_hostname", "dest_port", "con_protocol", "dest_site", "con_status",
                 "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
                 "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
             }
@@ -70,15 +70,15 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       }else {
         {
           if (level == "detail") {
-            df.groupBy("source_sector", "source_ip",
+            df.groupBy("source_sector", "source_ip", "source_aip_server_hostname",
               "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
               "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
               "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
-              "dest_ip", "dest_port", "con_protocol", "dest_site", "con_status",
+              "dest_ip", "dest_aip_server_hostname", "dest_port", "con_protocol", "dest_site", "con_status",
               "dest_aip_app_name", "dest_aip_server_function", "dest_aip_server_subfunction", "dest_aip_app_criticality", "dest_aip_app_type",
               "dest_aip_app_sector", "dest_aip_app_shared_unique_id", "dest_aip_server_adminby", "dest_aip_app_state", "dest_aip_appinstance_type")
           } else {
-            df.groupBy("source_sector", "source_ip",
+            df.groupBy("source_sector",
               "source_site", "source_app_name", "source_app_category", "source_app_exec", "url",
               "source_aip_app_name", "source_aip_server_function", "source_aip_server_subfunction", "source_aip_app_criticality", "source_aip_app_type",
               "source_aip_app_sector", "source_aip_app_shared_unique_id", "source_aip_server_adminby", "source_aip_app_state", "source_aip_appinstance_type",
@@ -179,7 +179,8 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     }
 
     //Eval and write SectorCode file
-    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
+    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
+    myIO.writeCsvToS3(context.repo().readAIPApplication().select($"aip_app_sector" as "Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCodeServer.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
 
     //eval and write SiteCode file
     val SiteCode = context.repo().readI_ID()

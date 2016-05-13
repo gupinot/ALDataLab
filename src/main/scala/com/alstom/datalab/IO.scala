@@ -42,4 +42,18 @@ class IO {
     merge(filedeviceouthdfs, s"${s3root}/${dstfile}")
     deletefile(filedeviceouthdfs)
   }
+
+  def writeJsonToS3(dfin: DataFrame, dstfile: String, gz: Boolean = true, s3root: String = "s3n://gecustomers/document", skipVerify: Boolean = false) = {
+    val jobid:Long = System.currentTimeMillis
+    val filedeviceouthdfs = s"hdfs:///tmp/writejson${jobid}"
+    if (dstfile == "") throw new IllegalArgumentException("dstfile cannot be empty !");
+    if ( ! skipVerify && ! s3root.matches("^s3n:\\/\\/[^\\/]+\\/document")) throw new IllegalArgumentException(s"s3root argument value (${s3root}) not authorized !");
+    deletefile(filedeviceouthdfs)
+    deletefile(s"${s3root}/${dstfile}")
+    dfin.coalesce(1).write.json(filedeviceouthdfs)
+
+    merge(filedeviceouthdfs, s"${s3root}/${dstfile}")
+    deletefile(filedeviceouthdfs)
+  }
+
 }

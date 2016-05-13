@@ -69,3 +69,4 @@ do
 	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
 done
 rm $tempfile
+

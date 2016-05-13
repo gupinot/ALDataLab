@@ -41,8 +41,8 @@ class Repo(context: Context)(implicit val sqlContext: SQLContext) extends Serial
 
     val aip_grid_fusion = readAIPGridFusion(currentDate)
         .groupBy("aip_appgf_shared_unique_id")
-        .agg(concat_ws(",", $"aip_appgf_grid_app_name") as "aip_appgf_grid_app_name",
-          concat_ws(",", $"aip_appgf_billing_code") as "aip_appgf_billing_code")
+        .agg(concat_ws(",", collect_set($"aip_appgf_grid_app_name")) as "aip_appgf_grid_app_name",
+          concat_ws(",", collect_set($"aip_appgf_billing_code")) as "aip_appgf_billing_code")
 
     val myConcat = new ConcatString("||")
 

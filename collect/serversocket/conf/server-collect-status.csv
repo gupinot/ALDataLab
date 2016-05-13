@@ -1,0 +1,1386 @@
+Hostname;ServerFunction;IPServer;ServerStatus;SiteCode;OSName;aip_app_name;csc_status;ge_status_code;ge_status_label;ge_test_label
+abp-vpdm;Application;10.99.142.16;Active;BJS2;HP-UX;;null;00;Not deployed by CSC;null
+ban-arhiva;Application;10.218.119.19;Active;KAR1;AIX;Baan - Karlovac - HR;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found. |; lsof Ko : ksh: sudo:  not found. |; crontab Ok"
+bell;Application;10.255.247.66;Active;GUC1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+bresil;Application;10.23.144.48;Active;REI1;SunOS;FAO;null;00;Not deployed by CSC;null
+copernic;Application;10.255.150.202;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+cortes;Application;10.255.250.189;Active;GUC1;AIX;Infra FAST (File Transfer - Connect Direct);done;20;Deployed by CSC but not testable (behind FW);null
+erp-v47-s2;Application;10.128.72.174;Active;BAD1;AIX;SAP CH;done;11;Deployed by CSC and GE test OK;null
+gec10;Application;10.23.4.133;Active;OUS1;SunOS;;null;00;Not deployed by CSC;null
+lic104;Application;10.238.146.104;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic113;Application;10.238.146.113;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic122;Application;10.238.146.122;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic131;Application;10.238.146.131;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic140;Application;10.238.146.140;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+sabad10011;Application;10.238.14.30;Active;BAD1;linux;ALSTOM Pensions Internet;done;12;Deployed by CSC and GE test OK;null
+sabad10467;Application;10.238.15.51;Active;BAD1;linux;Alista||ALISTA Tarbes, Charleroi, Nola;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10575;Application;10.238.15.101;Active;BAD1;linux;Ulysse;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10638;Application;10.238.15.138;Active;BAD1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad10773;Application;10.238.127.69;Active;BAD1;linux;Plant Explorer;done;12;Deployed by CSC and GE test OK;null
+sabad10782;Application;10.238.15.56;Active;BAD1;linux;GridFusion;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10935;Application;10.238.127.166;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad10953;Application;10.238.206.153;Active;BAD1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad10962;Application;10.238.206.149;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad11010;Application;10.238.196.125;Active;BAD1;linux;ANSYS Global License Control PW;done;12;Deployed by CSC and GE test OK;null
+sabad11178;Application;10.238.40.78;Active;BAD1;linux;SICOS||TeamTrack;done;12;Deployed by CSC and GE test OK;null
+sabad11259;Application;10.238.197.83;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11376;Application;10.238.219.125;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11385;Application;10.238.41.46;Active;BAD1;linux;SICOS||TeamTrack;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11394;Application;10.238.196.158;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11448;Application;10.238.206.48;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11484;Application;10.238.198.35;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11493;Application;10.238.198.39;Active;BAD1;linux;New PLM;null;00;Not deployed by CSC;null
+sabad15165;Application;10.236.4.165;Active;RMA1;AIX;New PLM||DELMIA V6||Aralia SIMTREE;done;20;Deployed by CSC but not testable (behind FW);null
+sabad16146;Application;10.236.4.146;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad18108;Application;10.238.168.18;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18117;Application;10.238.168.27;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18126;Application;10.238.168.36;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18135;Application;10.238.168.45;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18144;Application;10.238.168.54;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18153;Application;10.238.168.63;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18207;Application;10.238.164.17;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18216;Application;10.238.164.26;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18225;Application;10.238.164.35;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18234;Application;10.238.164.44;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18243;Application;10.238.164.53;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18252;Application;10.238.164.62;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18306;Application;10.238.168.206;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18405;Application;10.238.199.21;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18414;Application;10.238.199.30;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18423;Application;10.238.199.39;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18432;Application;10.238.199.48;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18441;Application;10.238.199.57;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19017;Application;10.238.21.84;Active;BAD1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19030-vs10;Application;10.128.78.86;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19044;Application;10.128.78.147;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19053;Application;10.238.142.198;Active;BAD1;SunOS;Patent Atlas II;null;00;Not deployed by CSC;null
+sabad19080;Application;10.128.78.67;Active;BAD1;linux;Video Service AT;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19161;Application;10.238.142.172;Active;BAD1;SunOS;EAI Base Platform;null;00;Not deployed by CSC;null
+sabad19251;Application;10.238.101.21;Active;RMA1;SunOS;InfoSystem;null;00;Not deployed by CSC;null
+sabad19260;Application;10.238.21.107;Active;BAD1;AIX;Powermax;done;11;Deployed by CSC and GE test OK;null
+sabad19305;Application;10.238.220.65;Active;BAD1;AIX;AMON||AMON DOLLAR UNIVERSE;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19323;Application;10.238.220.75;Active;RMA1;AIX;AMON;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19341;Application;10.238.220.81;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19404;Application;10.238.21.37;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19413;Application;10.238.21.44;Active;BAD1;AIX;PMX SAP EP;done;11;Deployed by CSC and GE test OK;null
+sabad19602;Application;10.238.21.113;Active;BAD1;AIX;PW Solman;done;21;Deployed by CSC and GE test on going;null
+sabad19788;Application;10.238.143.103;Active;BAD1;AIX;Enya;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19797;Application;10.238.220.46;Active;BAD1;AIX;AMON;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19800;Application;10.128.78.48;Active;BAD1;AIX;CADDS License control CH||NUMECA Autogrid86-2 IGG;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35037;Application;10.236.9.83;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sablq11621;Application;10.115.1.38;Active;BLQ1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sabor10025;Application;10.23.176.12;Active;BOR1;AIX;ELSA||DMA-GS Belfort;null;00;Not deployed by CSC;null
+sacch10101;Application;10.17.36.40;Active;CCH1;linux;KTP Cash Flow Marché||THETYS;done;12;Deployed by CSC and GE test OK;null
+sacch10287;Application;10.239.4.140;Active;CCH1;AIX;DELMIA V6;null;00;Not deployed by CSC;null
+sacch10368;Application;10.239.25.140;Active;CCH1;SunOS;GEODE PDM||SOFIA;null;00;Not deployed by CSC;null
+sacch10377;Application;10.239.4.174;Active;CCH1;AIX;DMA-GS Central offer;null;00;Not deployed by CSC;null
+sacch10449;Application;10.239.25.234;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch10458;Application;10.239.25.231;Active;CCH1;linux;Subversion Grid||Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sacch10467;Application;10.239.25.249;Active;CCH1;linux;New Electrical||BRMS;done;12;Deployed by CSC and GE test OK;null
+sacch15057;Application;10.237.4.57;Active;CCH1;AIX;RAILSYS;null;00;Not deployed by CSC;null
+sacch15084;Application;10.237.4.84;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15093;Application;10.237.4.93;Active;CCH1;AIX;Catia||Aralia SIMTREE;null;00;Not deployed by CSC;null
+sacch15570;Application;10.239.8.4;Active;CCH1;linux;TEMPUS - GTA France||TEMPUS - GTA France;Password Prompt;01;CSC not able to deploy;null
+sacch15624;Application;10.239.26.144;Active;CCH1;linux;GSI BW;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15651;Application;10.239.27.51;Active;CCH1;linux;CONFLUENCE||Subversion Grid||CROWD||JIRA;done;12;Deployed by CSC and GE test OK;null
+sacch35046;Application;10.237.9.108;Active;CCH1;linux;GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sacch35055;Application;10.237.9.117;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35073;Application;10.237.9.142;Active;CCH1;linux;GSI BO;done;12;Deployed by CSC and GE test OK;null
+sacch35091;Application;10.237.9.165;Active;CCH1;linux;TEMPUS - GTA France||TEMPUS - GTA France;done;12;Deployed by CSC and GE test OK;null
+sacrl1gla2;Application;10.79.2.56;Active;CRL1;linux;Exploitations Archives 3270;done;12;Deployed by CSC and GE test OK;null
+salpt10067;Application;10.18.0.100;Active;CCH1;linux;;couldn't connect;01;CSC not able to deploy;null
+salrh10027;Application;10.23.97.162;Active;LRH1;SunOS;DMA-GS La Rochelle Training;null;00;Not deployed by CSC;null
+salrh10036;Application;10.23.97.187;Active;LRH1;linux;Test Tracer;done;12;Deployed by CSC and GE test OK;null
+sante10006;Application;10.18.0.137;Active;CCH1;linux;Outils Calcul Mecanique;done;12;Deployed by CSC and GE test OK;null
+sarei10005;Application;10.23.144.9;Active;REI1;AIX;DMA-GS Reichshoffen;null;00;Not deployed by CSC;null
+sarma15011;Application;10.238.198.220;Active;RMA1;linux;;null;00;Not deployed by CSC;null
+saroc13dc2;Application;10.163.0.55;Active;HNW1;AIX;DMA-GS Rochester;null;00;Not deployed by CSC;null
+savbn10027;Application;10.23.208.49;Active;VBN1;linux;Software Quality;done;12;Deployed by CSC and GE test OK;null
+sbbad16158;Application;10.236.4.158;Active;BAD1;AIX;DIP Global (Basware);null;00;Not deployed by CSC;null
+sbbad19119;Application;10.238.143.119;Active;BAD1;AIX;PIMS Support||Transport Archiving - Open Text solution;null;00;Not deployed by CSC;null
+sbbad19128;Application;10.238.132.128;Active;RMA1;AIX;APC-RPDM;null;00;Not deployed by CSC;null
+sbbad19137;Application;10.238.132.39;Active;BAD1;AIX;APC-RPDM;null;00;Not deployed by CSC;null
+sbbad19164;Application;10.238.143.114;Active;RMA1;AIX;PMS||PMS||PMS||ALISTA Le Creusot, Madrid, London||Alista||BOXI Platform (Power)||ALISTA Tarbes, Charleroi, Nola||APC-RPDM||CROWD||PDMOne||PCDMS||ALISTA Valenciennes, Bucarest, Atagora, La Rochelle;null;00;Not deployed by CSC;null
+sbbad19173;Application;10.238.143.201;Active;RMA1;AIX;PowerSales/Ferman;null;00;Not deployed by CSC;null
+sbbad19182;Application;10.238.217.182;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+sbbad19191;Application;10.238.197.7;Active;BAD1;linux;DELMIA V6;null;00;Not deployed by CSC;null
+sbcch10199;Application;10.239.4.205;Active;CCH1;AIX;ELSA||ILS Solutions||GESDOC||SOFIA||SOFIA||ADEL WP||CLAMP||E3Séries||GEODE PDM;null;00;Not deployed by CSC;null
+sbcch15068;Application;10.237.4.68;Active;CCH1;AIX;IMAGINE 1;null;00;Not deployed by CSC;null
+sbcch15077;Application;10.237.4.77;Active;CCH1;AIX;Mis Marques AT||DSTT||TDM Belfort;null;00;Not deployed by CSC;null
+sbspm10001;Application;10.155.24.80;Active;SPM1;linux;Soldaduras||TwistInfo||Conproy Spain||Artemis Barcelona ||CDP - Captura de Datos en Planta||Control de Presencia / Incentivos||Itemsasoft||Quality BCN||GSI Bajas IT Sugerencias;done;12;Deployed by CSC and GE test OK;null
+ssmprod;Application;10.238.21.67;Active;BAD1;AIX;PW Solman;null;00;Not deployed by CSC;null
+sumlm10005;Application;10.123.134.14;Active;MLM1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+suric1tcet;Application;10.164.24.131;Active;RIC1;HP-UX;Teamcenter Richmond;null;00;Not deployed by CSC;null
+suwin1webs;Application;10.160.48.24;Active;WND1;linux;SupplierNet;asking password;01;CSC not able to deploy;null
+sycomore;Application;10.18.146.210;Active;GNB1;linux;Moyens de calculs HYDRO CT||HPC - Grenoble Sycomore;done;12;Deployed by CSC and GE test OK;null
+valencia;Application;10.79.3.32;Active;CRL1;SunOS;TEAMWORK||DDTS;null;00;Not deployed by CSC;null
+acectra6;Application;10.79.2.36;Active;CRL1;HP-UX;SAP R3 40B (FI-CO+GPAO) Charleroi;null;00;Not deployed by CSC;null
+curie;Application;10.255.150.125;Active;CCH1;AIX;ISIS  - SAP SRM||Supplier Relationship Management SAP;done;11;Deployed by CSC and GE test OK;null
+edison;Application;10.255.250.106;Active;GUC1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+grw08a;Application;10.34.32.203;Active;RUG1;SunOS;Naval Eng Purch App (EPA);null;00;Not deployed by CSC;null
+hrkabirt;Application;10.218.10.63;Active;KAR1;linux;Baan - Karlovac - HR;asking password;01;CSC not able to deploy;null
+lic105;Application;10.238.146.105;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic114;Application;10.238.146.114;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic123;Application;10.238.146.123;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic132;Application;10.238.146.132;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic141;Application;10.238.146.147;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic150;Application;10.238.146.156;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+orgrugs09;Application;10.34.114.253;Active;RUG1;SunOS;HMS CAPP (Unmaintained app)||TDM UK||Secure Image Viewing System||Thermal New IS Application Register||Thermal Service Strategy System||Oracle ApEx||On-Track / AES Training Database||Materials Release Properties Database||SQEP Database||MEWS||ST Projects Change Management||TSS Project Portfolio Primavera Interface||P&EP Stakeholder Contact Management||Naval Eng Purch App (EPA)||Oracle Apps (DTMS and BTMS)||SWIFT Factory instructions||TSNE Project Portfolio||RM Stores Costing Extension||TSNE Project Categorisation||Engineering Design Review Management||TSST Project Portfolio||Integrated Drawing Registers                        ;null;00;Not deployed by CSC;null
+sabad10576;Application;10.238.15.102;Active;BAD1;linux;Ulysse;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10774;Application;10.238.125.89;Active;BAD1;linux;HPC - Plateform;done;12;Deployed by CSC and GE test OK;null
+sabad10954;Application;10.238.14.56;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad10963;Application;10.238.126.184;Active;BAD1;linux;Baan - PL - HR||Triton||BAAN PL;done;12;Deployed by CSC and GE test OK;null
+sabad10972;Application;10.238.15.175;Active;BAD1;linux;e-Temptation Thermal Systems Belfort||e-Temptation Thermal Service France||e-Temptation Renewable France||e-Temptation Thermal PAC Ludres;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11188;Application;10.238.196.88;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad11197;Application;10.238.196.114;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11278;Application;10.238.14.88;Active;BAD1;linux;MAX3000;done;12;Deployed by CSC and GE test OK;null
+sabad11359;Application;10.238.41.84;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11368;Application;10.238.196.170;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11377;Application;10.238.219.126;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11395;Application;10.238.196.159;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11467;Application;10.238.198.23;Active;BAD1;linux;PKI;done;12;Deployed by CSC and GE test OK;null
+sabad11494;Application;10.238.198.40;Active;BAD1;linux;New PLM;null;00;Not deployed by CSC;null
+sabad16147;Application;10.236.4.147;Active;RMA1;AIX;PMX SAP EP;done;11;Deployed by CSC and GE test OK;null
+sabad18109;Application;10.238.168.19;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18118;Application;10.238.168.28;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18127;Application;10.238.168.37;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18136;Application;10.238.168.46;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18145;Application;10.238.168.55;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18154;Application;10.238.168.64;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18208;Application;10.238.164.18;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18217;Application;10.238.164.27;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18226;Application;10.238.164.36;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18235;Application;10.238.164.45;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18244;Application;10.238.164.54;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18253;Application;10.238.164.63;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18307;Application;10.238.168.207;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18406;Application;10.238.199.22;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18415;Application;10.238.199.31;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18424;Application;10.238.199.40;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18433;Application;10.238.199.49;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18442;Application;10.238.199.58;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19018;Application;10.128.72.201;Active;BAD1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19027;Application;10.128.78.49;Active;BAD1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19031-vs10;Application;10.128.78.84;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19040-vs11;Application;10.128.78.51;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19041-vs10;Application;10.128.78.85;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19045;Application;10.128.78.127;Active;BAD1;AIX;SAP CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19054;Application;10.238.142.199;Active;BAD1;SunOS;Patent Atlas II;null;00;Not deployed by CSC;null
+sabad19126;Application;10.238.142.177;Active;RMA1;SunOS;MDM Platform;null;00;Not deployed by CSC;null
+sabad19162;Application;10.238.142.173;Active;RMA1;SunOS;EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform;null;00;Not deployed by CSC;null
+sabad19261;Application;10.238.21.108;Active;BAD1;AIX;PMX SAP EP;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad19270;Application;10.238.142.222;Active;BAD1;SunOS;POSEIDON;null;00;Not deployed by CSC;null
+sabad19324;Application;10.238.220.76;Active;RMA1;AIX;AMON||AMON DOLLAR UNIVERSE;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19342;Application;10.238.220.82;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19351;Application;10.238.21.75;Active;BAD1;AIX;Powermax;done;11;Deployed by CSC and GE test OK;null
+sabad19405;Application;10.238.21.34;Active;RMA1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;21;Deployed by CSC and GE test on going;null
+sabad19423;Application;10.238.21.53;Active;RMA1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found. |; lsof Ko : no lsof found |; crontab Ok"
+sabad19603;Application;10.238.21.114;Active;BAD1;AIX;PMX SAP PO;done;21;Deployed by CSC and GE test on going;null
+sabad19702;Application;10.128.78.164;Active;BAD1;AIX;SAP-BW for SAP-CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : Password: |; crontab Ok"
+sabad19798;Application;10.238.220.47;Active;BAD1;AIX;APIS;done;20;Deployed by CSC but not testable (behind FW);null
+sabad790;Application;10.238.220.42;Active;BAD1;AIX;APIS;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sacch10378;Application;10.239.4.175;Active;CCH1;AIX;DMA-GS Central offer;null;00;Not deployed by CSC;null
+sacch10468;Application;10.239.25.163;Active;CCH1;linux;BRMS;done;12;Deployed by CSC and GE test OK;null
+sacch15058;Application;10.237.4.58;Active;CCH1;AIX;RAILSYS;null;00;Not deployed by CSC;null
+sacch15085;Application;10.237.4.85;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15094;Application;10.237.4.94;Active;CCH1;AIX;Aralia SIMTREE||Catia;null;00;Not deployed by CSC;null
+sacch15553;Application;10.239.26.159;Active;CCH1;linux;THETYS;done;12;Deployed by CSC and GE test OK;null
+sacch15616;Application;10.239.4.208;Active;CCH1;linux;ADEL e-TRS||ADEL WP;done;12;Deployed by CSC and GE test OK;null
+sacch15652;Application;10.239.27.50;Active;CCH1;linux;Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sacch15670;Application;10.239.27.70;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15706;Application;10.239.27.106;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35056;Application;10.237.9.118;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35065;Application;10.237.9.131;Active;CCH1;linux;TEMPUS - GTA France||TEMPUS - GTA France;done;12;Deployed by CSC and GE test OK;null
+salrh10028;Application;10.23.97.163;Active;LRH1;SunOS;DMA-GS La Rochelle VHST;null;00;Not deployed by CSC;null
+sante10007;Application;10.18.208.45;Active;NTE1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+saptf10020;Application;10.22.97.101;Active;PTF1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sarma15012;Application;10.238.198.221;Active;RMA1;linux;3DExperience R2015x;null;00;Not deployed by CSC;null
+sarma15021;Application;10.236.4.30;Active;RMA1;AIX;DELMIA V6;null;00;Not deployed by CSC;null
+saroc1hmc1;Application;10.163.0.50;Active;HNW1;AIX;;null;00;Not deployed by CSC;null
+sartre;Application;10.255.250.28;Active;GUC1;AIX;;null;00;Not deployed by CSC;null
+sasao10324;Application;10.81.129.176;Active;HTL1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sasav10020;Application;10.115.32.171;Active;SAV1;SunOS;DMA-GS Savigliano;null;00;Not deployed by CSC;null
+sautc10011;Application;10.192.16.80;Active;UTC1;linux;ClearCase;password prompt;01;CSC not able to deploy;null
+savbn10019;Application;10.23.208.33;Active;VBN1;linux;IAO Linux;done;12;Deployed by CSC and GE test OK;null
+savbn10037;Application;10.23.208.177;Active;VBN1;SunOS;IAO Solaris;null;00;Not deployed by CSC;null
+sbbad16159;Application;10.236.4.159;Active;BAD1;AIX;DIP Global (Basware)||DIP Global (Basware);null;00;Not deployed by CSC;null
+sbbad19138;Application;10.238.132.40;Active;BAD1;AIX;APC-RPDM;null;00;Not deployed by CSC;null
+sbbad19174;Application;10.238.143.202;Active;RMA1;AIX;PowerSales/Ferman||PowerSales/Ferman||PowerSales/Ferman;null;00;Not deployed by CSC;null
+sbbad19183;Application;10.238.217.114;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+sbbad19192;Application;10.238.197.81;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sbcch15078;Application;10.237.4.78;Active;CCH1;AIX;Infra Easy Archive||BO BI4 Platform (Common)||DataStage 9.1 Platform (Common)||TDM Belfort;null;00;Not deployed by CSC;null
+sbcch15087;Application;10.237.4.87;Active;CCH1;AIX;KTP Cash Flow Marché;null;00;Not deployed by CSC;null
+sbspm10002;Application;10.155.24.81;Active;SPM1;linux;Soldaduras||TwistInfo||Conproy Spain||Artemis Barcelona ||CDP - Captura de Datos en Planta||Control de Presencia / Incentivos||Itemsasoft||Quality BCN||GSI Bajas IT Sugerencias;done;12;Deployed by CSC and GE test OK;null
+serpolet;Application;10.23.208.30;Active;VBN1;SunOS;IAO Solaris;null;00;Not deployed by CSC;null
+sncch10033;Application;10.18.0.169;Active;CCH1;linux;;null;00;Not deployed by CSC;null
+sudel10045;Application;10.108.100.120;Active;NDA1;linux;Jumpoff box VM;null;00;Not deployed by CSC;null
+sulpt15001;Application;10.18.0.235;Active;CCH1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sutra15001;Application;10.155.143.80;Active;TRA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sutrc12773;Application;10.92.2.33;Active;TRC1;HP-UX;PeopleSoft;null;00;Not deployed by CSC;null
+suwin1bppp;Application;10.164.119.71;Active;WND1;AIX;WIN18087||FILM-X||WIN18269||Submit Client||WIN18124;null;00;Not deployed by CSC;null
+canton;Application;10.255.250.40;Active;GUC1;AIX;ISIS  - SAP SRM||ISIS  - SAP SRM||Supplier Relationship Management SAP;done;11;Deployed by CSC and GE test OK;null
+celsius;Application;10.255.150.201;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+cubad10231;Application;10.128.172.216;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+gcnsse;Application;10.239.4.214;Active;CCH1;SunOS;;null;00;Not deployed by CSC;null
+hawai;Application;10.23.29.32;Active;OUS1;SunOS;Support&Hosting Petites applications métier OUS;null;00;Not deployed by CSC;null
+lic106;Application;10.238.146.106;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic115;Application;10.238.146.115;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic124;Application;10.238.146.124;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic133;Application;10.238.146.133;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic142;Application;10.238.146.148;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic151;Application;10.238.146.157;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+oracle1-s1;Application;10.128.72.167;Active;BAD1;AIX;EAI Base Platform;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+pascal;Application;10.255.150.136;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+sabad10298;Application;10.238.125.98;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad10400;Application;10.238.14.245;Active;BAD1;linux;e-Project Renew (HPR)||Hydro Technical Tendering (HTT)||NCM||Hydro Reftable (HREF);done;11;Deployed by CSC and GE test OK;null
+sabad10568;Application;10.238.125.68;Active;BAD1;linux;CVS CH||Tarra||ALPEG||CVS  Repository;done;12;Deployed by CSC and GE test OK;null
+sabad10955;Application;10.238.206.154;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad10964;Application;10.238.126.185;Active;BAD1;linux;BAAN UK||BAAN UK||BAAN NL;done;12;Deployed by CSC and GE test OK;null
+sabad10973;Application;10.238.14.176;Active;BAD1;linux;e-Temptation Thermal PAC Ludres||e-Temptation Thermal Systems Belfort||e-Temptation Thermal Service France;done;12;Deployed by CSC and GE test OK;null
+sabad11189;Application;10.238.196.89;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad11210;Application;10.238.127.56;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11279;Application;10.238.14.89;Active;BAD1;linux;MAX3000;done;12;Deployed by CSC and GE test OK;null
+sabad11369;Application;10.238.196.171;Active;RMA1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabad11495;Application;10.238.198.41;Active;BAD1;linux;DELMIA V6||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad15419;Application;10.238.127.190;Active;BAD1;linux;Nexthink;null;00;Not deployed by CSC;null
+sabad16148;Application;10.236.4.148;Active;RMA1;AIX;PMX SAP EP;done;11;Deployed by CSC and GE test OK;null
+sabad16166;Application;10.236.4.166;Active;RMA1;AIX;New PLM||DELMIA V6||Aralia SIMTREE;done;20;Deployed by CSC but not testable (behind FW);null
+sabad18119;Application;10.238.168.29;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18128;Application;10.238.168.38;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18137;Application;10.238.168.47;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18146;Application;10.238.168.56;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18155;Application;10.238.168.65;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18209;Application;10.238.164.19;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18218;Application;10.238.164.28;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18227;Application;10.238.164.37;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18236;Application;10.238.164.46;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18245;Application;10.238.164.55;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18254;Application;10.238.164.64;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18308;Application;10.238.168.208;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18407;Application;10.238.199.23;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18416;Application;10.238.199.32;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18425;Application;10.238.199.41;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18434;Application;10.238.199.50;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18443;Application;10.238.199.59;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19019;Application;10.128.72.202;Active;BAD1;AIX;PMX NW Administrator CUA;done;21;Deployed by CSC and GE test on going;null
+sabad19031-vs11;Application;10.128.78.153;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19041-vs11;Application;10.128.78.154;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19046;Application;10.238.142.56;Active;BAD1;SunOS;SECAD GASTON;null;00;Not deployed by CSC;null
+sabad19163;Application;10.238.142.165;Active;BAD1;SunOS;EAI Base Platform;null;00;Not deployed by CSC;null
+sabad19262;Application;10.238.142.84;Active;RMA1;SunOS;EAI Base Platform;null;00;Not deployed by CSC;null
+sabad19271;Application;10.238.142.237;Active;BAD1;SunOS;POSEIDON;null;00;Not deployed by CSC;null
+sabad19307;Application;10.238.220.67;Active;BAD1;AIX;AMON;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19325;Application;10.238.143.200;Active;BAD1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19343;Application;10.238.220.83;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19352;Application;10.238.21.76;Active;BAD1;AIX;Powermax;done;11;Deployed by CSC and GE test OK;null
+sabad19361;Application;10.238.220.86;Active;BAD1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19406;Application;10.238.21.38;Active;RMA1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19424;Application;10.238.21.54;Active;RMA1;AIX;Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found. |; lsof Ko : no lsof found |; crontab Ok"
+sabad19604;Application;10.238.21.115;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19802;Application;10.128.78.35;Active;RMA1;AIX;SAP-BW for SAP-CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19811;Application;10.238.21.71;Active;RMA1;AIX;SAP CH Bluesky;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found |; lsof Ko : no lsof found |; crontab Ok"
+sabad35039;Application;10.238.101.189;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabor15220;Application;10.18.92.29;Active;BOR1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabrs15001;Application;10.38.3.26;Active;BRS1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sacch10469;Application;10.239.25.193;Active;CCH1;linux;BRMS;done;12;Deployed by CSC and GE test OK;null
+sacch10496;Application;10.239.26.76;Active;CCH1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sacch15059;Application;10.237.4.59;Active;CCH1;AIX;RAILSYS;null;00;Not deployed by CSC;null
+sacch15554;Application;10.239.26.161;Active;CCH1;linux;PKI;done;12;Deployed by CSC and GE test OK;null
+sacch15563;Application;10.239.55.18;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15617;Application;10.23.31.24;Active;CCH1;linux;ADEL Diane;done;12;Deployed by CSC and GE test OK;null
+sacch15653;Application;10.239.27.53;Active;CCH1;linux;CONFLUENCE;done;12;Deployed by CSC and GE test OK;null
+sacch15707;Application;10.239.27.107;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+saguc10001;Application;10.255.250.105;Active;GUC1;AIX;Infra INFORMATICA (Platform);null;00;Not deployed by CSC;null
+salrh10029;Application;10.23.97.167;Active;LRH1;SunOS;DMA-GS La Rochelle Citadis;null;00;Not deployed by CSC;null
+saptf10003;Application;10.23.71.8;Active;PTF1;SunOS;METAPROD;null;00;Not deployed by CSC;null
+saptf10021;Application;10.22.97.102;Active;PTF1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sarei10007;Application;10.23.144.10;Active;REI1;AIX;DMA-GS Reichshoffen;null;00;Not deployed by CSC;null
+sarma15013;Application;10.238.198.222;Active;RMA1;linux;GForge;done;12;Deployed by CSC and GE test OK;null
+sassg10130;Application;10.115.49.130;Active;SSG1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sautc10012;Application;10.192.16.81;Active;UTC1;linux;ClearCase;done;10;Deployed by CSC but GE test KO;ssh : password
+savbn10029;Application;10.23.208.67;Active;VBN1;linux;Software Quality;done;12;Deployed by CSC and GE test OK;null
+sbbad19139;Application;10.238.207.201;Active;BAD1;AIX;;null;00;Not deployed by CSC;null
+sbbad19148;Application;10.238.143.102;Active;BAD1;AIX;BAAN PL||Baan - Belfort 800||BAAN Villeurbanne||BAAN (Canada)||BAAN UK||BAAN NL||Baan - Belfort 700||Baan - Levallois 700;null;00;Not deployed by CSC;null
+sbbad19157;Application;10.238.143.167;Active;RMA1;AIX;Hydro Reftable (HREF)||e-Project Renew (HPR)||Hydro Technical Tendering (HTT)||Hydro e-Project Reporting - BI (FRFAHPRP-7IOHD)||Hydro E-Tendering Reporting - BI (FRFAHTTE-7IOHD)||NCM||Hydro Reftable Reporting - BI (FRFAHREF-7IOHD);null;00;Not deployed by CSC;null
+sbbad19175;Application;10.238.197.66;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sbbad19184;Application;10.238.197.74;Active;BAD1;linux;;done;12;Deployed by CSC and GE test OK;null
+sbbad19193;Application;10.238.197.89;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sbbir10001;Application;10.129.131.100;Active;BIR1;linux;Factory Systems Birr;done;12;Deployed by CSC and GE test OK;null
+sbcch15010;Application;10.237.4.101;Active;CCH1;AIX;SmartPlantFoundation (SPF);null;00;Not deployed by CSC;null
+sbcch15079;Application;10.237.4.79;Active;CCH1;AIX;International Network Database||DSTT||Country & Tax database||AXIOMCAD License Control FR Massy||TDM Belfort||APRIORI||Ethics & Compliance Database||Mis Marques AT||Mis Marques AT;null;00;Not deployed by CSC;null
+sbcch15088;Application;10.237.4.88;Active;CCH1;AIX;HR Reporting;null;00;Not deployed by CSC;null
+sbcch15655;Application;10.239.26.125;Active;CCH1;linux;CONFLUENCE||Subversion Grid||CROWD||JIRA;done;12;Deployed by CSC and GE test OK;null
+sbssg15001;Application;10.115.48.12;Active;SSG1;linux;ELSA;done;12;Deployed by CSC and GE test OK;null
+sc5;Utility;10.23.97.70;Active;LRH1;SunOS;;null;00;Not deployed by CSC;null
+sublq11486;Application;10.112.9.15;Active;BLQ1;linux;Fax server and portal maintenence and support;asking password;01;CSC not able to deploy;null
+sublq13nlk;Application;10.115.1.93;Active;BLQ1;linux;Fax server and portal maintenence and support;null;00;Not deployed by CSC;null
+sucrl1a0;Application;10.79.2.83;Active;CRL1;SunOS;Xpedition Enterprise||ClearCase;null;00;Not deployed by CSC;null
+suric10002;Application;10.164.24.140;Active;RIC1;linux;Enterprise Data Warehouse||Nucleus v5;done;12;Deployed by CSC and GE test OK;null
+tesla;Application;10.255.150.141;Active;CCH1;AIX;ISIS  - SAP SRM||Supplier Relationship Management SAP;null;00;Not deployed by CSC;null
+baobab;Application;10.18.146.243;Active;GNB1;SunOS;GP 2000||ARCOLE||Workmanager - Consultation;null;00;Not deployed by CSC;null
+gab;Application;10.255.150.214;Active;CCH1;AIX;Infra FAST (File Transfer - Connect Direct);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+iww;Application;10.23.128.15;Active;BAD1;linux;Other Gestion des plans d'action Support||Purchasing - Gestion des non conformités||Inhouse DELPHI;asking password;01;CSC not able to deploy;null
+lic107;Application;10.238.146.107;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic116;Application;10.238.146.116;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic125;Application;10.238.146.125;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic134;Application;10.238.146.134;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic143;Application;10.238.146.149;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic152;Application;10.238.146.158;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+mobius0;Application;10.255.250.196;Active;GUC1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+multimedia;Utility;10.115.0.24;Active;BLQ1;linux;;null;00;Not deployed by CSC;null
+naos;Application;10.23.208.31;Active;VBN1;SunOS;UNIX directory NIS VBN;null;00;Not deployed by CSC;null
+oracle1-s2;Application;10.128.72.176;Active;BAD1;AIX;EAI Base Platform;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+phoenix;Application;10.128.77.50;Active;BAD1;AIX;;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10131;Application;10.128.30.202;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad10203;Application;10.238.125.203;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10221;Application;10.238.14.221;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10299;Application;10.238.125.99;Active;BAD1;linux;ALISTA France||ALISTA France||ALISTA Le Creusot, Madrid, London||Alista||ALISTA Tarbes, Charleroi, Nola||ALISTA Valenciennes, Bucarest, Atagora, La Rochelle;done;12;Deployed by CSC and GE test OK;null
+sabad10389;Application;10.238.141.59;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10956;Application;10.238.11.119;Active;RMA1;linux;PMS;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11004;Application;10.238.141.77;Active;BAD1;linux;PIMS Support;null;00;Not deployed by CSC;null
+sabad11121;Application;10.238.196.53;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11211;Application;10.238.127.75;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11388;Application;10.238.196.175;Active;RMA1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabad11397;Application;10.238.197.75;Active;RMA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11478;Application;10.238.198.30;Active;BAD1;linux;Nexthink;null;00;Not deployed by CSC;null
+sabad16167;Application;10.238.220.60;Active;RMA1;AIX;ASCOT;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad18129;Application;10.238.168.39;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18138;Application;10.238.168.48;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18147;Application;10.238.168.57;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18219;Application;10.238.164.29;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18228;Application;10.238.164.38;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18237;Application;10.238.164.47;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18246;Application;10.238.166.56;Active;BAD1;linux;HPC - TGN Green Extension;done;20;Deployed by CSC but not testable (behind FW);null
+sabad18255;Application;10.238.164.65;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18291;Application;10.238.164.111;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18309;Application;10.238.168.209;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18408;Application;10.238.199.24;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18417;Application;10.238.199.33;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18426;Application;10.238.199.42;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18435;Application;10.238.199.51;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18444;Application;10.238.199.60;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19047;Application;10.238.142.55;Active;BAD1;SunOS;SECAD;null;00;Not deployed by CSC;null
+sabad19056;Application;10.128.72.33;Active;RMA1;AIX;APC VPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19083;Application;10.238.21.83;Active;BAD1;AIX;PW GRC;done;11;Deployed by CSC and GE test OK;null
+sabad19092;Application;10.238.142.38;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19263;Application;10.238.21.109;Active;BAD1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad19335;Application;10.238.16.35;Active;BAD1;AIX;PLM FastTrack;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19344;Application;10.238.220.84;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19416;Application;10.238.21.47;Active;RMA1;AIX;Powermax;done;11;Deployed by CSC and GE test OK;null
+sabad19515;Application;10.238.21.69;Active;BAD1;AIX;PMX Sabrix;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19605;Application;10.238.21.116;Active;BAD1;AIX;PMX SAP EP;done;11;Deployed by CSC and GE test OK;null
+sabad19803;Application;10.128.72.82;Active;BAD1;AIX;SAP CH Bluesky;done;11;Deployed by CSC and GE test OK;null
+sabad19812;Application;10.238.21.72;Active;RMA1;AIX;SAP CH Bluesky;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found |; lsof Ko : no lsof found |; crontab Ok"
+sabor15230;Application;10.23.176.166;Active;BOR1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sacch10122;Application;10.239.15.2;Active;CCH1;AIX;PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10497;Application;10.239.26.77;Active;CCH1;linux;PCDMS;null;00;Not deployed by CSC;null
+sacch10500;Application;10.239.26.75;Active;CCH1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sacch15087;Application;10.255.150.49;Active;CCH1;AIX;GRID SAP Solution Manager;null;00;Not deployed by CSC;null
+sacch15555;Application;10.239.26.162;Active;CCH1;linux;PKI;done;12;Deployed by CSC and GE test OK;null
+sacch15564;Application;10.239.55.19;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15654;Application;10.239.27.54;Active;CCH1;linux;CROWD;done;12;Deployed by CSC and GE test OK;null
+sacch15663;Application;10.239.27.63;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15708;Application;10.239.27.108;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35049;Application;10.237.9.111;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35058;Application;10.237.9.125;Active;CCH1;linux;GSI Content Server;done;12;Deployed by CSC and GE test OK;null
+salpt10100;Application;10.18.1.110;Active;CCH1;linux;;done;12;Deployed by CSC and GE test OK;null
+saptf10013;Application;10.22.97.20;Active;PTF1;AIX;DMA-GS Valenciennes;null;00;Not deployed by CSC;null
+sarei10017;Application;10.23.144.247;Active;REI1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sassg10131;Application;10.115.49.131;Active;SSG1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sbbad19158;Application;10.238.143.166;Active;RMA1;AIX;;null;00;Not deployed by CSC;null
+sbcch15011;Application;10.237.4.104;Active;CCH1;AIX;SmartPlantFoundation (SPF);null;00;Not deployed by CSC;null
+sbcch15089;Application;10.237.4.89;Active;CCH1;AIX;HR Reporting;null;00;Not deployed by CSC;null
+sbcch15656;Application;10.239.26.188;Active;CCH1;linux;CONFLUENCE||Subversion Grid||CROWD||JIRA;done;12;Deployed by CSC and GE test OK;null
+sbptf15001;Application;10.22.97.106;Active;PTF1;linux;ELSA;done;12;Deployed by CSC and GE test OK;null
+sncch10035;Application;10.18.0.165;Active;CCH1;linux;Central Account Directory (CAD);done;12;Deployed by CSC and GE test OK;null
+ss20;Application;10.18.0.150;Active;CCH1;SunOS;GI2000;null;00;Not deployed by CSC;null
+suelb15001;Application;10.197.128.31;Active;ELB1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+suqhp10276;Application;10.83.2.80;Active;QHP1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+surid10002;Application;10.192.192.53;Active;RID1;AIX;DMA-GS Ridderkerk;null;00;Not deployed by CSC;null
+sutrc1plm1;Application;10.92.0.30;Active;TRC1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+tcein001;Application;10.108.100.49;Active;NDA1;HP-UX;;null;00;Not deployed by CSC;null
+v240;Application;10.115.33.93;Active;SAV1;SunOS;E-Ncore||Artemis Savigliano||ARTEMIS||e-Time||e-Config;null;00;Not deployed by CSC;null
+watt;Application;10.255.150.142;Active;CCH1;AIX;Alt@is (GRID Global ERP);null;00;Not deployed by CSC;null
+buri;Application;10.255.150.52;Active;CCH1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+frptqux3;Application;10.22.140.100;Active;PTQ1;HP-UX;TPQ - Baan E.R.P;null;00;Not deployed by CSC;null
+gcna32;Application;10.18.0.239;Active;CCH1;linux;CAO2000;asking for root password;01;CSC not able to deploy;null
+gestor;Application;10.23.176.15;Active;BOR1;AIX;HR GESTOR Presence;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+kilby;Application;10.255.150.127;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+lic108;Application;10.238.146.108;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic117;Application;10.238.146.117;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic126;Application;10.238.146.126;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic135;Application;10.238.146.135;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic144;Application;10.238.146.150;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic153;Application;10.238.146.159;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+mobius1;Application;10.255.250.254;Active;GUC1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+oracle;Application;10.155.31.103;Active;SPM1;AIX;DMA-GS Barcelona;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad10402;Application;10.238.125.220;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10501;Application;10.238.8.160;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+sabad10510;Application;10.238.125.163;Active;BAD1;linux;AUM;done;12;Deployed by CSC and GE test OK;null
+sabad10597;Application;10.238.125.197;Active;RMA1;linux;APC-RPDM;done;12;Deployed by CSC and GE test OK;null
+sabad10867;Application;10.238.127.62;Active;BAD1;linux;MTA||SUMO;done;12;Deployed by CSC and GE test OK;null
+sabad10939;Application;10.238.127.237;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad10957;Application;10.238.11.120;Active;RMA1;linux;PMS;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10975;Application;10.238.15.178;Active;BAD1;linux;e-Temptation Thermal PAC Ludres||e-Temptation Thermal Systems Belfort||e-Temptation Thermal Service France||e-Temptation Renewable France;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11005;Application;10.238.141.78;Active;BAD1;linux;PIMS Support||CSMS - Demo||CSMS - Demo;done;12;Deployed by CSC and GE test OK;null
+sabad11050;Application;10.238.37.41;Active;RMA1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11212;Application;10.238.127.157;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11389;Application;10.238.196.183;Active;RMA1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabad11479;Application;10.238.198.31;Active;BAD1;linux;Nexthink;null;00;Not deployed by CSC;null
+sabad11497;Application;10.238.206.220;Active;RMA1;linux;SAP B1 (PowerMax Light);null;00;Not deployed by CSC;null
+sabad18139;Application;10.238.168.49;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18148;Application;10.238.168.58;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18229;Application;10.238.164.39;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18238;Application;10.238.164.48;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18247;Application;10.238.166.57;Active;BAD1;linux;HPC - TGN Green Extension;done;20;Deployed by CSC but not testable (behind FW);null
+sabad18256;Application;10.238.164.66;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18292;Application;10.238.164.112;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18409;Application;10.238.199.25;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18418;Application;10.238.199.34;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18427;Application;10.238.199.43;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18436;Application;10.238.199.52;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18445;Application;10.238.199.61;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19030-vs1;Application;10.128.78.70;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19039;Application;10.128.78.136;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19084;Application;10.238.142.85;Active;BAD1;SunOS;PDMOne;null;00;Not deployed by CSC;null
+sabad19264;Application;10.238.21.110;Active;BAD1;AIX;PMX SAP PO;done;21;Deployed by CSC and GE test on going;null
+sabad19606;Application;10.238.21.117;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19651;Application;10.238.220.91;Active;BAD1;AIX;Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sablq130h0;Application;10.115.1.12;Active;BLQ1;linux;Fax server and portal maintenence and support;done;12;Deployed by CSC and GE test OK;null
+sabor10047;Application;10.18.92.164;Active;BOR1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabor15231;Application;10.23.176.167;Active;BOR1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sacch10123;Application;10.239.15.3;Active;CCH1;AIX;GESDOC||PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10141;Application;10.239.14.2;Active;CCH1;AIX;GESDOC||PLM FastTrack||PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10213;Application;10.239.4.212;Active;CCH1;SunOS;MENU BE||UNI;null;00;Not deployed by CSC;null
+sacch10498;Application;10.239.26.78;Active;CCH1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sacch10501;Application;10.239.26.73;Active;CCH1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sacch15100;Application;10.239.14.20;Active;CCH1;linux;Managed File Transfer;done;12;Deployed by CSC and GE test OK;null
+sacch15592;Application;10.239.55.22;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15637;Application;10.239.27.34;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15664;Application;10.239.27.64;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15709;Application;10.239.27.109;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35059;Application;10.237.9.128;Active;CCH1;linux;GSI DOLLAR UNIVERSE||GSI BW;done;12;Deployed by CSC and GE test OK;null
+salpt10020;Application;10.18.0.177;Active;CCH1;SunOS;;null;00;Not deployed by CSC;null
+saons10006;Application;10.23.132.3;Active;ONS1;AIX;DMA-GS Ornans;null;00;Not deployed by CSC;null
+saptf10005;Application;10.23.71.100;Active;PTF1;SunOS;ELSA||DMA-GS Valenciennes||E3Séries;null;00;Not deployed by CSC;null
+sarei10018;Application;10.23.144.248;Active;REI1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sarug11751;Application;10.39.0.151;Active;RUG1;SunOS;Turbine Design & Devt Programmes Hosting;null;00;Not deployed by CSC;null
+sbbad19186;Application;10.238.197.88;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sbbad19339;Application;10.238.143.31;Active;BAD1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbbor15054;Application;10.18.92.169;Active;BOR1;linux;AXIOMCAD Belfort;done;12;Deployed by CSC and GE test OK;null
+sbcch15585;Application;10.239.26.192;Active;CCH1;linux;MTA||SUMO;done;12;Deployed by CSC and GE test OK;null
+sncch10036;Application;10.18.0.173;Active;CCH1;linux;;done;20;Deployed by CSC but not testable (behind FW);null
+sncch10162;Application;10.239.4.150;Active;CCH1;AIX;CAO2000;null;00;Not deployed by CSC;null
+subjs15001;Application;10.96.160.38;Active;BJS1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sucrl1a2;Application;10.79.2.85;Active;CRL1;SunOS;Xpedition Enterprise;null;00;Not deployed by CSC;null
+sukar10002;Application;10.218.10.86;Active;KAR1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+suwin1bpps;Application;10.164.119.70;Active;WND1;AIX;WIN18087||FILM-X||WIN18269||Submit Client||WIN18124;null;00;Not deployed by CSC;null
+vpmcax10;Application;10.128.79.248;Active;BAD1;AIX;;null;00;Not deployed by CSC;null
+bws-s1;Application;10.128.72.166;Active;RMA1;AIX;SAP-BW for SAP-CH;done;11;Deployed by CSC and GE test OK;null
+dbserv;Application;10.23.128.34;Active;ONS1;linux;Other Gestion des plans d'action Support;null;00;Not deployed by CSC;null
+enterprise;Application;10.115.0.109;Active;BLQ1;linux;clearcase Italy;null;00;Not deployed by CSC;null
+esaki;Application;10.255.150.61;Active;CCH1;AIX;Alt@is (GRID Global ERP)||TPM;done;11;Deployed by CSC and GE test OK;null
+hrkaatc;Application;10.218.10.67;Active;KAR1;linux;ATC Tool;asking password;01;CSC not able to deploy;null
+jslrugs01;Application;10.34.3.80;Active;RUG1;linux;External DNS;asking password;01;CSC not able to deploy;null
+lic109;Application;10.238.146.109;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic118;Application;10.238.146.118;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic127;Application;10.238.146.127;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic136;Application;10.238.146.136;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic145;Application;10.238.146.151;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic154;Application;10.238.146.160;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+oradev1;Application;10.255.150.108;Active;CCH1;AIX;BO Planning||Infra INFORMATICA (Platform)||Infra INFORMATICA (Platform)||TEMPUS - GTA France||TEMPUS - GTA France||TEMPUS - GTA France||REX - RETOUR D'EXPERIENCES||REX - RETOUR D'EXPERIENCES||Infra FAST (File Transfer - Connect Direct)||Infra PHP Shared Platform||Infra PHP Shared Platform||TPM||ARIS Server||BO XI GRID||BO XI GRID||BO XI GRID||DRJM - DATAsset REJECT MANAGEMENT||DRJM - DATAsset REJECT MANAGEMENT;done;11;Deployed by CSC and GE test OK;null
+pmcht;Application;10.128.72.207;Active;BAD1;AIX;PW Solman;done;21;Deployed by CSC and GE test on going;null
+rio;Application;10.79.2.23;Active;CRL1;SunOS;ClearCase||DDTS||TEAMWORK;null;00;Not deployed by CSC;null
+sabad10043;Application;10.128.30.81;Active;BAD1;linux;TDS Doku server;done;12;Deployed by CSC and GE test OK;null
+sabad10133;Application;10.128.30.204;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad10304;Application;10.238.15.228;Active;BAD1;linux;WAVE;null;00;Not deployed by CSC;null
+sabad10403;Application;10.238.125.221;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10511;Application;10.238.125.164;Active;BAD1;linux;AUM;done;12;Deployed by CSC and GE test OK;null
+sabad10967;Application;10.238.126.188;Active;BAD1;linux;BAAN (Canada);done;12;Deployed by CSC and GE test OK;null
+sabad10976;Application;10.238.14.179;Active;BAD1;linux;e-Temptation Thermal Systems Belfort||e-Temptation Thermal Service France||e-Temptation Thermal PAC Ludres;done;12;Deployed by CSC and GE test OK;null
+sabad11024;Application;10.238.197.57;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad11051;Application;10.238.37.42;Active;BAD1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11060;Application;10.238.101.145;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11150;Application;10.238.196.66;Active;BAD1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sabad11213;Application;10.238.127.194;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11411;Application;10.238.41.160;Active;BAD1;linux;AES||AES;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11489;Application;10.238.11.25;Active;RMA1;linux;PMS;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11510;Application;10.238.198.55;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad18149;Application;10.238.168.59;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18239;Application;10.238.164.49;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18248;Application;10.238.164.58;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18293;Application;10.238.164.113;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18419;Application;10.238.199.35;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18428;Application;10.238.199.44;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18437;Application;10.238.199.53;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18446;Application;10.238.199.62;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19030-vs2;Application;10.128.78.71;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19031-vs1;Application;10.128.78.79;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19040-vs1;Application;10.128.78.45;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19085;Application;10.128.78.165;Active;BAD1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found |; lsof Ko : no lsof found |; crontab Ok"
+sabad19355;Application;10.238.21.85;Active;BAD1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ko : >>> sudoers file: syntax error, line 79 <<< |; lsof Ko : no lsof found |; crontab Ok"
+sabad19652;Application;10.236.4.114;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19706;Application;10.128.78.34;Active;RMA1;AIX;APC VPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19805;Application;10.128.72.74;Active;BAD1;AIX;SAP CH Bluesky;done;11;Deployed by CSC and GE test OK;null
+sacch10124;Application;10.239.15.4;Active;CCH1;AIX;GESDOC||PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10142;Application;10.239.14.3;Active;CCH1;AIX;PLM FastTrack||PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10205;Application;10.239.4.206;Active;CCH1;linux;ADEL WP;done;12;Deployed by CSC and GE test OK;null
+sacch10250;Application;10.239.4.70;Active;CCH1;AIX;ADEL e-TRS||ADEL Diane||ADEL WP;null;00;Not deployed by CSC;null
+sacch10340;Application;10.239.4.202;Active;CCH1;SunOS;SOFIA||SOFIA||GEODE PDM;null;00;Not deployed by CSC;null
+sacch10421;Application;10.239.14.8;Active;CCH1;linux;International Network Database AT||Ethics & Compliance Database AT||SOL (Sourcing on line)||Country & Tax database AT;done;20;Deployed by CSC but not testable (behind FW);null
+sacch10499;Application;10.239.26.74;Active;CCH1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sacch15020;Application;10.237.4.21;Active;CCH1;AIX;SAP ISIS FR;null;00;Not deployed by CSC;null
+sacch15089;Application;10.255.150.65;Active;CCH1;AIX;PO 2.0 (Fiori);null;00;Not deployed by CSC;null
+sacch15101;Application;10.239.27.24;Active;CCH1;linux;MdM-PlugBI;done;12;Deployed by CSC and GE test OK;null
+sacch15638;Application;10.239.27.35;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15665;Application;10.239.27.65;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+salpt10102;Application;10.18.1.102;Active;CCH1;linux;Asset Center;done;11;Deployed by CSC and GE test OK;null
+salpt10111;Application;10.18.1.127;Active;CCH1;linux;IGC;done;11;Deployed by CSC and GE test OK;null
+saons10007;Application;10.23.132.4;Active;ONS1;AIX;DMA-GS Ornans;null;00;Not deployed by CSC;null
+sarug11752;Application;10.39.0.152;Active;RUG1;SunOS;Turbine Design & Devt Programmes Hosting;null;00;Not deployed by CSC;null
+sarug11761;Application;10.39.0.236;Active;RUG1;SunOS;;null;00;Not deployed by CSC;null
+satab10010;Application;10.23.113.25;Active;TAB1;AIX;DMA-GS Tarbes;null;00;Not deployed by CSC;null
+sbbad19001;Application;10.238.142.181;Active;RMA1;SunOS;HyLife;null;00;Not deployed by CSC;null
+sbcch10207;Application;10.239.4.209;Active;CCH1;linux;CARAT Light;done;12;Deployed by CSC and GE test OK;null
+sbcch15022;Application;10.237.4.23;Active;CCH1;AIX;IMAGINE 4;null;00;Not deployed by CSC;null
+sblrh10001;Application;10.23.97.55;Active;LRH1;SunOS;ELSA||BUSINESS OBJECT||SGF||AIFO||GLC;null;00;Not deployed by CSC;null
+sbwin1orap;Application;10.164.119.51;Active;WND1;linux;Aware (DocKit)||webPBOM||Teamcenter Enterprise;done;12;Deployed by CSC and GE test OK;null
+sc8;Application;10.23.97.108;Active;LRH1;SunOS;ERP- Archivage SAP R2;null;00;Not deployed by CSC;null
+sfgnb10018;Application;10.18.146.176;Active;GNB1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sfons10005;Utility;10.23.128.74;Active;ONS1;SunOS;ANSYS;null;00;Not deployed by CSC;null
+sfrug15017;Utility;10.39.0.157;Active;RUG1;linux;;done;12;Deployed by CSC and GE test OK;null
+subcn13dc1;Application;10.155.31.233;Active;SPM1;AIX;DMA-GS Barcelona;null;00;Not deployed by CSC;null
+sucha10001;Application;10.164.170.46;Active;CHA1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sucrl1dma1;Application;10.79.2.49;Active;CRL1;AIX;DMA-GS Charleroi;null;00;Not deployed by CSC;null
+suelb10080;Application;10.197.128.80;Active;ELB1;linux;ABAQUS Global License Control;done;12;Deployed by CSC and GE test OK;null
+surid10004;Utility;10.192.192.58;Active;RID1;linux;;done;12;Deployed by CSC and GE test OK;null
+surug15001;Application;10.39.0.129;Active;RUG1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+aioli;Application;10.23.208.15;Active;VBN1;SunOS;Hosting Métier||ClearCase||UNIX directory NIS VBN;null;00;Not deployed by CSC;null
+baan4v;Application;10.180.119.2;Active;BUD1;linux;BAAN Budapest;done;12;Deployed by CSC and GE test OK;null
+bws-s2;Application;10.128.72.175;Active;RMA1;AIX;SAP-BW for SAP-CH;done;11;Deployed by CSC and GE test OK;null
+dbta05;Application;10.18.0.185;Active;CCH1;SunOS;;null;00;Not deployed by CSC;null
+euler;Application;10.255.150.138;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+gama;Application;10.255.150.193;Active;CCH1;AIX;Infra FAST (File Transfer - Connect Direct);done;11;Deployed by CSC and GE test OK;null
+italie;Application;10.23.144.49;Active;REI1;SunOS;FAO;null;00;Not deployed by CSC;null
+juliar;Application;10.192.195.130;Active;RID1;HP-UX;Licence Microtec C/C++ Compiler 68K;null;00;Not deployed by CSC;null
+kessel;Application;10.255.250.223;Active;GUC1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : ksh: 2199790 Memory fault(coredump) |; crontab Ok"
+lic119;Application;10.238.146.119;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic128;Application;10.238.146.128;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic137;Application;10.238.146.137;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic146;Application;10.238.146.152;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic155;Application;10.238.146.161;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+powers1;Application;10.216.112.71;Active;VAT1;AIX;CATIA Finland;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+sabad10134;Application;10.128.30.205;Active;BAD1;linux;CoCoOn||STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10215;Application;10.238.14.215;Active;BAD1;linux;Inoveyou||Weekly Volumes Viewer||Bonga;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad10422;Application;10.238.14.23;Active;BAD1;linux;RVR TIC Apllication;done;12;Deployed by CSC and GE test OK;null
+sabad10611;Application;10.238.141.111;Active;BAD1;linux;DocCommander;done;12;Deployed by CSC and GE test OK;null
+sabad10698;Application;10.238.14.198;Active;BAD1;linux;ALISTA Valenciennes, Bucarest, Atagora, La Rochelle||Alista;done;12;Deployed by CSC and GE test OK;null
+sabad11034;Application;10.238.206.155;Active;RMA1;linux;PMS;Asking for Password Change;01;CSC not able to deploy;null
+sabad11052;Application;10.238.126.55;Active;RMA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11061;Application;10.238.101.146;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11124;Application;10.238.196.58;Active;RMA1;linux;GESDOC||Central Account Directory (CAD);done;12;Deployed by CSC and GE test OK;null
+sabad11133;Application;10.238.41.133;Active;BAD1;linux;E-Project Project||Transport Reference Tables||E-Project Tender;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11151;Application;10.238.196.67;Active;BAD1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sabad11214;Application;10.238.127.250;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11250;Application;10.238.37.70;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11412;Application;10.238.41.161;Active;BAD1;linux;AES;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11511;Application;10.238.198.56;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad15030;Application;10.238.198.113;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad15201;Application;10.238.198.63;Active;BAD1;linux;SUMO||MTA;done;12;Deployed by CSC and GE test OK;null
+sabad15210;Application;10.238.198.205;Active;BAD1;linux;Subversion Grid||Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sabad18249;Application;10.238.164.59;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18294;Application;10.238.164.114;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18429;Application;10.238.199.45;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18438;Application;10.238.199.54;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18447;Application;10.238.199.63;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19030-vs3;Application;10.128.78.72;Active;RMA1;SunOS;PDMOne;null;00;Not deployed by CSC;null
+sabad19031-vs2;Application;10.128.78.80;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19040-vs2;Application;10.128.78.46;Active;RMA1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19041-vs1;Application;10.128.78.74;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19059;Application;10.128.72.83;Active;BAD1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19068;Application;10.238.142.136;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19338;Application;10.238.21.138;Active;BAD1;AIX;TRT SAP SOLMAN;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19356;Application;10.238.21.86;Active;BAD1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19653;Application;10.238.220.93;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad35010;Application;10.236.9.39;Active;BAD1;linux;UAMS (User Authorization Management System);done;12;Deployed by CSC and GE test OK;null
+sacch10062;Application;10.23.4.36;Active;CCH1;linux;Request Tracker;done;12;Deployed by CSC and GE test OK;null
+sacch10125;Application;10.239.15.5;Active;CCH1;AIX;PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10305;Application;10.239.25.54;Active;CCH1;linux;Calculateur Scientifique||PowerFlow||StarCCM+;done;12;Deployed by CSC and GE test OK;null
+sacch10440;Application;10.239.25.214;Active;CCH1;linux;DMA-GS Central server;done;11;Deployed by CSC and GE test OK;null
+sacch15012;Application;10.237.9.45;Active;CCH1;linux;;done;12;Deployed by CSC and GE test OK;null
+sacch15021;Application;10.237.4.22;Active;CCH1;AIX;Hibiscus;null;00;Not deployed by CSC;null
+sacch15030;Application;10.237.4.29;Active;CCH1;AIX;CHAS;null;00;Not deployed by CSC;null
+sacch15099;Application;10.239.27.22;Active;CCH1;linux;Managed File Transfer;done;12;Deployed by CSC and GE test OK;null
+sacch15102;Application;10.237.4.102;Active;CCH1;AIX;DMA-GS Quality;null;00;Not deployed by CSC;null
+sacch15639;Application;10.239.27.36;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15657;Application;10.239.27.57;Active;CCH1;linux;Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sacch15666;Application;10.239.27.66;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35088;Application;10.237.9.162;Active;CCH1;linux;TEMPUS - GTA France;done;12;Deployed by CSC and GE test OK;null
+sacch35100;Application;10.237.9.179;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sarug11753;Application;10.39.0.153;Active;RUG1;SunOS;CBPMS;null;00;Not deployed by CSC;null
+sasaa15017;Application;10.109.0.103;Active;SAA1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+satab10002;Application;10.23.113.84;Active;TAB1;SunOS;ClearCase;null;00;Not deployed by CSC;null
+satab10011;Application;10.23.113.24;Active;TAB1;AIX;Gestion des plans (TED);null;00;Not deployed by CSC;null
+sbbad10038;Application;10.238.198.153;Active;BAD1;linux;SUMO||Strategic Sizing Planning||MTA;done;12;Deployed by CSC and GE test OK;null
+sbbad11361;Application;10.238.197.200;Active;BAD1;linux;ALISTA France||Alista||Subversion Grid||AES||APC-RPDM||MERCURY||TAG||FEC||FEC||HyLife;done;12;Deployed by CSC and GE test OK;null
+sbbad19101;Application;10.238.143.42;Active;RMA1;AIX;ASK2||BO XI Platform (Transport)||FRACAS reporting||GridFusion (Reporting)||GridFusion||IMACS||Plant Explorer||TERANGA - Census||DWH Sourcing||POSEIDON||DWH MSF||Weekly Volumes Viewer;null;00;Not deployed by CSC;null
+sbbad19110;Application;10.238.143.110;Active;RMA1;AIX;ALISTA Le Creusot, Madrid, London||Alista||ALISTA Tarbes, Charleroi, Nola||Power Source by CSC - Business Intelligence (FRFAPWSR-7IOHD)||ALISTA Valenciennes, Bucarest, Atagora, La Rochelle;null;00;Not deployed by CSC;null
+sbblr10003;Application;10.107.138.172;Active;BLR1;linux;ELSA||E3Séries;done;12;Deployed by CSC and GE test OK;null
+sbcch15023;Application;10.237.4.24;Active;CCH1;AIX;IMAGINE 4;null;00;Not deployed by CSC;null
+sblrh15039;Application;10.23.97.53;Active;LRH1;linux;ELSA;done;12;Deployed by CSC and GE test OK;null
+sdbad19511;Application;10.238.143.41;Active;BAD1;AIX;EAI Base Platform||Ulysse||BO Platform (Corporate)||SECAD GASTON;null;00;Not deployed by CSC;null
+sfgnb10019;Application;10.18.146.175;Active;GNB1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sncch10038;Application;10.18.0.172;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sncch10416;Application;10.239.14.7;Active;CCH1;linux;My IT Portal||AC1 - Configurator Grid;done;12;Deployed by CSC and GE test OK;null
+strsrv;Application;10.128.76.145;Active;BAD1;AIX;TDS Doku server;null;00;Not deployed by CSC;null
+subud15009;Application;10.180.112.32;Active;BUD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+suric15001;Application;10.164.24.176;Active;RIC1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+george;Application;10.164.119.16;Active;WND1;SunOS;Teamcenter Enterprise;null;00;Not deployed by CSC;null
+krap02;Application;10.128.72.178;Active;BAD1;AIX;SAP P02-Switzerland;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+lic129;Application;10.238.146.129;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic138;Application;10.238.146.138;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic147;Application;10.238.146.153;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic156;Application;10.238.146.162;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+mobius4;Application;10.255.250.193;Active;GUC1;AIX;;done;11;Deployed by CSC and GE test OK;null
+oudini;Application;10.255.150.162;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;02;Deployed by CSC but GE test KO;null
+pmsbxep;Application;10.236.4.120;Active;BAD1;AIX;PW GRC;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ok; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad10135;Application;10.128.30.206;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10612;Application;10.238.141.112;Active;BAD1;linux;DocCommander;done;12;Deployed by CSC and GE test OK;null
+sabad10699;Application;10.238.15.197;Active;BAD1;linux;Alista||ALISTA Valenciennes, Bucarest, Atagora, La Rochelle;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11026;Application;10.238.15.147;Active;BAD1;linux;Alstom Eco-Design;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11035;Application;10.238.206.156;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad11053;Application;10.238.126.56;Active;RMA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11125;Application;10.238.196.59;Active;RMA1;linux;Central Account Directory (CAD);done;12;Deployed by CSC and GE test OK;null
+sabad11251;Application;10.238.37.71;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11260;Application;10.238.217.112;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+sabad11530;Application;10.238.208.33;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabad15022;Application;10.238.198.114;Active;RMA1;linux;DELMIA V6;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+sabad15031;Application;10.238.198.116;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad18100;Application;10.238.168.254;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18439;Application;10.238.199.55;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18448;Application;10.238.199.64;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19031-vs3;Application;10.128.78.81;Active;BAD1;SunOS;PDMOne;null;00;Not deployed by CSC;null
+sabad19041-vs2;Application;10.128.78.75;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19357;Application;10.238.21.87;Active;RMA1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19636;Application;10.238.142.155;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19654;Application;10.236.4.115;Active;BAD1;AIX;PMX SAP PO;done;21;Deployed by CSC and GE test on going;null
+sabad19753;Application;10.238.143.225;Active;BAD1;AIX;CATIA V5;done;21;Deployed by CSC and GE test on going;null
+sabad19771;Application;10.128.78.183;Active;BAD1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19780;Application;10.238.143.37;Active;BAD1;AIX;ASCOT;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19861;Application;10.238.132.61;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35011;Application;10.236.9.41;Active;BAD1;linux;UAMS (User Authorization Management System);done;12;Deployed by CSC and GE test OK;null
+sacch10126;Application;10.239.15.6;Active;CCH1;AIX;PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10450;Application;10.239.25.235;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch15004;Application;10.237.9.25;Active;CCH1;linux;GSI - SAP ECC 6;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15013;Application;10.237.9.50;Active;CCH1;linux;GSI BW;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15022;Application;10.237.9.54;Active;CCH1;linux;GSI BO;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15031;Application;10.237.4.30;Active;CCH1;AIX;CHAS;null;00;Not deployed by CSC;null
+sacch15103;Application;10.237.4.103;Active;CCH1;AIX;DMA-GS Quality;null;00;Not deployed by CSC;null
+sacch15586;Application;10.239.55.20;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15658;Application;10.239.27.58;Active;CCH1;linux;JIRA;done;12;Deployed by CSC and GE test OK;null
+sacch15667;Application;10.239.27.67;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35089;Application;10.237.9.163;Active;CCH1;linux;TEMPUS - GTA France||TEMPUS - GTA France;done;12;Deployed by CSC and GE test OK;null
+sacch35101;Application;10.237.9.180;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch35110;Application;10.237.9.190;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+salcr10021;Application;10.23.81.223;Active;LCR1;SunOS;ANSYS;null;00;Not deployed by CSC;null
+saptf10017;Application;10.22.97.19;Active;PTF1;AIX;DMA-GS Valenciennes offer;null;00;Not deployed by CSC;null
+sarug21186;Utility;10.34.1.69;Active;RUG1;linux;;asking password;01;CSC not able to deploy;null
+satab10012;Application;10.23.113.27;Active;TAB1;AIX;DMA-GS Tarbes;null;00;Not deployed by CSC;null
+satab10021;Application;10.23.113.29;Active;TAB1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+savbn10010;Application;10.23.208.166;Active;VBN1;SunOS;IAO Solaris;null;00;Not deployed by CSC;null
+savst15160;Application;10.205.132.68;Active;VST1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sbbad11290;Application;10.238.197.53;Active;RMA1;linux;POKAL||FEC||HyLife;done;12;Deployed by CSC and GE test OK;null
+sbbad11362;Application;10.238.197.201;Active;RMA1;linux;InfoSystem;done;12;Deployed by CSC and GE test OK;null
+sbbad19102;Application;10.238.143.44;Active;RMA1;AIX;IMACS||Plant Explorer||AEINet||DWH Sourcing||POSEIDON||DWH MSF||Parts Folio||BO XI Platform (Transport)||FRACAS reporting;null;00;Not deployed by CSC;null
+sbbad19111;Application;10.238.143.111;Active;RMA1;AIX;ALISTA Valenciennes, Bucarest, Atagora, La Rochelle||Supplier & Quality Management (S&QM)||ALISTA Le Creusot, Madrid, London||Alista||ALISTA Tarbes, Charleroi, Nola;null;00;Not deployed by CSC;null
+sbbad19120;Application;10.238.143.120;Active;BAD1;AIX;MVS Transport;null;00;Not deployed by CSC;null
+sbcch10119;Application;10.18.0.52;Active;CCH1;linux;;done;20;Deployed by CSC but not testable (behind FW);null
+sbcch10182;Application;10.239.4.167;Active;CCH1;AIX;ADEL e-TRS||Agile||CLAMP||E3Séries||ADEL Diane||ELSA||GEPS||ILS Solutions||GESDOC||SOFIA||Athena||CHRONOTIQUE||ADEL WP||TDM Le Creusot;null;00;Not deployed by CSC;null
+soleil;Application;10.23.81.218;Active;LCR1;SunOS;UNIX directory NIS LCR;null;00;Not deployed by CSC;null
+subdq20059;Application;10.107.148.98;Active;BDQ2;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+subor15001;Application;10.18.92.175;Active;BOR1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sucha10030;Application;10.164.170.35;Active;CHA1;AIX;Syteline - Chattanooga;null;00;Not deployed by CSC;null
+suelb10028;Application;10.197.223.10;Active;ELB1;linux;;null;00;Not deployed by CSC;null
+sujpt10001;Application;10.167.23.103;Active;JPT1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+suric15002;Application;10.160.11.18;Active;RIC1;linux;Managed File Transfer;password prompt;01;CSC not able to deploy;null
+txser01;Application;10.192.195.64;Active;RID1;AIX;CCDRAFT;null;00;Not deployed by CSC;null
+vpf;Utility;10.23.71.190;Active;PTF1;linux;;done;12;Deployed by CSC and GE test OK;null
+balor;Application;10.34.114.246;Active;RUG1;SunOS;;null;00;Not deployed by CSC;null
+ibm60s;Application;10.197.128.160;Active;ELB1;AIX;Other CAD/CAM;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found. |; lsof Ko : no lsof found |; crontab Ok"
+joule;Application;10.255.150.140;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+kelvin;Application;10.255.150.200;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+lic139;Application;10.238.146.139;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic148;Application;10.238.146.154;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic157;Application;10.238.146.163;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+manille;Application;10.79.3.17;Active;CRL1;HP-UX;COMPILATORS;null;00;Not deployed by CSC;null
+ns0;Application;10.34.2.65;Active;RUG1;linux;;done;12;Deployed by CSC and GE test OK;null
+paris;Application;10.79.3.9;Active;CRL1;HP-UX;COMPILATORS;null;00;Not deployed by CSC;null
+sabad10109;Application;10.128.30.114;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+sabad10217;Application;10.238.14.217;Active;BAD1;linux;Bonga||GridFusion||Inoveyou||Weekly Volumes Viewer;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad10811;Application;10.238.141.50;Active;RMA1;linux;Datastage Platform (Corporate);done;12;Deployed by CSC and GE test OK;null
+sabad11135;Application;10.238.37.50;Active;BAD1;linux;E-Project Project||Transport Reference Tables||E-Project Tender;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11153;Application;10.238.196.60;Active;BAD1;linux;PCDMS;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ok; crontab Ko : bash: /usr/bin/crontab: Permission denied"
+sabad11261;Application;10.238.217.141;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+sabad11315;Application;10.238.198.150;Active;BAD1;linux;;done;12;Deployed by CSC and GE test OK;null
+sabad11360;Application;10.238.217.85;Active;BAD1;linux;GRC;done;12;Deployed by CSC and GE test OK;null
+sabad11414;Application;10.238.196.220;Active;BAD1;linux;MDM Platform;done;12;Deployed by CSC and GE test OK;null
+sabad11441;Application;10.238.38.79;Active;BAD1;linux;ALISTA France||Alista||Alista;done;10;Deployed by CSC but GE test KO;ssh : no route to host
+sabad11504;Application;10.238.206.90;Active;BAD1;linux;SUMO||MTA;done;12;Deployed by CSC and GE test OK;null
+sabad11531;Application;10.238.208.34;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabad15014;Application;10.238.37.80;Active;BAD1;linux;GForge;done;12;Deployed by CSC and GE test OK;null
+sabad15023;Application;10.238.198.100;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad15032;Application;10.238.198.117;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad18101;Application;10.238.168.11;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18110;Application;10.238.168.20;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18200;Application;10.238.164.254;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad19010;Application;10.238.142.88;Active;BAD1;SunOS;HyLife;null;00;Not deployed by CSC;null
+sabad19031-vs4;Application;10.128.78.82;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19041-vs3;Application;10.128.78.76;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19097;Application;10.238.142.49;Active;BAD1;SunOS;SECAD;null;00;Not deployed by CSC;null
+sabad19100;Application;10.128.72.50;Active;BAD1;AIX;PMX Sabrix;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19196;Application;10.238.142.34;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19358;Application;10.238.21.88;Active;RMA1;AIX;BI4 Platform (Power)||Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19754;Application;10.238.143.226;Active;BAD1;AIX;CATIA V5;done;21;Deployed by CSC and GE test on going;null
+sabad19781;Application;10.238.143.107;Active;BAD1;AIX;TRT SAP PI;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : Password: |; crontab Ok"
+sabad19862;Application;10.238.132.62;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19961;Application;10.238.132.20;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35012;Application;10.236.9.35;Active;BAD1;linux;GSI - SAP ECC 6||GSI DOLLAR UNIVERSE;done;12;Deployed by CSC and GE test OK;null
+sabad35021;Application;10.236.9.66;Active;BAD1;linux;GSI - SAP ECC 6;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+sacch10172;Application;10.239.4.162;Active;CCH1;linux;My IT Portal||SSO||Central Account Directory (CAD);done;12;Deployed by CSC and GE test OK;null
+sacch10334;Application;10.239.4.240;Active;CCH1;SunOS;CLAMP||ILS Solutions;null;00;Not deployed by CSC;null
+sacch10424;Application;10.239.15.12;Active;CCH1;linux;Lisa;done;12;Deployed by CSC and GE test OK;null
+sacch10451;Application;10.239.25.236;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch10460;Application;10.239.25.137;Active;CCH1;SunOS;CLAMP||ILS Solutions;null;00;Not deployed by CSC;null
+sacch10820;Application;10.239.4.130;Active;CCH1;SunOS;HERMES;null;00;Not deployed by CSC;null
+sacch15005;Application;10.237.9.26;Active;CCH1;linux;GSI - SAP ECC 6;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15023;Application;10.237.9.55;Active;CCH1;linux;GSI BW||GSI BO;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15032;Application;10.237.4.31;Active;CCH1;AIX;CHAS;null;00;Not deployed by CSC;null
+sacch15050;Application;10.237.4.48;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15104;Application;10.237.4.69;Active;CCH1;AIX;;null;00;Not deployed by CSC;null
+sacch15569;Application;10.239.4.207;Active;CCH1;linux;ADEL e-TRS||ADEL WP;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15587;Application;10.239.55.21;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15596;Application;10.239.27.19;Active;CCH1;linux;Pulse||Firewall||Network Connect;null;00;Not deployed by CSC;null
+sacch15668;Application;10.239.27.68;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15857;Application;10.23.4.96;Active;CCH1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sacch35102;Application;10.237.9.181;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacrl15040;Application;10.79.2.24;Active;CRL1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+saguc15002;Application;10.255.250.198;Active;GUC1;AIX;Alt@is (GRID Global ERP);null;00;Not deployed by CSC;null
+salcr10004;Application;10.23.81.229;Active;LCR1;SunOS;SOFIA||SOFIA;null;00;Not deployed by CSC;null
+salrh10020;Application;10.23.97.127;Active;LRH1;SunOS;ClearCase;null;00;Not deployed by CSC;null
+sarug11782;Application;10.39.0.148;Active;RUG1;linux;;done;12;Deployed by CSC and GE test OK;null
+satab10022;Application;10.23.113.30;Active;TAB1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sbbad11291;Application;10.238.197.54;Active;RMA1;linux;IMACS||APC-RPDM;done;12;Deployed by CSC and GE test OK;null
+sbbad11363;Application;10.238.197.202;Active;BAD1;linux;SICOS||AES||TeamTrack||TAG;done;12;Deployed by CSC and GE test OK;null
+sbbad16151;Application;10.236.4.151;Active;BAD1;AIX;Wind PLM;null;00;Not deployed by CSC;null
+sbbad16160;Application;10.236.4.160;Active;RMA1;AIX;DIP Global (Basware);null;00;Not deployed by CSC;null
+sbbad19112;Application;10.238.143.52;Active;RMA1;AIX;e-Temptation Thermal Systems Belfort||e-Temptation Thermal Systems Belfort||PMS||Aligator||e-Temptation Thermal Service France||e-Temptation Thermal Service France||Plant Explorer||TLS-TT||POSEIDON||SECAD||e-Temptation Renewable France||e-Temptation Renewable France||PDMOne||e-Temptation Thermal PAC Ludres||e-Temptation Thermal PAC Ludres;null;00;Not deployed by CSC;null
+sbbad19121;Application;10.238.143.54;Active;BAD1;AIX;Bonga||GridFusion (Reporting)||GridFusion||Inoveyou||TERANGA - Census||AEINet||APC-RPDM||Parts Folio||Parts Folio||Parts Folio||Parts Folio||Power Source by CSC - Business Intelligence (FRFAPWSR-7IOHD)||Power Source by CSC - Business Intelligence (FRFAPWSR-7IOHD)||Weekly Volumes Viewer;null;00;Not deployed by CSC;null
+sbbad19130;Application;10.238.207.130;Active;BAD1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbwin1oras;Application;10.164.119.52;Active;WND1;linux;Aware (DocKit)||webPBOM||Teamcenter Enterprise;done;12;Deployed by CSC and GE test OK;null
+sdbad19504;Application;10.238.143.34;Active;RMA1;AIX;ADEL SAS||EAI Base Platform;null;00;Not deployed by CSC;null
+sucrl1nim1;Application;10.79.2.53;Active;CRL1;AIX;DMA_GS_Catia / 3DCOM = 100% Part of AIX infrastructure within SUCRL1POWER1 Physical host;null;00;Not deployed by CSC;null
+sukar15001;Application;10.218.10.87;Active;KAR1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+tcebav10;Application;10.128.76.220;Active;BAD1;HP-UX;;null;00;Not deployed by CSC;null
+erp-p47-s1;Application;10.128.72.164;Active;RMA1;AIX;SAP CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+lic149;Application;10.238.146.155;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+mach;Application;10.255.150.143;Active;CCH1;AIX;ISIS  - SAP SRM||Supplier Relationship Management SAP;done;11;Deployed by CSC and GE test OK;null
+oradwh1;Application;10.255.250.104;Active;GUC1;AIX;Infra INFORMATICA (Platform)||BO XI GRID;done;11;Deployed by CSC and GE test OK;null
+osi2004;Application;10.23.97.35;Active;LRH1;SunOS;DDSC;null;00;Not deployed by CSC;null
+sabad10119;Application;10.128.30.122;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10146;Application;10.128.30.237;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10155;Application;10.238.14.155;Active;BAD1;linux;Hydro Costing Tool (HCT)||GridFusion||INSIGHTER||Ulysse;culdn't connect;01;CSC not able to deploy;null
+sabad10614;Application;10.238.125.214;Active;BAD1;linux;DocCommander;done;12;Deployed by CSC and GE test OK;null
+sabad10650;Application;10.238.142.150;Active;RMA1;linux;ADEL e-TRS||Datastage Platform (Transport)||ADEL WP;done;12;Deployed by CSC and GE test OK;null
+sabad10803;Application;10.238.14.83;Active;BAD1;linux;AUtube;done;12;Deployed by CSC and GE test OK;null
+sabad11055;Application;10.238.101.140;Active;RMA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11154;Application;10.238.196.61;Active;BAD1;linux;PCDMS;done;12;Deployed by CSC and GE test OK;null
+sabad11172;Application;10.238.196.172;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11190;Application;10.238.41.90;Active;BAD1;linux;JIRA;done;12;Deployed by CSC and GE test OK;null
+sabad11217;Application;10.238.206.217;Active;RMA1;linux;MDM Platform;done;12;Deployed by CSC and GE test OK;null
+sabad11262;Application;10.238.217.142;Active;RMA1;linux;New PLM;done;10;Deployed by CSC but GE test KO;ssh : no route to host
+sabad11307;Application;10.238.196.177;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad11415;Application;10.238.196.221;Active;BAD1;linux;MDM Platform;done;12;Deployed by CSC and GE test OK;null
+sabad11532;Application;10.238.208.35;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabad15024;Application;10.238.198.101;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad16140;Application;10.238.220.140;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad18102;Application;10.238.168.12;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18111;Application;10.238.168.21;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18120;Application;10.238.168.30;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18201;Application;10.238.164.11;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18210;Application;10.238.164.20;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18300;Application;10.238.168.200;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad19020;Application;10.128.72.252;Active;BAD1;linux;Video Service AT;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19041-vs4;Application;10.128.78.77;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19098;Application;10.238.142.48;Active;RMA1;SunOS;PDMOne;null;00;Not deployed by CSC;null
+sabad19101;Application;10.238.21.106;Active;BAD1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19200;Application;10.128.72.52;Active;BAD1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;"netstat Ko : Sorry, sudo must be setuid root. |; lsof Ko : no lsof found |; crontab Ok"
+sabad19269;Application;10.238.142.124;Active;BAD1;SunOS;POSEIDON;null;00;Not deployed by CSC;null
+sabad19755;Application;10.238.143.227;Active;BAD1;AIX;CATIA V5;done;21;Deployed by CSC and GE test on going;null
+sabad19773;Application;10.128.78.185;Active;BAD1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19962;Application;10.238.132.21;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35013;Application;10.236.9.42;Active;BAD1;linux;GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sabad35040;Application;10.238.101.190;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sacch10173;Application;10.239.4.156;Active;CCH1;linux;My IT Portal||SSO||Central Account Directory (CAD);done;12;Deployed by CSC and GE test OK;null
+sacch10425;Application;10.239.14.9;Active;CCH1;linux;International Network Database AT||Ethics & Compliance Database AT||SOL (Sourcing on line)||Country & Tax database AT;done;20;Deployed by CSC but not testable (behind FW);null
+sacch10452;Application;10.239.25.250;Active;CCH1;linux;SMOOTH;done;12;Deployed by CSC and GE test OK;null
+sacch10506;Application;10.239.15.22;Active;CCH1;AIX;PLM FastTrack||PLM FastTrack;null;00;Not deployed by CSC;null
+sacch10542;Application;10.239.55.23;Active;CCH1;linux;Nexthink;done;10;Deployed by CSC but GE test KO;ssh : password
+sacch15015;Application;10.237.9.51;Active;CCH1;linux;GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sacch15024;Application;10.237.9.56;Active;CCH1;linux;GSI BW;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15033;Application;10.237.4.32;Active;CCH1;AIX;CHAS;null;00;Not deployed by CSC;null
+sacch15051;Application;10.237.4.49;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15060;Application;10.237.4.60;Active;CCH1;AIX;IMAGINE 1;null;00;Not deployed by CSC;null
+sacch15669;Application;10.239.27.69;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch15858;Application;10.23.4.99;Active;CCH1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sacch35103;Application;10.237.9.182;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacrl10037;Application;10.79.2.230;Active;CRL1;linux;ELSA;done;12;Deployed by CSC and GE test OK;null
+sacrl15041;Application;10.79.2.25;Active;CRL1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+saguc15003;Application;10.255.250.199;Active;GUC1;AIX;Alt@is (GRID Global ERP);null;00;Not deployed by CSC;null
+salrh10021;Application;10.23.97.75;Active;LRH1;linux;;done;12;Deployed by CSC and GE test OK;null
+saous10041;Application;10.23.4.209;Active;CCH1;linux;DAS Cecilia;done;12;Deployed by CSC and GE test OK;null
+sarug11468;Application;10.34.114.249;Active;RUG1;SunOS;Oracle Financials 11i;null;00;Not deployed by CSC;null
+sassg20019;Application;10.115.48.19;Active;SSG1;SunOS;DMA-GS Sesto||ALTIRIS for DCO;null;00;Not deployed by CSC;null
+satrc15001;Application;10.92.2.43;Active;TRC1;linux;Etika;done;12;Deployed by CSC and GE test OK;null
+savbn10021;Application;10.23.208.44;Active;VBN1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sbbad16161;Application;10.236.4.161;Active;RMA1;AIX;DIP Global (Basware);null;00;Not deployed by CSC;null
+sbbad19113;Application;10.238.143.53;Active;RMA1;AIX;MDM Platform||MDM Platform||EAI Base Platform||EAI Base Platform||EAI Base Platform||APC VPDM;null;00;Not deployed by CSC;null
+sbbad19122;Application;10.238.143.55;Active;BAD1;AIX;E-Project Tender||INSIGHTER||E-Project Project||Transport Reference Tables||GESPER||GESPER||RVR TIC Apllication||RVR TIC Apllication||MERCURY||MERCURY;null;00;Not deployed by CSC;null
+sbbad19131;Application;10.238.207.131;Active;BAD1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbbad19140;Application;10.238.207.73;Active;BAD1;AIX;;null;00;Not deployed by CSC;null
+sbcch10184;Application;10.239.4.164;Active;CCH1;AIX;PLM FastTrack||PLM FastTrack;null;00;Not deployed by CSC;null
+sbcch10454;Application;10.239.25.245;Active;CCH1;AIX;TEMPUS - GTA France||Teranga Census AT||Livelink||ALISTA France||Alista||Mis Marques;null;00;Not deployed by CSC;null
+sbcch15080;Application;10.237.4.80;Active;CCH1;AIX;KTP Cash Flow Marché||KTP Cash Flow Marché (Reporting);null;00;Not deployed by CSC;null
+sokar;Application;10.23.4.125;Active;CCH1;SunOS;Support&Hosting Petites applications métier OUS;null;00;Not deployed by CSC;null
+subcn15001;Application;10.153.6.152;Active;BCN4;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sucrl13dc1;Application;10.79.2.50;Active;CRL1;AIX;DMA-GS Charleroi;null;00;Not deployed by CSC;null
+suelb10018-1;Application;10.197.128.143;Active;ELB1;AIX;Ofertacja PSC - ALSC PL;null;00;Not deployed by CSC;null
+susrd15001;Application;10.34.128.35;Active;SRD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+suwin1wbspdz;Application;10.160.49.17;Active;WND1;linux;SupplierNet;null;00;Not deployed by CSC;null
+suwnd10001;Application;10.164.119.130;Active;WND1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+suwuh15001;Application;10.99.163.209;Active;WUH1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+ugs-neh;Application;10.128.30.90;Active;BAD1;linux;Siemens Unigraphics NX6;done;10;Deployed by CSC but GE test KO;ssh : password
+ultra11;Application;10.79.2.154;Active;CRL1;SunOS;CADDS License control BE||Archives Scanned Plans;null;00;Not deployed by CSC;null
+v480;Application;10.23.67.23;Active;PTF1;SunOS;METAPROD;null;00;Not deployed by CSC;null
+vpmwork11;Application;10.128.79.247;Active;BAD1;AIX;;null;00;Not deployed by CSC;null
+ban;Application;10.218.119.20;Active;KAR1;AIX;Baan - Karlovac - HR;done;10;Deployed by CSC but GE test KO;"netstat Ko : ksh: sudo:  not found. |; lsof Ko : ksh: sudo:  not found. |; crontab Ok"
+ceylan;Application;10.239.4.211;Active;CCH1;SunOS;SOFIA||GEODE PDM;null;00;Not deployed by CSC;null
+columbo;Application;10.79.3.4;Active;CRL1;SunOS;ClearCase;null;00;Not deployed by CSC;null
+conix;Application;10.23.48.110;Active;CCH1;HP-UX;Support&Hosting Petites applications métier OUS;null;00;Not deployed by CSC;null
+egaprod;Application;10.23.97.73;Active;LRH1;SunOS;LRH - Intranet;null;00;Not deployed by CSC;null
+erp-p47-s2;Application;10.128.72.173;Active;RMA1;AIX;SAP CH;done;11;Deployed by CSC and GE test OK;null
+hoder;Application;10.255.150.42;Active;CCH1;AIX;;done;20;Deployed by CSC but not testable (behind FW);null
+m4000;Application;10.115.33.1;Active;SAV1;SunOS;DMA-GS Savigliano;null;00;Not deployed by CSC;null
+ns2;Application;10.3.5.19;Active;CCH1;linux;Network Services (NS);null;00;Not deployed by CSC;null
+orapas1;Application;10.255.250.110;Active;GUC1;AIX;;done;02;Deployed by CSC but GE test KO;null
+sabad10129;Application;10.238.126.129;Active;BAD1;linux;HPC - TGN Green||HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad10156;Application;10.238.14.156;Active;BAD1;linux;SAFIR;culdn't connect;01;CSC not able to deploy;null
+sabad10228;Application;10.238.125.228;Active;BAD1;linux;ARM (GRC GRID);done;12;Deployed by CSC and GE test OK;null
+sabad10390;Application;10.238.141.60;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+sabad10507;Application;10.238.125.160;Active;BAD1;linux;AUM;done;12;Deployed by CSC and GE test OK;null
+sabad10651;Application;10.238.142.151;Active;BAD1;linux;ADEL WP||ADEL e-TRS||Datastage Platform (Transport);done;12;Deployed by CSC and GE test OK;null
+sabad10660;Application;10.238.126.160;Active;BAD1;linux;PDMS;done;12;Deployed by CSC and GE test OK;null
+sabad10804;Application;10.238.14.84;Active;BAD1;linux;AUtube;done;12;Deployed by CSC and GE test OK;null
+sabad10941v;Application;10.238.197.72;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11038;Application;10.238.41.41;Active;RMA1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11056;Application;10.238.101.141;Active;RMA1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11137;Application;10.238.41.137;Active;BAD1;linux;E-Project Tender||E-Project Project||Transport Reference Tables;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11146;Application;10.238.196.146;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11155;Application;10.238.127.192;Active;BAD1;linux;My IT Portal;couldn't connect;01;CSC not able to deploy;null
+sabad11173;Application;10.238.196.173;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11191;Application;10.238.41.91;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+sabad11209;Application;10.238.127.55;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11218;Application;10.238.206.218;Active;RMA1;linux;MDM Platform;done;12;Deployed by CSC and GE test OK;null
+sabad11227;Application;10.238.127.247;Active;BAD1;linux;GRC;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11254;Application;10.238.197.77;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11371;Application;10.238.219.120;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11380;Application;10.238.21.103;Active;BAD1;linux;BWA;null;00;Not deployed by CSC;null
+sabad11416;Application;10.238.196.222;Active;BAD1;linux;MDM Platform;done;12;Deployed by CSC and GE test OK;null
+sabad11443;Application;10.238.206.126;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad11461;Application;10.238.41.56;Active;BAD1;linux;Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sabad11470;Application;10.238.198.24;Active;BAD1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabad15025;Application;10.238.198.104;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad16141;Application;10.238.220.141;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad18103;Application;10.238.168.13;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18112;Application;10.238.168.22;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18121;Application;10.238.168.31;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18130;Application;10.238.168.40;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18202;Application;10.238.164.12;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18211;Application;10.238.164.21;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18220;Application;10.238.164.30;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18301;Application;10.238.168.201;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18310;Application;10.238.168.210;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18400;Application;10.238.199.16;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19012;Application;10.238.142.146;Active;BAD1;SunOS;SECAD;null;00;Not deployed by CSC;null
+sabad19021;Application;10.236.4.221;Active;BAD1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ko : crontab: 0481-109 You are not authorized to use the cron command."
+sabad19102;Application;10.128.72.51;Active;BAD1;AIX;BI4 Platform (Power)||PMX SAP EP;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19201;Application;10.128.78.66;Active;RMA1;AIX;Power max (PMX) datawarehouse (BW);done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19300;Application;10.238.142.178;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19369;Application;10.238.142.192;Active;BAD1;SunOS;POSEIDON;null;00;Not deployed by CSC;null
+sabad19387;Application;10.238.143.116;Active;BAD1;AIX;Enya||HR Shared Service Spain;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19774;Application;10.128.78.186;Active;BAD1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19783;Application;10.238.220.41;Active;BAD1;AIX;TRT SAP PI;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35014;Application;10.236.9.43;Active;BAD1;linux;GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sabad35032;Application;10.236.9.78;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabad35041;Application;10.238.101.191;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabad799;Application;10.238.220.53;Active;BAD1;AIX;APIS;done;20;Deployed by CSC but not testable (behind FW);null
+sablq10131;Application;10.115.0.131;Active;BLQ1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sacch10165;Application;10.239.4.135;Active;CCH1;SunOS;CADDS License control La Courneuve;null;00;Not deployed by CSC;null
+sacch10183;Application;10.239.4.143;Active;CCH1;SunOS;TEC4;null;00;Not deployed by CSC;null
+sacch10363;Application;10.239.25.134;Active;CCH1;SunOS;ILS Solutions||CLAMP;null;00;Not deployed by CSC;null
+sacch10372;Application;10.239.25.144;Active;CCH1;SunOS;DMA-GS St Ouen 3D Room;null;00;Not deployed by CSC;null
+sacch10453;Application;10.239.25.243;Active;CCH1;linux;Agile;done;12;Deployed by CSC and GE test OK;null
+sacch15016;Application;10.237.4.17;Active;CCH1;AIX;SAP ISIS FR;null;00;Not deployed by CSC;null
+sacch15025;Application;10.237.9.58;Active;CCH1;linux;GSI BO;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15034;Application;10.237.4.33;Active;CCH1;AIX;CHAS Brazil;null;00;Not deployed by CSC;null
+sacch15052;Application;10.237.4.50;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch35023;Application;10.237.9.84;Active;CCH1;linux;GSI DOLLAR UNIVERSE||GSI BW;done;12;Deployed by CSC and GE test OK;null
+sacch35050;Application;10.237.9.112;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35104;Application;10.237.9.183;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+saguc15004;Application;10.255.250.205;Active;GUC1;AIX;PO 2.0 (Fiori);null;00;Not deployed by CSC;null
+salrh10040;Application;10.23.97.37;Active;LRH1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+samad15006;Application;10.155.1.48;Active;MAD1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sapfcur;Application;10.128.72.171;Active;BAD1;AIX;PowerMax AT;null;00;Not deployed by CSC;null
+sapre11921;Utility;10.38.96.42;Active;PRE1;linux;;done;12;Deployed by CSC and GE test OK;null
+sarug11649;Application;10.39.0.130;Active;RUG1;SunOS;CADverter||Engenious I-sight FD||Tecplot License control||Mechanica Licenses control UK||SCAPOS -MpCCI Licenses||MSC Software License Control UK||CADDS License control UK;null;00;Not deployed by CSC;null
+sarug11847;Application;10.39.0.135;Active;RUG1;SunOS;OPTEGRA;null;00;Not deployed by CSC;null
+sarug11964;Application;10.39.0.141;Active;RUG1;SunOS;WorkPlace Time and Attendance;null;00;Not deployed by CSC;null
+sasav15024;Application;10.115.33.151;Active;SAV1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+satsn15023;Application;10.99.146.36;Active;TSN2;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sbbad15154;Application;10.236.4.129;Active;BAD1;AIX;SmartPlantFoundation (SPF);null;00;Not deployed by CSC;null
+sbbad16153;Application;10.236.4.153;Active;BAD1;AIX;Wind PLM;null;00;Not deployed by CSC;null
+sbbad16162;Application;10.236.4.162;Active;RMA1;AIX;BONGA AT||HYDROGIS||PowerPLM||D2i||Enricher 2||DELMIA V6||TS Project Portfolio Tool (Services)||TPMRO Execution Database;null;00;Not deployed by CSC;null
+sbcch10185;Application;10.239.4.165;Active;CCH1;AIX;PLM FastTrack||PLM FastTrack;null;00;Not deployed by CSC;null
+sbcch10455;Application;10.239.25.246;Active;CCH1;AIX;APRIORI||SOL (Sourcing on line)||TEMPUS - GTA France||TEMPUS - GTA France||TEMPUS - GTA France||Country & Tax database AT||ALISTA France||My IT Portal||My IT Portal||International Network Database AT||VISUAL PLANNING||Ethics & Compliance Database AT||Alista||PCDMS||PCDMS;null;00;Not deployed by CSC;null
+sbcch15072;Application;10.237.4.72;Active;CCH1;AIX;KTP Cash Flow Marché;null;00;Not deployed by CSC;null
+sbcch15081;Application;10.237.4.81;Active;CCH1;AIX;KTP Cash Flow Marché||KTP Cash Flow Marché (Reporting);null;00;Not deployed by CSC;null
+sbcch15090;Application;10.237.4.90;Active;CCH1;AIX;HR Reporting;null;00;Not deployed by CSC;null
+sbrei10012;Application;10.23.144.55;Active;REI1;linux;E3Séries||ELSA;done;12;Deployed by CSC and GE test OK;null
+seville;Application;10.79.3.1;Active;CRL1;HP-UX;Xpedition Enterprise;null;00;Not deployed by CSC;null
+sncch10906;Application;10.17.32.10;Active;CCH1;linux;;done;20;Deployed by CSC but not testable (behind FW);null
+solar;Application;10.34.114.247;Active;RUG1;SunOS;;null;00;Not deployed by CSC;null
+subcn15002;Application;10.153.6.9;Active;BCN4;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sucha15001;Application;10.164.170.12;Active;CHA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+suelb10018-2;Application;10.197.128.144;Active;ELB1;AIX;Ofertacja PSC - ALSC PL;null;00;Not deployed by CSC;null
+susao10145;Application;10.81.129.180;Active;SAO1;linux;Nexthink;null;00;Not deployed by CSC;null
+sushah10001;Application;10.236.137.42;Active;SHAH;linux;Nexthink;null;00;Not deployed by CSC;null
+suwnd10002;Application;10.164.119.134;Active;WND1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+aapbwc;Application;10.128.72.179;Active;BAD1;AIX;SAP-BW for SAP-CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ok; crontab Ko : A line of the crontab file:"
+alti;Application;10.255.150.50;Active;CCH1;AIX;;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+entreprise-1;Application;10.23.65.3;Active;PTF1;SunOS;E3Séries||ELSA||GOLF||Artemis Valenciennes;null;00;Not deployed by CSC;null
+erp-c47-s1;Application;10.128.72.170;Active;BAD1;AIX;SAP CH;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+frvbn02fs04;Application;10.249.117.70;Active;VBN2;linux;;done;12;Deployed by CSC and GE test OK;null
+frzrp01as01;Application;10.22.201.29;Active;ZRP1;linux;ERT - Samcef||ERT - Samcef HVS;done;12;Deployed by CSC and GE test OK;null
+java03;Application;10.18.0.20;Active;CCH1;SunOS;;null;00;Not deployed by CSC;null
+nsnrugs01;Application;10.34.3.83;Active;RUG1;SunOS;;null;00;Not deployed by CSC;null
+odin;Application;10.255.151.35;Active;CCH1;AIX;;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10157;Application;10.238.14.157;Active;BAD1;linux;TERANGA - Census||AEINet;couldn't connect;01;CSC not able to deploy;null
+sabad10337;Application;10.238.14.28;Active;BAD1;linux;ALTIRIS for DCO;done;12;Deployed by CSC and GE test OK;null
+sabad10418;Application;10.238.15.66;Active;BAD1;linux;ALISTA Le Creusot, Madrid, London||Alista;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10508;Application;10.238.125.161;Active;BAD1;linux;AUM;done;12;Deployed by CSC and GE test OK;null
+sabad10652;Application;10.238.142.152;Active;BAD1;linux;ADEL e-TRS||Datastage Platform (Transport)||ADEL WP;done;12;Deployed by CSC and GE test OK;null
+sabad10670;Application;10.238.15.87;Active;BAD1;linux;Bonga;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10940;Application;10.238.127.20;Active;BAD1;linux;New PLM||New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11039;Application;10.238.41.42;Active;BAD1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11057;Application;10.238.126.90;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11075;Application;10.238.41.43;Active;BAD1;linux;;can't change sudo file;01;CSC not able to deploy;null
+sabad11156;Application;10.238.41.156;Active;BAD1;linux;CROWD;done;12;Deployed by CSC and GE test OK;null
+sabad11174;Application;10.238.196.174;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11255;Application;10.238.197.78;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11354;Application;10.238.196.68;Active;BAD1;linux;STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad11372;Application;10.238.219.121;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11381;Application;10.238.21.104;Active;BAD1;linux;BWA;null;00;Not deployed by CSC;null
+sabad11444;Application;10.238.206.127;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad11471;Application;10.238.198.25;Active;BAD1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+sabad11480;Application;10.238.198.32;Active;BAD1;linux;Nexthink;null;00;Not deployed by CSC;null
+sabad15026;Application;10.238.198.105;Active;RMA1;linux;DELMIA V6;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+sabad15206;Application;10.238.198.201;Active;BAD1;linux;CONFLUENCE||Subversion Grid||CROWD||CROWD||JIRA;done;12;Deployed by CSC and GE test OK;null
+sabad16142;Application;10.238.220.142;Active;RMA1;AIX;PMX SAP PO;done;21;Deployed by CSC and GE test on going;null
+sabad18104;Application;10.238.168.14;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18113;Application;10.238.168.23;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18122;Application;10.238.168.32;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18131;Application;10.238.168.41;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18140;Application;10.238.168.50;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18203;Application;10.238.164.13;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18212;Application;10.238.164.22;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18221;Application;10.238.164.31;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18230;Application;10.238.164.40;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18299;Application;10.238.164.100;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18302;Application;10.238.168.202;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18311;Application;10.238.168.211;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18401;Application;10.238.199.17;Active;BAD1;linux;e-Project (TPPR)||HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18410;Application;10.238.199.26;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19103;Application;10.128.72.238;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19202;Application;10.128.78.137;Active;RMA1;AIX;SAP CH;done;11;Deployed by CSC and GE test OK;null
+sabad19301;Application;10.238.21.97;Active;BAD1;AIX;PMX Sabrix;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19388;Application;10.238.143.115;Active;BAD1;AIX;Enya||HR Shared Service Spain||HR Shared Service Spain;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19400;Application;10.238.142.179;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19775;Application;10.238.132.58;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19784;Application;10.238.220.43;Active;BAD1;AIX;ASCOT;done;20;Deployed by CSC but not testable (behind FW);null
+sabad35042;Application;10.238.101.192;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sablq10132;Application;10.115.0.132;Active;BLQ1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sabor10030;Application;10.23.176.13;Active;BOR1;SunOS;ClearCase;null;00;Not deployed by CSC;null
+sacch10364;Application;10.239.25.135;Active;CCH1;SunOS;CLAMP||ILS Solutions;null;00;Not deployed by CSC;null
+sacch10373;Application;10.239.25.145;Active;CCH1;SunOS;DMA-GS St Ouen 3D Room;null;00;Not deployed by CSC;null
+sacch10427;Application;10.239.15.15;Active;CCH1;SunOS;GESDOC;null;00;Not deployed by CSC;null
+sacch10481;Application;10.23.4.216;Active;CCH1;linux;ClearCase;done;20;Deployed by CSC but not testable (behind FW);null
+sacch10553;Application;10.239.26.214;Active;CCH1;linux;DataStage 9.1 Platform (Common);done;12;Deployed by CSC and GE test OK;null
+sacch15008;Application;10.237.9.42;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch15017;Application;10.237.4.18;Active;CCH1;AIX;Hibiscus;null;00;Not deployed by CSC;null
+sacch15026;Application;10.237.4.25;Active;CCH1;AIX;IMAGINE 4;null;00;Not deployed by CSC;null
+sacch15035;Application;10.237.4.34;Active;CCH1;AIX;CHAS Brazil;null;00;Not deployed by CSC;null
+sacch15044;Application;10.237.4.37;Active;CCH1;AIX;IMAGINE 3;null;00;Not deployed by CSC;null
+sacch15071;Application;10.255.150.204;Active;CCH1;AIX;PO 2.0 (Fiori);null;00;Not deployed by CSC;null
+sacch15620;Application;10.239.26.207;Active;CCH1;linux;Trend Micro;null;00;Not deployed by CSC;null
+sacch15710;Application;10.239.27.110;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35024;Application;10.237.9.85;Active;CCH1;linux;GSI BW;done;12;Deployed by CSC and GE test OK;null
+sacch35051;Application;10.237.9.113;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35060;Application;10.237.9.126;Active;CCH1;linux;GSI BW;done;12;Deployed by CSC and GE test OK;null
+sacch35105;Application;10.237.9.184;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+saguc15005;Application;10.255.250.42;Active;GUC1;AIX;GRID SAP Solution Manager;null;00;Not deployed by CSC;null
+salcr10016;Application;10.23.81.247;Active;LCR1;AIX;DMA-GS Le Creusot;null;00;Not deployed by CSC;null
+salrh10014;Application;10.23.97.46;Active;LRH1;AIX;DMA-GS La Rochelle VHST;null;00;Not deployed by CSC;null
+salrh10041;Application;10.23.97.38;Active;LRH1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+samad15007;Application;10.155.1.49;Active;MAD1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+saroc1dma2;Application;10.163.0.54;Active;HNW1;AIX;Catia||DMA-GS Rochester;null;00;Not deployed by CSC;null
+sarug41881;Application;10.39.0.169;Active;RUG1;linux;;couldn't connect;01;CSC not able to deploy;null
+sasao10310;Application;10.81.129.163;Active;SAO1;linux;Nexthink;null;00;Not deployed by CSC;null
+sasav15025;Application;10.115.33.152;Active;SAV1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sbbad16154;Application;10.236.4.154;Active;BAD1;AIX;Wind PLM;null;00;Not deployed by CSC;null
+sbbad16163;Application;10.236.4.163;Active;RMA1;AIX;BONGA AT||PowerPLM||Enricher 2||TSST Project Portfolio||TS Project Portfolio Tool (Services)||TPMRO Execution Database;null;00;Not deployed by CSC;null
+sbbad19106;Application;10.238.143.49;Active;BAD1;AIX;ADEL SAS||ADEL SAS||BO Platform (Corporate)||CS10 Renewable||CS10 Renewable||POSEIDON||DocCommander||DWH MSF||R&D and IP Parternship||R&D and IP Parternship||EAI Base Platform||Supplier & Quality Management (S&QM)||Supplier & Quality Management (S&QM);null;00;Not deployed by CSC;null
+sbbad19124;Application;10.238.143.61;Active;BAD1;AIX;Transport Archiving - Open Text solution||Transport Archiving - Open Text solution||DIP Global (Basware)||MVS Transport||MVS Transport;null;00;Not deployed by CSC;null
+sbbad19133;Application;10.238.207.44;Active;RMA1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbcch10186;Application;10.239.4.166;Active;CCH1;AIX;ADEL e-TRS||ADEL e-TRS||Agile||REPA||Suivi Depose RSO / Depose SIG||ADEL WP||ADEL WP;null;00;Not deployed by CSC;null
+sbcch10456;Application;10.239.25.247;Active;CCH1;AIX;Livelink||ALISTA France||International Network Database AT||Ethics & Compliance Database AT||Alista||e-Project (TPPR)||e-Project (TPPR)||Mis Marques||DELMIA V6||SOL (Sourcing on line)||Country & Tax database AT||Teranga Census AT;null;00;Not deployed by CSC;null
+sbcch15091;Application;10.237.4.91;Active;CCH1;AIX;HR Reporting;null;00;Not deployed by CSC;null
+sbwnd1ora1;Application;10.164.119.54;Active;WND1;linux;PowerPLM||SupplierNet;done;12;Deployed by CSC and GE test OK;null
+ssroc1nim1;Application;10.163.0.53;Active;HNW1;AIX;;null;00;Not deployed by CSC;null
+suelb10018-3;Application;10.197.128.145;Active;ELB1;AIX;Ofertacja PSC - ALSC PL;null;00;Not deployed by CSC;null
+suric1tcep;Application;10.164.24.130;Active;RIC1;HP-UX;Teamcenter Richmond||Docware US;null;00;Not deployed by CSC;null
+sushah10002;Application;10.236.137.43;Active;SHAH;linux;Nexthink;null;00;Not deployed by CSC;null
+suwin1wbsp;Application;10.164.119.41;Active;WND1;linux;SupplierNet||webPBOM;done;12;Deployed by CSC and GE test OK;null
+suwnd10003;Application;10.164.119.136;Active;WND1;linux;PowerPLM;done;12;Deployed by CSC and GE test OK;null
+suwro10022;Application;10.197.64.176;Active;WRO1;linux;TOIP;null;00;Not deployed by CSC;null
+taylor;Application;10.255.150.203;Active;CCH1;AIX;Infra FAST (File Transfer - Connect Direct);null;00;Not deployed by CSC;null
+apabb;Application;10.197.128.202;Active;ELB1;SunOS;Obl. Uklad¿rzeplywowych (SUN) - engl. Steam Path Design Tools;null;00;Not deployed by CSC;null
+devuk001;Application;10.32.128.101;Active;SRD2;HP-UX;SAP PCS;null;00;Not deployed by CSC;null
+frcqz01as04;Application;10.22.241.70;Active;CQZ1;linux;;null;00;Not deployed by CSC;null
+frdtc01as88lx;Application;10.255.249.112;Active;GUC1;linux;;done;12;Deployed by CSC and GE test OK;null
+khephren;Application;10.255.150.114;Active;CCH1;AIX;Infra INFORMATICA (Platform)||Infra INFORMATICA (Platform);done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+lic101;Application;10.238.146.101;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic110;Application;10.238.146.110;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lim;Application;10.238.146.100;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+nisrv;Application;10.23.113.52;Active;TAB1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+node2;Application;10.115.48.64;Active;SSG1;SunOS;DMA-GS Sesto||ALTIRIS for DCO;null;00;Not deployed by CSC;null
+nsnrugs02;Application;10.34.12.5;Active;RUG1;SunOS;;null;00;Not deployed by CSC;null
+oraprd1;Application;10.255.250.100;Active;GUC1;AIX;REX - RETOUR D'EXPERIENCES||Web Timesheet||Infra FAST (File Transfer - Connect Direct)||Infra PHP Shared Platform||ARIS Server||DRJM - DATAsset REJECT MANAGEMENT||Infra Speed-Testing (Mercury Quality Center)||ACTS AIS Web||TEMPUS - GTA France;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : ksh: 2523300 Segmentation fault(coredump) |; crontab Ok"
+sabad10158;Application;10.238.14.158;Active;BAD1;linux;TERANGA - Census||AEINet;done;11;Deployed by CSC and GE test OK;null
+sabad10365;Application;10.238.141.165;Active;BAD1;linux;ALISTA Valenciennes, Bucarest, Atagora, La Rochelle||ALISTA Le Creusot, Madrid, London||Alista||ALISTA Tarbes, Charleroi, Nola;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10509;Application;10.238.125.162;Active;BAD1;linux;AUM;done;12;Deployed by CSC and GE test OK;null
+sabad10626;Application;10.238.15.127;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10653;Application;10.238.125.53;Active;BAD1;linux;DWH Sourcing||DWH Sourcing||Portfolio Reporting Center||FEC||FEC;done;12;Deployed by CSC and GE test OK;null
+sabad10671;Application;10.238.15.73;Active;BAD1;linux;Bonga;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10752;Application;10.238.127.76;Active;BAD1;linux;UML Magic Draw License Control||STITS (Steam Turbine Integrated Tools Suite);done;12;Deployed by CSC and GE test OK;null
+sabad11058;Application;10.238.126.91;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad11085;Application;10.238.196.85;Active;BAD1;linux;Plant Explorer;done;12;Deployed by CSC and GE test OK;null
+sabad11139;Application;10.238.37.60;Active;BAD1;linux;E-Project Tender||E-Project Project||Transport Reference Tables||e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11148;Application;10.238.206.129;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11184;Application;10.238.14.81;Active;BAD1;linux;Video Service AT;done;12;Deployed by CSC and GE test OK;null
+sabad11238;Application;10.238.197.84;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11247;Application;10.238.41.47;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11256;Application;10.238.197.79;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11355;Application;10.238.41.80;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11373;Application;10.238.219.122;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11382;Application;10.238.21.105;Active;BAD1;linux;BWA;null;00;Not deployed by CSC;null
+sabad11445;Application;10.238.217.101;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11472;Application;10.238.198.26;Active;BAD1;linux;PowerPLM;null;00;Not deployed by CSC;null
+sabad11481;Application;10.238.198.33;Active;BAD1;linux;Nexthink;null;00;Not deployed by CSC;null
+sabad11508;Application;10.238.198.53;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11535;Application;10.238.198.89;Active;BAD1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sabad15027;Application;10.238.198.109;Active;RMA1;linux;DELMIA V6;done;10;Deployed by CSC but GE test KO;ssh : connection refused
+sabad15207;Application;10.238.198.202;Active;BAD1;linux;JIRA;done;12;Deployed by CSC and GE test OK;null
+sabad16107;Application;10.236.4.107;Active;BAD1;AIX;;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad16143;Application;10.238.220.143;Active;RMA1;AIX;PMX SAP PO;done;21;Deployed by CSC and GE test on going;null
+sabad18105;Application;10.238.168.15;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18114;Application;10.238.168.24;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18123;Application;10.238.168.33;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18132;Application;10.238.168.42;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18141;Application;10.238.168.51;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18150;Application;10.238.168.60;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18204;Application;10.238.164.14;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18213;Application;10.238.164.23;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18222;Application;10.238.164.32;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18231;Application;10.238.164.41;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18240;Application;10.238.164.50;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18303;Application;10.238.168.203;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18312;Application;10.238.168.212;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18402;Application;10.238.199.18;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18411;Application;10.238.199.27;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18420;Application;10.238.199.36;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19014;Application;10.236.4.116;Active;RMA1;AIX;PW Solman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19023;Application;10.128.78.123;Active;RMA1;AIX;Powermax||SAP CH;done;11;Deployed by CSC and GE test OK;null
+sabad19032;Application;10.238.142.197;Active;BAD1;SunOS;APC-RPDM;null;00;Not deployed by CSC;null
+sabad19389;Application;10.238.142.149;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19401;Application;10.238.21.32;Active;RMA1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19776;Application;10.238.132.66;Active;BAD1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19785;Application;10.238.143.67;Active;BAD1;AIX;BAAN Villeurbanne;done;20;Deployed by CSC but not testable (behind FW);null
+sabad35034;Application;10.236.9.80;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sabor10040;Application;10.23.176.176;Active;BOR1;AIX;DAS Cecilia;null;00;Not deployed by CSC;null
+sacch10356;Application;10.239.25.128;Active;CCH1;linux;CHRONOTIQUE||CHRONOTIQUE;done;12;Deployed by CSC and GE test OK;null
+sacch10428;Application;10.239.15.16;Active;CCH1;SunOS;GESDOC;null;00;Not deployed by CSC;null
+sacch10482;Application;10.23.4.214;Active;CCH1;linux;ClearCase;done;20;Deployed by CSC but not testable (behind FW);null
+sacch10509;Application;10.239.26.109;Active;CCH1;linux;THETYS;done;12;Deployed by CSC and GE test OK;null
+sacch10554;Application;10.239.26.217;Active;CCH1;linux;DataStage 9.1 Platform (Common);done;12;Deployed by CSC and GE test OK;null
+sacch15009;Application;10.237.9.43;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch15018;Application;10.237.4.19;Active;CCH1;AIX;SAP ISIS FR;null;00;Not deployed by CSC;null
+sacch15036;Application;10.237.4.35;Active;CCH1;AIX;CHAS Brazil;null;00;Not deployed by CSC;null
+sacch15063;Application;10.239.26.178;Active;CCH1;AIX;DMA-GS Central projects;null;00;Not deployed by CSC;null
+sacch15621;Application;10.239.26.243;Active;CCH1;linux;;null;00;Not deployed by CSC;null
+sacch15711;Application;10.239.27.111;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35025;Application;10.237.9.86;Active;CCH1;linux;GSI BW;done;12;Deployed by CSC and GE test OK;null
+sacch35034;Application;10.237.9.99;Active;CCH1;linux;GSI BO;done;12;Deployed by CSC and GE test OK;null
+sacch35052;Application;10.237.9.114;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35061;Application;10.237.9.127;Active;CCH1;linux;GSI BW;done;12;Deployed by CSC and GE test OK;null
+sacch35106;Application;10.237.9.185;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+saguc15006;Application;10.255.250.43;Active;GUC1;AIX;GRID SAP Solution Manager;null;00;Not deployed by CSC;null
+salcr10017;Application;10.23.81.200;Active;LCR1;AIX;DMA-GS Le Creusot;null;00;Not deployed by CSC;null
+salrh10024;Application;10.23.97.96;Active;LRH1;AIX;DMA-GS La Rochelle Citadis;null;00;Not deployed by CSC;null
+sarug11966;Application;10.39.0.222;Active;RUG1;linux;;done;12;Deployed by CSC and GE test OK;null
+sarug41882;Application;10.39.0.170;Active;RUG1;linux;;couldn't connect;01;CSC not able to deploy;null
+sawov15004;Application;10.35.184.182;Active;WOV1;AIX;E3Séries||ELSA;null;00;Not deployed by CSC;null
+sbbad19107;Application;10.238.143.50;Active;BAD1;AIX;ASK2||BO XI Platform (Transport)||BO XI Platform (Transport)||FRACAS reporting||FRACAS reporting||DWH Sourcing||DWH Sourcing||DWH MSF||ORCA;null;00;Not deployed by CSC;null
+sbbad19125;Application;10.238.207.125;Active;RMA1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbbad19134;Application;10.238.207.46;Active;RMA1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbbad19170;Application;10.238.196.132;Active;BAD1;linux;ADEL BI||e-Project (TPPR);done;12;Deployed by CSC and GE test OK;null
+sbcch10457;Application;10.239.25.248;Active;CCH1;AIX;ClearQuest||ILS Solutions||International Network Database AT||International Network Database AT||Ethics & Compliance Database AT||Ethics & Compliance Database AT||BO BI4 Platform (Common)||BRMS||CLAMP||TEMPUS - GTA France||Country & Tax database AT||Country & Tax database AT||Teranga Census AT;null;00;Not deployed by CSC;null
+sbcch15065;Application;10.237.4.65;Active;CCH1;AIX;IMAGINE 3;null;00;Not deployed by CSC;null
+sbcch15074;Application;10.237.4.74;Active;CCH1;AIX;DataStage 9.1 Platform (Common)||HR Reporting;null;00;Not deployed by CSC;null
+sbvbn15031;Application;10.23.208.55;Active;VBN1;linux;ClearQuest;done;12;Deployed by CSC and GE test OK;null
+sbwnd1ora2;Application;10.164.119.233;Active;WND1;linux;Veritas Replication Exec USA;done;12;Deployed by CSC and GE test OK;null
+sc0;Utility;10.23.243.114;Active;LRH1;SunOS;;null;00;Not deployed by CSC;null
+sublq11238;Application;10.112.9.14;Active;BLQ1;linux;SAP Bologna;asking password;01;CSC not able to deploy;null
+sunshine;Application;10.164.119.34;Active;WND1;SunOS;Teamcenter Enterprise;null;00;Not deployed by CSC;null
+sushah10003;Application;10.236.137.40;Active;SHAH;linux;Nexthink;null;00;Not deployed by CSC;null
+suwin1wbssdz;Application;10.160.49.30;Active;WND1;linux;SupplierNet;asking password;01;CSC not able to deploy;null
+suwin1webp;Application;10.160.48.26;Active;WND1;linux;SupplierNet;null;00;Not deployed by CSC;null
+suwnd10004;Application;10.164.119.254;Active;WND1;linux;Nexthink;null;00;Not deployed by CSC;null
+tapenade;Application;10.23.208.32;Active;VBN1;SunOS;DECA||PLEIADE||PLEIADE||REPA||Suivi intégration||Suivi Depose RSO / Depose SIG;null;00;Not deployed by CSC;null
+wwanview;Application;10.3.4.27;Active;CCH1;linux;;null;00;Not deployed by CSC;null
+as-proxylog01;Utility;10.18.1.203;Active;CCH1;linux;Mail Services Fake;null;00;Not deployed by CSC;null
+cnsha01as06lx;Application;10.98.180.9;Active;SHA7;linux;Ansys Grid China;done;12;Deployed by CSC and GE test OK;null
+cook;Application;10.255.250.191;Active;GUC1;AIX;Infra FAST (File Transfer - Connect Direct)||THETYS||THETYS;done;11;Deployed by CSC and GE test OK;null
+cswuh020;Application;10.99.133.6;Active;WUH2;HP-UX;;null;00;Not deployed by CSC;null
+fermat;Application;10.255.150.182;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+lic102;Application;10.238.146.102;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic111;Application;10.238.146.111;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic120;Application;10.238.146.120;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+mnode0;Application;10.197.128.111;Active;ELB1;linux;MAGMA;done;12;Deployed by CSC and GE test OK;null
+ns1.power.alstom.com;Application;10.34.9.5;Active;RUG5;linux;External DNS;done;12;Deployed by CSC and GE test OK;null
+orgrugs06;Application;10.34.10.40;Active;RUG1;SunOS;TSNE Project Categorisation||Engineering Design Review Management||TSST Project Portfolio||Thermal New IS Application Register||Thermal Service Strategy System||Oracle ApEx||On-Track / AES Training Database||Materials Release Properties Database||SQEP Database||ST Projects Change Management||TSS Project Portfolio Primavera Interface||P&EP Stakeholder Contact Management||Oracle Financials||SWIFT Factory instructions||TSNE Project Portfolio||RM Stores Costing Extension;null;00;Not deployed by CSC;null
+oz;Application;10.255.150.164;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+sabad10087;Application;10.128.30.187;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10186;Application;10.128.30.243;Active;BAD1;linux;CoCoOn||STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10762;Application;10.238.15.67;Active;BAD1;linux;GridFusion;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10780;Application;10.238.28.28;Active;BAD1;linux;Proxy;done;12;Deployed by CSC and GE test OK;null
+sabad10834;Application;10.238.14.85;Active;BAD1;linux;AUtube;done;12;Deployed by CSC and GE test OK;null
+sabad10942;Application;10.238.206.175;Active;RMA1;linux;New PLM;done;11;Deployed by CSC and GE test OK;null
+sabad11158;Application;10.238.41.158;Active;BAD1;linux;CONFLUENCE;done;12;Deployed by CSC and GE test OK;null
+sabad11185;Application;10.238.127.252;Active;BAD1;linux;Video Service AT;done;12;Deployed by CSC and GE test OK;null
+sabad11239;Application;10.238.197.85;Active;BAD1;linux;DELMIA V6||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11248;Application;10.238.41.48;Active;BAD1;linux;e-Project (TPPR);done;20;Deployed by CSC but not testable (behind FW);null
+sabad11257;Application;10.238.197.80;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11284;Application;10.238.196.204;Active;BAD1;linux;InfoSystem;done;12;Deployed by CSC and GE test OK;null
+sabad11374;Application;10.238.219.123;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11383;Application;10.238.49.43;Active;BAD1;linux;;null;00;Not deployed by CSC;null
+sabad11446;Application;10.238.217.102;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11491;Application;10.238.82.92;Active;BAD1;linux;My IT Portal;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad11509;Application;10.238.198.54;Active;BAD1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad15028;Application;10.238.198.110;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad15208;Application;10.238.198.203;Active;BAD1;linux;CONFLUENCE;done;12;Deployed by CSC and GE test OK;null
+sabad18106;Application;10.238.168.16;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18115;Application;10.238.168.25;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18124;Application;10.238.168.34;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18133;Application;10.238.168.43;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18142;Application;10.238.168.52;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18151;Application;10.238.168.61;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18205;Application;10.238.164.15;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18214;Application;10.238.164.24;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18223;Application;10.238.164.33;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18232;Application;10.238.164.42;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18241;Application;10.238.164.51;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18250;Application;10.238.164.60;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18304;Application;10.238.168.204;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18403;Application;10.238.199.19;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18412;Application;10.238.199.28;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18421;Application;10.238.199.37;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18430;Application;10.238.199.46;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19015;Application;10.128.72.28;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19024;Application;10.128.78.124;Active;BAD1;AIX;SAP CH||Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19150;Application;10.238.142.144;Active;BAD1;SunOS;InfoSystem;null;00;Not deployed by CSC;null
+sabad19303;Application;10.238.220.54;Active;BAD1;AIX;Baan - Belfort 800||BAAN Villeurbanne||Baan - Belfort 700||Baan - Levallois 700;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19330;Application;10.238.220.78;Active;BAD1;AIX;TRT SAP SOLMAN;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19402;Application;10.238.21.36;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19411;Application;10.238.21.42;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19501;Application;10.238.15.30;Active;BAD1;AIX;E-Project Project||Transport Reference Tables||E-Project Tender;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19696;Application;10.128.78.64;Active;BAD1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19786;Application;10.238.220.48;Active;RMA1;AIX;ASCOT;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35035;Application;10.236.9.81;Active;BAD1;linux;Wind PLM;done;12;Deployed by CSC and GE test OK;null
+sablr15002;Application;10.107.138.163;Active;BLR1;AIX;Catia||DMA-GS Bangalore;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sablr15020;Application;10.107.138.126;Active;BLR1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sabor10041;Application;10.23.176.177;Active;BOR1;AIX;DAS Cecilia||DMA-GS Belfort;null;00;Not deployed by CSC;null
+sacch10384;Application;10.239.25.173;Active;CCH1;linux;Agile;done;12;Deployed by CSC and GE test OK;null
+sacch10447;Application;10.239.25.232;Active;CCH1;linux;DELMIA V6;done;20;Deployed by CSC but not testable (behind FW);null
+sacch10537;Application;10.239.55.15;Active;CCH1;linux;Nexthink;null;00;Not deployed by CSC;null
+sacch15019;Application;10.237.4.20;Active;CCH1;AIX;Hibiscus;null;00;Not deployed by CSC;null
+sacch15028;Application;10.237.4.27;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15055;Application;10.237.4.55;Active;CCH1;AIX;RAILSYS;null;00;Not deployed by CSC;null
+sacch15064;Application;10.239.26.179;Active;CCH1;AIX;DMA-GS Central projects;null;00;Not deployed by CSC;null
+sacch15073;Application;10.237.4.73;Active;CCH1;AIX;Infra INFORMATICA (Platform);null;00;Not deployed by CSC;null
+sacch15082;Application;10.237.4.82;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15613;Application;10.23.4.238;Active;CCH1;linux;ADEL e-TRS||ADEL WP;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15622;Application;10.239.26.150;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch15712;Application;10.239.27.112;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35035;Application;10.237.9.100;Active;CCH1;linux;GSI BO;done;12;Deployed by CSC and GE test OK;null
+sacch35044;Application;10.237.9.98;Active;CCH1;linux;GSI DOLLAR UNIVERSE||GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sacch35053;Application;10.237.9.115;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35071;Application;10.237.9.140;Active;CCH1;linux;GSI Content Server;done;12;Deployed by CSC and GE test OK;null
+sacch35107;Application;10.237.9.186;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch35116;Application;10.237.9.196;Active;CCH1;linux;DataStage 9.1 Platform (Common);done;12;Deployed by CSC and GE test OK;null
+sakul15005;Application;10.189.112.43;Active;KUL1;linux;Nexthink;null;00;Not deployed by CSC;null
+samow15009;Application;10.139.133.22;Active;MOW1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+savbn10016;Application;10.23.208.14;Active;VBN1;SunOS;;null;00;Not deployed by CSC;null
+savbn10025;Application;10.23.208.176;Active;VBN1;SunOS;GEODE||GEODE PDM||GEODE PDM;null;00;Not deployed by CSC;null
+savbn10034;Application;10.23.208.84;Active;VBN1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sawov15005;Application;10.35.184.183;Active;WOV1;AIX;DMA-GS Oxley;null;00;Not deployed by CSC;null
+sbbad16156;Application;10.236.4.156;Active;RMA1;AIX;DELMIA V6||DELMIA V6||DELMIA V6||TSST Project Portfolio||TSST Project Portfolio||TS Project Portfolio Tool (Services)||TPMRO Execution Database||Infra Easy Archive||PMS||PMS||BONGA AT||BONGA AT||HYDROGIS||Enricher 2;null;00;Not deployed by CSC;null
+sbbad19108;Application;10.238.143.51;Active;BAD1;AIX;PowerSales/Ferman||PowerSales/Ferman||PowerSales/Ferman;null;00;Not deployed by CSC;null
+sbbad19126;Application;10.238.207.126;Active;RMA1;AIX;TERANGA - Finance;null;00;Not deployed by CSC;null
+sbbad19162;Application;10.238.143.112;Active;RMA1;AIX;PMS||TERANGA - Finance||APC VPDM;null;00;Not deployed by CSC;null
+sbbad19171;Application;10.238.196.133;Active;RMA1;linux;ADEL BI||e-Project (TPPR);done;12;Deployed by CSC and GE test OK;null
+sbbad19180;Application;10.238.197.71;Active;BAD1;linux;SICOS||IMACS||e-Project (TPPR)||TeamTrack;done;12;Deployed by CSC and GE test OK;null
+sbcch15066;Application;10.237.4.66;Active;CCH1;AIX;IMAGINE 3;null;00;Not deployed by CSC;null
+sblrh15040;Application;10.23.97.52;Active;LRH1;linux;ELSA;done;12;Deployed by CSC and GE test OK;null
+sumow15001;Application;10.139.133.16;Active;MOW1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+suqhp10307;Application;10.83.2.70;Active;QHP1;linux;ANSYS License control Taubate (BR Renewable);done;12;Deployed by CSC and GE test OK;null
+suwnd10005;Application;10.164.119.245;Active;WND1;linux;Nexthink;null;00;Not deployed by CSC;null
+suwro15001;Application;10.197.64.143;Active;WRO1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+tcebaz20;Application;10.128.78.151;Active;BAD1;HP-UX;;null;00;Not deployed by CSC;null
+techsys2;Application;10.129.131.128;Active;BIR1;linux;Factory Systems Birr;null;00;Not deployed by CSC;null
+acectra4;Application;10.79.2.31;Active;CRL1;HP-UX;SAP R3 40B (FI-CO+GPAO) Charleroi;null;00;Not deployed by CSC;null
+ddsc;Application;10.79.2.70;Active;CRL1;HP-UX;E3Séries||DDSC;null;00;Not deployed by CSC;null
+erp-v47-s1;Application;10.128.72.165;Active;BAD1;AIX;SAP CH;done;11;Deployed by CSC and GE test OK;null
+lic103;Application;10.238.146.103;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic112;Application;10.238.146.112;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic121;Application;10.238.146.121;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+lic130;Application;10.238.146.130;Active;BAD1;linux;HPC - BIG-Cluster;null;00;Not deployed by CSC;null
+madrid;Application;10.79.3.13;Active;CRL1;HP-UX;Business Compilers - Unix Based - Certified compilations;null;00;Not deployed by CSC;null
+ohm;Application;10.255.150.211;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;11;Deployed by CSC and GE test OK;null
+orgrugs07;Application;10.34.10.41;Active;RUG1;SunOS;Thermal New IS Application Register||Thermal Service Strategy System||Oracle ApEx||On-Track / AES Training Database||Materials Release Properties Database||SQEP Database||ST Projects Change Management||TSS Project Portfolio Primavera Interface||P&EP Stakeholder Contact Management||SWIFT Factory instructions||TSNE Project Portfolio||RM Stores Costing Extension||TSNE Project Categorisation||Engineering Design Review Management||TSST Project Portfolio;null;00;Not deployed by CSC;null
+pdmcax12;Application;10.128.26.13;Active;BAD1;HP-UX;;null;00;Not deployed by CSC;null
+porto;Application;10.79.3.24;Active;CRL1;SunOS;COMPILATORS;null;00;Not deployed by CSC;null
+potter;Application;10.255.150.161;Active;CCH1;AIX;Alt@is (GRID Global ERP);done;02;Deployed by CSC but GE test KO;null
+proust;Application;10.255.150.225;Active;CCH1;AIX;;done;11;Deployed by CSC and GE test OK;null
+sabad10187;Application;10.128.30.242;Active;BAD1;linux;CoCoOn||STITS (Steam Turbine Integrated Tools Suite);done;11;Deployed by CSC and GE test OK;null
+sabad10367;Application;10.238.15.78;Active;BAD1;linux;ALISTA Le Creusot, Madrid, London||Alista;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10385;Application;10.238.14.246;Active;BAD1;linux;e-Project Renew (HPR)||Hydro Technical Tendering (HTT)||NCM||Hydro Reftable (HREF);couldn't connect;01;CSC not able to deploy;null
+sabad10466;Application;10.238.15.50;Active;BAD1;linux;Alista||ALISTA Tarbes, Charleroi, Nola;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10574;Application;10.238.15.100;Active;BAD1;linux;Ulysse;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10628;Application;10.238.15.128;Active;BAD1;linux;;culdn't connect;01;CSC not able to deploy;null
+sabad10637;Application;10.238.15.137;Active;BAD1;linux;Hydro Costing Tool (HCT);done;20;Deployed by CSC but not testable (behind FW);null
+sabad10835;Application;10.238.14.86;Active;BAD1;linux;AUtube;done;12;Deployed by CSC and GE test OK;null
+sabad10952;Application;10.238.11.55;Active;RMA1;linux;PMS;done;20;Deployed by CSC but not testable (behind FW);null
+sabad10961;Application;10.238.14.57;Active;RMA1;linux;PMS;done;12;Deployed by CSC and GE test OK;null
+sabad11168;Application;10.238.126.168;Active;BAD1;linux;GIS Tendering Application;done;12;Deployed by CSC and GE test OK;null
+sabad11177;Application;10.238.40.77;Active;BAD1;linux;SICOS||CONFLUENCE||Subversion Grid||CROWD||JIRA||TeamTrack;done;12;Deployed by CSC and GE test OK;null
+sabad11249;Application;10.238.41.49;Active;BAD1;linux;e-Project (TPPR)||Weekly Volumes Viewer;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11258;Application;10.238.197.82;Active;BAD1;linux;New PLM||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11285;Application;10.238.196.205;Active;RMA1;linux;InfoSystem;done;12;Deployed by CSC and GE test OK;null
+sabad11357;Application;10.238.41.82;Active;BAD1;linux;e-Project (TPPR)||Weekly Volumes Viewer;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11375;Application;10.238.219.124;Active;BAD1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11384;Application;10.238.41.45;Active;BAD1;linux;SICOS||TeamTrack;done;20;Deployed by CSC but not testable (behind FW);null
+sabad11447;Application;10.238.206.46;Active;RMA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sabad11492;Application;10.238.82.93;Active;BAD1;linux;My IT Portal;done;10;Deployed by CSC but GE test KO;ssh : password
+sabad15029;Application;10.238.198.112;Active;RMA1;linux;DELMIA V6;done;12;Deployed by CSC and GE test OK;null
+sabad15164;Application;10.236.4.164;Active;RMA1;AIX;DELMIA V6||Aralia SIMTREE||New PLM;done;20;Deployed by CSC but not testable (behind FW);null
+sabad15209;Application;10.238.198.204;Active;BAD1;linux;Subversion Grid;done;12;Deployed by CSC and GE test OK;null
+sabad16145;Application;10.236.4.145;Active;RMA1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad18107;Application;10.238.168.17;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18116;Application;10.238.168.26;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18125;Application;10.238.168.35;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18134;Application;10.238.168.44;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18143;Application;10.238.168.53;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18152;Application;10.238.168.62;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18206;Application;10.238.164.16;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18215;Application;10.238.164.25;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18224;Application;10.238.164.34;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18233;Application;10.238.164.43;Active;BAD1;linux;HPC - TGN Green;done;12;Deployed by CSC and GE test OK;null
+sabad18242;Application;10.238.164.52;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18251;Application;10.238.164.61;Active;BAD1;linux;HPC - TGN Green Extension;done;12;Deployed by CSC and GE test OK;null
+sabad18305;Application;10.238.168.205;Active;BAD1;linux;HPC - TGN Green ex TARRA;null;00;Not deployed by CSC;null
+sabad18404;Application;10.238.199.20;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18413;Application;10.238.199.29;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18422;Application;10.238.199.38;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18431;Application;10.238.199.47;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad18440;Application;10.238.199.56;Active;BAD1;linux;HPC - Plant-HPC new;done;12;Deployed by CSC and GE test OK;null
+sabad19016;Application;10.128.72.98;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19025;Application;10.128.78.125;Active;BAD1;AIX;Powermax;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19133;Application;10.238.142.196;Active;BAD1;SunOS;;null;00;Not deployed by CSC;null
+sabad19151;Application;10.238.101.20;Active;BAD1;SunOS;InfoSystem;null;00;Not deployed by CSC;null
+sabad19160;Application;10.238.142.171;Active;BAD1;SunOS;EAI Base Platform;null;00;Not deployed by CSC;null
+sabad19250;Application;10.238.142.147;Active;RMA1;SunOS;CTO Training Content Management||InfoSystem;null;00;Not deployed by CSC;null
+sabad19331;Application;10.238.220.79;Active;BAD1;AIX;TRT SAP SOLMAN;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19340;Application;10.238.220.80;Active;RMA1;AIX;PowerSales/Ferman;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19403;Application;10.238.21.33;Active;BAD1;AIX;Powermax;done;21;Deployed by CSC and GE test on going;null
+sabad19502;Application;10.238.15.33;Active;BAD1;AIX;;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19601;Application;10.238.220.45;Active;RMA1;AIX;ASCOT;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19697;Application;10.128.78.53;Active;RMA1;AIX;DMA-GS Neuhausen;done;20;Deployed by CSC but not testable (behind FW);null
+sabad19778;Application;10.238.132.67;Active;RMA1;AIX;APC-RPDM;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad19787;Application;10.238.220.50;Active;RMA1;AIX;TRT SAP PI;done;10;Deployed by CSC but GE test KO;"netstat Ok; lsof Ko : no lsof found |; crontab Ok"
+sabad35018;Application;10.236.9.58;Active;BAD1;linux;GSI - SAP ECC 6;done;20;Deployed by CSC but not testable (behind FW);null
+sablq11620;Application;10.115.1.36;Active;BLQ1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sablr15003;Application;10.107.138.164;Active;BLR1;AIX;DMA-GS Bangalore;null;00;Not deployed by CSC;null
+sablr15021;Application;10.107.138.127;Active;BLR1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sabor10006;Application;10.18.62.10;Active;BOR1;AIX;CATIA-HYDRO||IMSPOST License Control FR Belfort;null;00;Not deployed by CSC;null
+sabor10024;Application;10.18.92.140;Active;BOR1;linux;E3Séries||ELSA||Baan Scheduler v6.4;done;12;Deployed by CSC and GE test OK;null
+sacch10286;Application;10.239.4.139;Active;CCH1;AIX;;null;00;Not deployed by CSC;null
+sacch10448;Application;10.239.25.233;Active;CCH1;linux;DELMIA V6;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15029;Application;10.237.4.28;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory||ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15056;Application;10.237.4.56;Active;CCH1;AIX;RAILSYS;null;00;Not deployed by CSC;null
+sacch15083;Application;10.237.4.83;Active;CCH1;AIX;ALPS PeopleSoft & Global Directory;null;00;Not deployed by CSC;null
+sacch15092;Application;10.237.4.92;Active;CCH1;AIX;Catia||Aralia SIMTREE;null;00;Not deployed by CSC;null
+sacch15524;Application;10.239.27.154;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+sacch15614;Application;10.239.4.33;Active;CCH1;linux;ADEL WP;done;12;Deployed by CSC and GE test OK;null
+sacch15623;Application;10.239.26.115;Active;CCH1;linux;GSI - SAP ECC 6;done;20;Deployed by CSC but not testable (behind FW);null
+sacch15713;Application;10.239.27.113;Active;CCH1;linux;IMAGINE 2.0;done;12;Deployed by CSC and GE test OK;null
+sacch35045;Application;10.237.9.107;Active;CCH1;linux;GSI - SAP ECC 6;done;12;Deployed by CSC and GE test OK;null
+sacch35054;Application;10.237.9.116;Active;CCH1;linux;ALISTA France||Alista;done;12;Deployed by CSC and GE test OK;null
+sacch35072;Application;10.237.9.141;Active;CCH1;linux;GSI BO;done;12;Deployed by CSC and GE test OK;null
+sacch35090;Application;10.237.9.164;Active;CCH1;linux;TEMPUS - GTA France;done;12;Deployed by CSC and GE test OK;null
+sacch35108;Application;10.237.9.187;Active;CCH1;linux;My IT Portal;done;12;Deployed by CSC and GE test OK;null
+salcr10019;Application;10.23.81.183;Active;LCR1;AIX;SOFIA;null;00;Not deployed by CSC;null
+salpt10048;Application;10.18.0.10;Active;CCH1;linux;Galice;done;12;Deployed by CSC and GE test OK;null
+salpt10084;Application;10.18.1.94;Active;CCH1;linux;Asset Center;done;12;Deployed by CSC and GE test OK;null
+salpt10183;Application;10.18.0.44;Active;CCH1;linux;Galice;done;12;Deployed by CSC and GE test OK;null
+sarug31768;Application;10.34.12.88;Active;RUG1;linux;;done;12;Deployed by CSC and GE test OK;null
+savbn10026;Application;10.23.208.48;Active;VBN1;linux;Software Quality;done;12;Deployed by CSC and GE test OK;null
+savbn10035;Application;10.23.208.86;Active;VBN1;linux;ClearCase;done;12;Deployed by CSC and GE test OK;null
+sawov15006;Application;10.35.184.184;Active;WOV1;AIX;DMA-GS Oxley;null;00;Not deployed by CSC;null
+sbbad16157;Application;10.236.4.157;Active;RMA1;AIX;e-Project Renew (HPR)||Hydro Technical Tendering (HTT)||PMS||Hydro e-Project Reporting - BI (FRFAHPRP-7IOHD)||Hydro E-Tendering Reporting - BI (FRFAHTTE-7IOHD)||NCM||Hydro Reftable Reporting - BI (FRFAHREF-7IOHD)||Enricher 2||DELMIA V6||Hydro Reftable (HREF)||TSST Project Portfolio||TS Project Portfolio Tool (Services)||TPMRO Execution Database;null;00;Not deployed by CSC;null
+sbbad19127;Application;10.238.132.127;Active;RMA1;AIX;APC-RPDM;null;00;Not deployed by CSC;null
+sbbad19136;Application;10.238.132.38;Active;BAD1;AIX;APC-RPDM;null;00;Not deployed by CSC;null
+sbbad19163;Application;10.238.143.113;Active;RMA1;AIX;PMS||Athena||BOXI Platform (Power)||MDM Platform||TERANGA - Finance||APC VPDM;null;00;Not deployed by CSC;null
+sbbad19172;Application;10.238.196.134;Active;BAD1;linux;ADEL BI||ADEL BI||CONFLUENCE||CONFLUENCE||InfoSystem||Subversion Grid||CROWD||JIRA||JIRA;done;12;Deployed by CSC and GE test OK;null
+sbbad19181;Application;10.238.217.181;Active;RMA1;linux;New PLM;done;20;Deployed by CSC but not testable (behind FW);ssh : time-out
+sbcch15067;Application;10.237.4.67;Active;CCH1;AIX;IMAGINE 1;null;00;Not deployed by CSC;null
+sbcch15076;Application;10.237.4.76;Active;CCH1;AIX;Ethics & Compliance Database||International Network Database||DSTT||Country & Tax database||BO BI4 Platform (Common)||DataStage 9.1 Platform (Common);null;00;Not deployed by CSC;null
+sfcch10149;Utility;10.239.4.82;Active;CCH1;linux;Galice||CAO2000;done;12;Deployed by CSC and GE test OK;null
+silex;Application;10.23.81.219;Active;LCR1;SunOS;UNIX directory NIS LCR||Matlab;null;00;Not deployed by CSC;null
+subdq20060;Application;10.107.148.99;Active;BDQ2;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+subdq25001;Application;10.107.148.122;Active;BDQ2;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+sucrl101;Application;10.79.3.2;Active;CRL1;HP-UX;COMPILATORS;null;00;Not deployed by CSC;null
+sudel15002;Application;10.108.100.156;Active;NDA1;linux;APC VPDM;done;12;Deployed by CSC and GE test OK;null
+susao10275;Application;10.81.129.135;Active;SAO1;linux;HyLife;done;12;Deployed by CSC and GE test OK;null
+sushah10005;Application;10.236.156.55;Active;SHAH;linux;Managed File Transfer;password prompt;01;CSC not able to deploy;null
+suwin1wbss;Application;10.164.119.48;Active;WND1;linux;webPBOM||SupplierNet;done;12;Deployed by CSC and GE test OK;null
+tcebaz21;Application;10.128.78.152;Active;BAD1;HP-UX;;null;00;Not deployed by CSC;null
+v890;Application;10.115.33.24;Active;SAV1;SunOS;ELSA;null;00;Not deployed by CSC;null
