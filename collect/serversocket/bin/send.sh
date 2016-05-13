@@ -22,11 +22,11 @@ function merge_sockets() {
 
 function send_sockets() {
 	cd ${DIR_TOSEND}
-	for fic in $(ls *.csv.gz)
+	for fic in $(find . -maxdepth 1 -name "*.csv.gz")
         do
         	CMD="aws s3 cp $fic $S3_DIR_COLLECT/$(basename $fic)" &&\
         	echo "$CMD" && $CMD &&\
-        	mv $fic $DIR_SENT/.
+		CMD="mv $fic $DIR_SENT/." && echo "$CMD" && $CMD
         done 
 }
 
@@ -37,10 +37,10 @@ cd $DIR_COLLECT
 type="linux"
 for col in lsof ps netstat
 do
-	for filedt in $(ls ${col}_*.csv.gz | cut -d_ -f3 | cut -d. -f1 | sort -u)
+	for filedt in $(find . -maxdepth 1 -name "${col}_*.csv.gz" | cut -d_ -f3 | cut -d. -f1 | sort -u)
 	do
 		tmpfile=$(mktemp)
-		for fic in $(ls ${col}_*_${filedt}.csv.gz)
+		for fic in $(find .  -maxdepth 1 -name "${col}_*_${filedt}.csv.gz")
 		do
 			echo $fic >> $tmpfile
 		done &&\
