@@ -32,10 +32,24 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
       }
     }).reduce(_.unionAll(_))
 
-    val meta2 = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
-      .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
-      .distinct()
-      .unionAll(meta)
+    val meta2 = {
+      try {
+        sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirout()}")
+          .select(lit("connection") as "filetype", lit(Pipeline3To4.STAGE_NAME) as "stage", $"collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
+          .distinct()
+
+      }
+      catch {
+        case _: Throwable => sqlContext.createDataFrame(sqlContext.sparkContext.emptyRDD[Row], StructType(List(
+          StructField("filetype", StringType, true),
+          StructField("stage", StringType, true),
+          StructField("collecttype", StringType, true),
+          StructField("engine", StringType, true),
+          StructField("dt", DateType, true),
+          StructField("filedt", StringType, true)
+        )))
+      }
+    }.unionAll(meta)
 
     val meta3 = {
       try {

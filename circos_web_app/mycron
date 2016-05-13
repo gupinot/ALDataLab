@@ -1,0 +1,1 @@
+0 1 * * * /home/datalab/SiteMap/SiteMap.sh clean

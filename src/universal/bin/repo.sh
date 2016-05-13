@@ -60,7 +60,7 @@ done
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
 
-hdfs dfs -ls ${dirin} | egrep -o "[^ ]+\.csv$" | egrep "$FILEPATTERN" >$tempfile
+hdfs dfs -ls ${dirin} | egrep -o "[^ ]+\.(csv|csv\.gz)$" | egrep "$FILEPATTERN" >$tempfile
 
 if [ $(wc -l $tempfile | awk '{print $1}') -gt 0 ]; then
     cat $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}"

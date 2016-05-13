@@ -64,10 +64,10 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
           $"dest_aip_app_sector".as("remote_sector"),
           $"dest_site".as("remote_site"),
           $"dest_ip".as("remote_ip"),
-          $"source_app_exec".as("remote_app_exec"),
+          lit(null).as("remote_app_exec"),
           $"dest_aip_app_name".as("remote_aip_app_name"),
           $"dest_port".as("server_port"),
-          $"con_protocol".as("conf_protocol"))
+          $"con_protocol".as("con_protocol"))
         .agg(sum($"con_number").as("con_number"),
           sum($"con_traffic_in" + $"con_traffic_out").as("con_traffic"))
         .withColumn("client_user", lit(null))
@@ -102,7 +102,7 @@ class Flow(implicit sqlContext: SQLContext) extends Pipeline {
           $"dest_aip_app_sector".as("remote_sector"),
           $"dest_site".as("remote_site"),
           $"dest_ip".as("remote_ip"),
-          $"source_app_exec".as("remote_app_exec"),
+          lit(null).as("remote_app_exec"),
           $"dest_aip_app_name".as("remote_aip_app_name"),
           $"dest_port".as("server_port"),
           $"con_protocol".as("con_protocol"))

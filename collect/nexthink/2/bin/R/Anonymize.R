@@ -66,7 +66,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- NXData[, !c("NX_device_name", "NX_user_name"), with=FALSE]
     
   }
-  else {
+  else if (FileType == "webrequest") {
     #webrequest
     NXData <- NXData[, c(1, 2, 3, 11, 15, 17, 18, 20, 21, 24), with=FALSE]
     setnames(NXData, c("wr_id", "wr_start_time", "wr_end_time", 
@@ -86,6 +86,28 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- Res[NXData, nomatch=NA]
     setnames(NXData, c("I_ID", "name"), c("I_ID_D", "wr_device_name"))
     
+    NXData <- NXData[, !c("wr_device_name"), with=FALSE]
+  }
+  else {
+    #execution
+    NXData <- NXData[, c(1, 2, 3, 11, 15, 17, 18, 20, 21, 24), with=FALSE]
+    setnames(NXData, c("wr_id", "wr_start_time", "wr_end_time",
+    "wr_url", "wr_user_name", "wr_device_name",
+    "wr_device_last_ip", "wr_destination_port",
+    "wr_destination_ip", "wr_application_name"))
+
+    NXData <- NXData[, list(wr_start_time, wr_end_time,
+    wr_url, wr_device_name,
+    wr_destination_port, wr_destination_ip, wr_application_name)]
+
+    print("AnonymizeNxFile() : anozmize wr_device_name")
+    Res <- Anonymize(unique(NXData$wr_device_name))
+    if (is.null(Res)) return(NULL)
+    setkey(Res, name)
+    setkey(NXData, wr_device_name)
+    NXData <- Res[NXData, nomatch=NA]
+    setnames(NXData, c("I_ID", "name"), c("I_ID_D", "wr_device_name"))
+
     NXData <- NXData[, !c("wr_device_name"), with=FALSE]
   }
   

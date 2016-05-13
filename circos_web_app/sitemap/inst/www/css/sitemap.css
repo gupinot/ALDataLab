@@ -1,0 +1,348 @@
+body {
+  background-color: lightseagreen;
+  line-height:1;
+}
+
+
+
+h1, h2, h3 {
+      text-align: center;
+      line-height: 23px;
+}
+    
+h1 {
+  font-size: -webkit-xxx-large;
+  margin-bottom: 23px;
+}
+    
+ol {position:relative; margin:0 10%; list-style:none;}
+
+br {
+  margin-bottom: 2px;
+  font-size:2px;
+  line-height: 2px;
+}
+
+#container {
+  width:99%;
+  min-height: 1500px;
+  margin-left:auto;
+  margin-right:auto;  
+  background-color: white;
+  padding: 10px;
+  height:auto;
+}
+
+#SettingPannel {
+  border : 2px solid black;
+  border-radius: 10px;
+  background-color:lightseagreen;  
+}
+
+#circos_result, #Appli, #cluster, #Server {
+  border : 1px solid lightseagreen;
+  border-radius: 10px;
+  background-color: white;  
+  text-align:center;
+  margin-top:10px;
+  padding: 5px;
+}
+
+
+
+#navigation {
+  text-align:right;
+}
+
+section#filterFormLeft {
+  display : inline-block;
+  float : left;
+  width : 31%;
+  min-width: 294px;
+  margin-left: 9px;
+  margin-top: 9px;
+  height : auto;
+  padding : 8px;
+  border : 2px solid black;
+  border-radius: 10px;
+  background-color:cadetblue;  
+  text-align:initial;
+}
+
+section#filterFormLeft td {
+  padding : 8px;
+}
+
+section#filterFormRight {
+  display : inline-block;
+  width : 60%;
+  min-width: 470px;
+  margin-right: 9px;
+  margin-top: 9px;
+  height : auto;
+  padding : 8px;
+  border : 2px solid black;
+  border-radius: 10px;
+  background-color:cadetblue;  
+}
+
+
+table {
+  	background-color: aliceblue;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 5px;
+    width: 100%;
+    border-collapse:inherit;
+}
+
+tr {
+	padding: 1px;
+}
+
+td#col1g {
+	min-width: 85px;
+	width: 30%;
+	text-align: center;
+}
+
+td#col2g {
+	padding-right: 2px;
+	padding-bottom: 2px;
+	min-width:180px;
+}
+
+td#col1 {
+	width: 20%;
+	text-align: center;
+	min-width:76px;
+}
+
+td#col2 {
+	width: 30%;
+	text-align: center;
+	min-width:150px;
+}
+
+td#col3 {
+	width: 10%;
+	font-size: small; 
+	text-align: center;
+	min-width:64px;
+}
+
+td#col4 {
+	width: 30%;
+	text-align: center;
+	min-width:150px;
+}
+
+td#col23, td#col234 {
+	max-width: 263px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+}
+
+label {
+  text-align : center;
+  font-weight: normal;
+  font-size: 1em;
+  
+}
+
+
+.label2 {
+	font-size: small;
+	font-weight: normal;
+}
+
+.labelCheckBox, .labelRadio {
+	font-weight: normal;
+	margin-left: 3px;
+	margin-right: 5px;
+}
+
+input[type=file] {
+	font-size:small;
+}
+
+
+#LaunchSubClusteringButton {
+	height:auto;
+}
+
+#LoadingResult {
+	font-size: x-large;
+	text-align: center;
+	margin-top:10px;
+}
+
+.inoutfilter {
+  margin-top:10px;
+  width: 30%;
+  margin-left: 10px;
+}
+#interintrafilter {
+  text-align: center;
+}
+
+select {
+  margin-left:10px;
+  width:90%;
+}
+
+.FromSiteMethodButton {
+  
+}
+
+form[name=operandForm] {
+	border: initial;
+    background-color: initial;
+}
+
+
+#circos_graph {
+  width : 70%;
+  margin-left: 10px;
+}
+
+#dowloadData {
+  text-align: center;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#circosimage, #circoscsv, #statcsv, #servercsv {
+  padding:20px;
+}
+      
+form { 
+  position: relative; 
+  border : 1px dotted CadetBlue;
+  border-radius : 10px;
+  padding : 5px;
+  margin-top:5px;
+  background-color: gainsboro;
+  }
+  
+#Operand {
+	margin-left: 10px;
+}
+
+input[type="range"] {
+        position: relative;
+      	margin-left: 1em;
+		width:90%;
+}
+
+input[type="range"]:after, input[type="range"]:before {
+      	position: absolute;
+      	top: 1em;
+      	color: #aaa;
+}
+input[type="range"]:before {
+      	left:0em; 
+      	content: attr(min);
+}
+input[type="range"]:after {
+      	right: 0em;
+      	content: attr(max);
+}
+outputExpansionParameter, outputInflationParameter, outputMaxMatrixRange, outputClusterNumber {
+      	position: absolute;
+      	top: 23px; left: 100px;
+      	font-size: small;
+}
+
+outputInflationParameter {
+      	top: 62px; left: 92px;
+}
+
+outputExpansionParameter {
+      	top: 110px; left: 92px;
+}
+
+outputClusterNumber {
+      	top: 60px; left: 92px;
+}
+
+#SiteMapSetting {
+	color: white; 
+	font-weight:bold; 
+	font-size: x-large;
+	-webkit-transition: color .4s;
+	-moz-transition: color .4s;
+	transition:color .4s;
+}
+#SiteMapSetting:hover {
+	color: crimson;
+	cursor : pointer;
+}
+
+#CircosResultTitle, #AppliResultTitle, #ServerResultTitle, #ClusterResultTitle {
+	color: cadetblue; 
+	font-weight:bold; 
+	font-size: x-large;
+	-webkit-transition: color .4s;
+	-moz-transition: color .4s;
+	transition:color .4s;
+}
+#CircosResultTitle:hover, #AppliResultTitle:hover, #ServerResultTitle:hover, #ClusterResultTitle:hover {
+	color: crimson;
+	cursor : pointer;
+}
+
+.button:hover {
+        background-color: crimson;
+        cursor : pointer;
+}
+.button:hover {
+        text-decoration: none;
+}
+.button {
+        display: block;
+        text-align: center;
+        padding: 15px 15px 15px 15px;
+        background-color: darkslateblue;
+        background-repeat: no-repeat;
+        background-position: 10px 6px;
+        background-position: 10px 6px,0 0;
+        margin-top: 10px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.3em;
+        text-shadow: 1px 1px 2px rgba(0,0,0,.25);
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+        box-shadow: 0 1px 3px rgba(0,0,0,.2);
+        -webkit-transition: background-color .4s;
+        -moz-transition: background-color .4s;
+        transition: background-color .4s;
+}
+
+#LaunchSubClusteringButton .button {
+	padding:5px 5px
+	margin:3px
+}
+
+#SectorFilterAll {
+  
+}
+
+#SectorNADiv, #SectorNADivTo  {
+  float: right;
+  margin-right:15px;
+}
+
+#SectorFilter {
+  margin-left: 15px;
+}
+
+#SiteCategoryFilterIn {
+	margin-left:15px;
+ }
+
+
