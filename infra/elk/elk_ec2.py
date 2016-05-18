@@ -477,7 +477,7 @@ def launch_cluster(conn, opts, cluster_name):
                 placement=zone,
                 count=num_slaves_this_zone,
                 key_name=opts.key_pair,
-                security_group_ids=[slave_group.id] + additional_group_ids,
+                security_group_ids=[slave_group.id,discovery_group.id] + additional_group_ids,
                 instance_type=opts.instance_type,
                 block_device_map=block_map,
                 subnet_id=opts.subnet_id,
@@ -530,7 +530,7 @@ def launch_cluster(conn, opts, cluster_name):
             if num_slaves_this_zone > 0:
                 slave_res = image.run(
                     key_name=opts.key_pair,
-                    security_group_ids=[slave_group.id] + additional_group_ids,
+                    security_group_ids=[slave_group.id,discovery_group.id] + additional_group_ids,
                     instance_type=opts.instance_type,
                     placement=zone,
                     min_count=num_slaves_this_zone,
@@ -572,7 +572,7 @@ def launch_cluster(conn, opts, cluster_name):
                     image_id=opts.ami,
                     key_name=opts.key_pair,
                     launch_group="master-group-%s" % cluster_name,
-                    security_group_ids=[master_group.id] + additional_group_ids,
+                    security_group_ids=[master_group.id,discovery_group.id] + additional_group_ids,
                     instance_type=master_type,
                     placement=opts.zone,
                     count=1,
@@ -609,7 +609,7 @@ def launch_cluster(conn, opts, cluster_name):
         else:
             master_res = image.run(
                 key_name=opts.key_pair,
-                security_group_ids=[master_group.id] + additional_group_ids,
+                security_group_ids=[master_group.id,discovery_group.id] + additional_group_ids,
                 instance_type=master_type,
                 placement=opts.zone,
                 min_count=1,
