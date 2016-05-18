@@ -84,14 +84,26 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
       val filename = basename(filein)
-      val Array(filetype, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
+      val Array(filetype_temp, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
       val (year, month_day) = file_date.splitAt(4)
       val (month, day) = month_day.splitAt(2)
       val filedate = s"$year-$month-$day"
 
+      val filetype = filetype_temp match {
+        case "CartoServer" => "AIP-Server"
+        case "CartoSoftInstance" => "AIP-SoftInstance"
+        case "CartoApplication" => "AIP-Application"
+        case "CartoAppGFtoApp" => "AIP-AppGFtoApp"
+        case "CartoAppSoftware" => "AIP-Software"
+        case "CartoOrgDeploy" => "AIP-OrgDeploy"
+        case _ => filetype_temp
+      }
+
+
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"${context.dirout()}/$filetype"
       println("RepoProcessInFile() : respath = " + respath)
+
 
       val res = sqlContext.read
         .format("com.databricks.spark.csv")
@@ -136,14 +148,14 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"CPU Name".as("aip_server_cpu_type"),
           $"CPUs number".as("aip_server_cpu_num"),
           $"Core number".as("aip_server_cpu_cores"),
-          $"Owner".as("aip_server_owner"),
-          $"Owner Org UID".as("aip_server_owner_org_id"),
+          $"Leased or owned".as("aip_server_owner"),
+          //$"Owner Org UID".as("aip_server_owner_org_id"),
           $"Vendor".as("aip_server_vendor"),
           $"Model".as("aip_server_model"),
           //$"Installation date".as("aip_server_dt_install"),
           $"Operational role".as("aip_server_role"),
           $"Source".as("aip_server_source"),
-          $"Administrated by".as("aip_server_adminby"),
+          //$"Administrated by".as("aip_server_adminby"),
           $"OS Name".as("aip_server_os_name"),
           lit(filedate).as("filedate")
         )
@@ -235,7 +247,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           sys.exit(1)
       }
 
-      res2.write.mode(SaveMode.Append).partitionBy("filedate").parquet(respath)
+      res2.write.mode(SaveMode.Overwrite).partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
   }
