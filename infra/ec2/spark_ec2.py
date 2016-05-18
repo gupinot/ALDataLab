@@ -217,6 +217,9 @@ def parse_args():
         "-v", "--spark-version", default=DEFAULT_SPARK_VERSION,
         help="Version of Spark to use: 'X.Y.Z' or a specific git hash (default: %default)")
     parser.add_option(
+        "--deploy-env", default="generic",
+        help="Name of your base deploy directory. Script will look for deploy.<envname> in current directory  (default: %default)")
+    parser.add_option(
         "--deploy-profile", default=None,
         help="If you have multiple profiles (AWS or boto config), you can configure " +
              "additional, named profiles by using this option. If not empty, this profile will be deployed"
@@ -916,10 +919,11 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
                                                   b=opts.spark_ec2_git_branch)
     )
 
-    print("Deploying files to master...")
+    deploy_root = SPARK_EC2_DIR + "/" + "deploy."+opts.deploy_env
+    print("Deploying root env {s} to master...".format(s=deploy_root))
     deploy_files(
         conn=conn,
-        root_dir=SPARK_EC2_DIR + "/" + "deploy.generic",
+        root_dir=deploy_root,
         opts=opts,
         master_nodes=master_nodes,
         slave_nodes=slave_nodes,
