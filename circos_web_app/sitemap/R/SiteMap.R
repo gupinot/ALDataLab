@@ -450,7 +450,7 @@ reformatStat <- function(Stat, deviceOrServer = "Device",
                                               by=list(SiteCode_Source, SiteName_Source, SiteCategory_Source,source_sector, source_teranga,
                                                       SiteCode_Destination, SiteName_Destination, SiteCategory_Destination,
                                                       source_app_name, source_app_exec, url,
-                                                      dest_ip, dest_port, con_protocol,
+                                                      dest_ip, dest_aip_server_hostname, dest_port, con_protocol,
                                                       dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
                                                       dest_aip_app_sector, dest_aip_app_shared_unique_id,
                                                       dest_aip_appinstance_type, dest_aip_server_adminby)]
@@ -458,11 +458,11 @@ reformatStat <- function(Stat, deviceOrServer = "Device",
   } else {
     tmpReformatStatAppli <- tmpReformatStat[, list(Traffic=round(sum(as.numeric(Traffic)), digits=0)),
                                     by=list(
-                                      source_ip, source_app_name, source_app_exec, url,
+                                      source_ip, source_aip_server_hostname, source_app_name, source_app_exec, url,
                                       source_aip_app_name, source_aip_server_function, source_aip_server_subfunction, source_aip_app_criticality, source_aip_app_type,
                                       source_aip_app_sector, source_aip_app_shared_unique_id,
                                       source_aip_appinstance_type, source_aip_server_adminby,
-                                      dest_ip, dest_port, con_protocol,
+                                      dest_ip, dest_aip_server_hostname, dest_port, con_protocol,
                                       dest_aip_app_name, dest_aip_server_function, dest_aip_server_subfunction, dest_aip_app_criticality, dest_aip_app_type,
                                       dest_aip_app_sector, dest_aip_app_shared_unique_id,
                                       dest_aip_appinstance_type, dest_aip_server_adminby,
@@ -1207,6 +1207,9 @@ RenameColumns <- function(DataTab, Type = "Device") {
            "dest_ip" = {
              setnames(DataTab, c("dest_ip"), c("Dest.IP"))
            },
+           "dest_aip_server_hostname" = {
+             setnames(DataTab, c("dest_aip_server_hostname"), c("Dest.Hostname"))
+           },
            "dest_port" = {
              setnames(DataTab, c("dest_port"), c("Dest.Port"))
            },
@@ -1245,6 +1248,9 @@ RenameColumns <- function(DataTab, Type = "Device") {
            },
            "source_ip" = {
              setnames(DataTab, c("source_ip"), c("Source.IP"))
+           },
+           "source_aip_server_hostname" = {
+             setnames(DataTab, c("source_aip_server_hostname"), c("Source.Hostname"))
            },
            "source_app_category" = {
              setnames(DataTab, c("source_app_category"), c("Source.App.Category"))
