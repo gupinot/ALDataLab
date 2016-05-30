@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+DirLog=$HOME/log; 
+if [[ ! -d "${DirLog}" ]] 
+then
+	mkdir "${DirLog}"
+fi
+exec &> >(tee -a "${DirLog}/submit.log")
+
 WD=$(dirname $0)
 if [[ "$WD" == "." ]]
 then
