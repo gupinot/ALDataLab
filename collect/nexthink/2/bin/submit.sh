@@ -21,6 +21,9 @@ ${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/connection*.gz" "${NXPIPE_RSHELL}" "con
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse nexthink webrequest files"
 ${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/webrequest*.gz" "${NXPIPE_RSHELL}" "webrequest"
 
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse nexthink execution files"
+${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/execution*.gz" "${NXPIPE_RSHELL}" "execution"
+
 # - merge anonymized files by file date and split if result too large
 ${MERGE_SPLIT_SHELL}
 

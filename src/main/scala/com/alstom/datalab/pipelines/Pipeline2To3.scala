@@ -88,6 +88,30 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
             to_date($"wr_end_time") as "dt",
             date_format(to_date($"wr_end_time"),"yyyy-MM") as "month"
           )
+          case "execution" => df.select(
+            $"I_ID_D",
+            $"I_ID_U",
+            $"ex_start_time" as "start",
+            $"ex_end_time" as "end",
+            $"ex_bin_path",
+            $"ex_cardinality",
+            $"ex_duration",
+            $"ex_status",
+            $"ex_app_category",
+            $"ex_app_company",
+            $"ex_app_name",
+            $"ex_app_bin_exec_name",
+            $"ex_app_bin_paths",
+            $"ex_app_bin_version",
+            $"ex_user_name",
+            $"ex_device_name",
+            $"engine",
+            $"filedt",
+            getCollectType($"engine") as "collecttype",
+            to_date($"ex_end_time") as "dt",
+            date_format(to_date($"ex_end_time"),"yyyy-MM") as "month"
+          )
+
           case _ => df
         }
         selectedDf

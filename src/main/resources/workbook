@@ -12,7 +12,7 @@ cd /Users/guillaumepinot/Dev/Alstom/V2/script/spark/IdeaProjects/ALDataLab/infra
 
 
 #zeppelin-dev
-./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 -s 15 launch zeppelin-dev
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 --deploy-env dev --zeppelin-bucket gecustomers --es-security-group elasticsearch-discovery -s 15 launch zeppelin-dev
 
 #Pipeline
 ./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --master-instance-type m3.xlarge --copy-aws-credentials --spot-price 0.07 --master-spot-price 0.07 -s 20 launch pipeline
@@ -49,6 +49,10 @@ keytool -importkeystore -deststorepass -destkeystore server.jks -srckeystore key
 #to compile project
 sbt assembly universal:packageZipTarball
 aws s3 cp ./target/universal/aldatalab-1.3.1.tgz s3://gedatalab/binaries/
+
+#to publish binaries that have to be http get able. Ex :
+aws s3api put-object-acl --bucket gedatalab --key binaries/zeppelin-0.6.0-incubating-SNAPSHOT.tar.gz --grant-read uri=http://acs.amazonaws.com/groups/global/AllUsers`
+
 
 
 ./slaves.sh ps -ef | grep java | grep 7077 | awk '{print "ssh root@" $1 " kill " $3}'

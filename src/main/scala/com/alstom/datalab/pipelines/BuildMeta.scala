@@ -15,7 +15,7 @@ class BuildMeta(sqlContext: SQLContext) extends Pipeline {
 
   override def execute(): Unit = {
     // try to read the dataframes metadata
-    val meta = List("connection", "webrequest").map(filetype => {
+    val meta = List("connection", "webrequest", "execution").map(filetype => {
       try {
         sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/$filetype/")
           .select(lit(filetype) as "filetype", lit(Pipeline2To3.STAGE_NAME) as "stage", $"collecttype", $"engine", to_date($"dt") as "dt", $"filedt")
