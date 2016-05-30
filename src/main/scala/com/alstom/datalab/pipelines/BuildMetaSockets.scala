@@ -60,7 +60,7 @@ class BuildMetaSockets(sqlContext: SQLContext) extends Pipeline {
           StructField("dt", StringType, true)
         )))
       }
-    }.unionAll(meta)
+    }.unionAll(meta2)
 
     // now merge all found dataframes and save it
     meta3.repartition(1)
