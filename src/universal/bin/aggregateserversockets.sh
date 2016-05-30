@@ -10,7 +10,7 @@ DATERANGE=0
 LOGERR=$(mktemp)
 echo "error log in $LOGERR"
 
-usage="$0 [-n|--dry-run] [-v|--verbose] [-d|--date-range begindate endate byNbDay] [submitArg]"
+usage="$0 [-n|--dry-run] [-v|--verbose] [submitArg]"
 while [[ $# > 0 ]]
 do
 key="$1"
