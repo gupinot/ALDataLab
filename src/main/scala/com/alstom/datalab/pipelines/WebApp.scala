@@ -122,7 +122,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .filter($"collecttype" === "device")
       .groupBy("dt")
       .agg(countDistinct($"engine").as("engine_count"))
-      .filter("engine_count >= 20")
+      .filter("engine_count >= 18")
       .select($"dt")
       .distinct()
     val dt_server = meta45
