@@ -1,0 +1,38 @@
+<html lang="en">
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+<head>
+    <title>Circos test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/opencpu.js"></script>
+    <script type="text/javascript" src="js/circos.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/circos.css" type="text/css">
+</head>
+<body>
+
+<div id="circos_result" hidden>
+    <h3  id="CircosResultTitle" onclick="HideShowSwitch('circosres')">Circos chord diagram</h3>
+    <div id="LoadingResult" style="font-size: x-large; display: none;">
+        Loading... <br/>
+        Please wait
+        <br/>
+        <img id="gifloading" src="img/loading.GIF"/>
+    </div>
+    <div id="circosres">
+        <img id="circos_graph" src=""/>
+        <label id="circos_unit"></label>
+        <div id="dowloadData">
+            <a href="" id="circosimage"></a>
+            <a href="" id="circoscsv"></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

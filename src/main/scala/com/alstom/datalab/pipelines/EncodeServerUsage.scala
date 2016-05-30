@@ -65,6 +65,7 @@ import org.apache.spark.sql.functions._
       val dfStorage = context.repo().readMasterStorage()
 
       val dfAIP = context.repo().readAIP().withColumnRenamed("aip_server_ip", "server_ip")
+                    .withColumn("aip_server_hostname", lower($"aip_server_hostname"))
 
       def deviceFormat = udf(
         (device: String, mount: String) => if(device == null || device == "") mount else device
@@ -177,14 +178,14 @@ import org.apache.spark.sql.functions._
         .write.mode(SaveMode.Overwrite).parquet(s"${dirout}/iostat")
 
 
-      // TODO : sysstat
+      //
       val sysstatorig = sqlContext.read.parquet(s"${dirin}/sysstat")
               .withColumn("dt", to_date($"date"))
               .withColumn("month", date_format(to_date($"date"),"yyyy-MM"))
+              .withColumn("server", lower($"server"))
 
       val sysstat = sysstatorig
         .join(dfAIP, sysstatorig("server") === dfAIP("aip_server_hostname"), "left_outer")
-
 
       sysstat
         .filter("cpu_percent is not null")

@@ -112,12 +112,12 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
   }
 
   def resolveSector(df: DataFrame): DataFrame = {
-    val dfI_ID = broadcast(context.repo().readI_ID().select("I_ID","Sector","SiteCode").cache())
+    val dfI_ID = broadcast(context.repo().readI_ID().select("I_ID","Sector","SiteCode","TerangaCode").cache())
 
     //join for resolution
     df.join(dfI_ID.as("dfID"), df("I_ID_U") === dfI_ID("I_ID"), "left_outer")
       .select((df.columns.toList.map(df.col)
-        ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SiteCode").as("source_I_ID_site"))):_*)
+        ++ List($"dfID.Sector".as("source_sector"),formatSite($"dfID.SiteCode").as("source_I_ID_site"), $"dfID.TerangaCode".as("source_teranga"))):_*)
   }
 
   def resolveAIP(df: DataFrame): DataFrame = {
@@ -128,6 +128,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")
       .select((df.columns.toList.map(df.col) ++
         List($"destAip.aip_server_adminby" as "dest_aip_server_adminby",
+        $"destAip.aip_server_hostname" as "dest_aip_server_hostname",
         $"destAip.aip_server_function" as "dest_aip_server_function",
         $"destAip.aip_server_subfunction" as "dest_aip_server_subfunction",
         $"destAip.aip_app_name" as "dest_aip_app_name",
@@ -137,8 +138,11 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         $"destAip.aip_app_sensitive" as "dest_aip_app_sensitive",
         $"destAip.aip_app_criticality" as "dest_aip_app_criticality",
         $"destAip.aip_app_sector" as "dest_aip_app_sector",
+        $"destAip.aip_appinstance_sector" as "dest_aip_appinstance_sector",
+        $"destAip.aip_appinstance_state" as "dest_aip_appinstance_state",
         $"destAip.aip_app_shared_unique_id" as "dest_aip_app_shared_unique_id",
         $"sourceAip.aip_server_adminby" as "source_aip_server_adminby",
+        $"sourceAip.aip_server_hostname" as "source_aip_server_hostname",
         $"sourceAip.aip_server_function" as "source_aip_server_function",
         $"sourceAip.aip_server_subfunction" as "source_aip_server_subfunction",
         $"sourceAip.aip_app_name" as "source_aip_app_name",
@@ -148,6 +152,8 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         $"sourceAip.aip_app_sensitive" as "source_aip_app_sensitive",
         $"sourceAip.aip_app_criticality" as "source_aip_app_criticality",
         $"sourceAip.aip_app_sector" as "source_aip_app_sector",
+        $"sourceAip.aip_appinstance_sector" as "source_aip_appinstance_sector",
+        $"sourceAip.aip_appinstance_state" as "source_aip_appinstance_state",
         $"sourceAip.aip_app_shared_unique_id" as "source_aip_app_shared_unique_id")):_*
       )
   }

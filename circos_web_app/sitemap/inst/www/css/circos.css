@@ -1,0 +1,63 @@
+#circos_result, #Appli, #cluster, #Server {
+  border : 1px solid lightseagreen;
+  border-radius: 10px;
+  background-color: white;  
+  text-align:center;
+  margin-top:40px;
+  padding: 5px;
+}
+
+
+
+#navigation {
+  text-align:right;
+}
+
+#LoadingResult {
+  font-size: x-large;
+  text-align: center;
+  margin-top:10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+#circos_graph {
+  width : 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#gifloading {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#dowloadData {
+  text-align: center;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#circosimage, #circoscsv, #statcsv, #servercsv {
+  padding:20px;
+}
+      
+#Operand {
+	margin-left: 10px;
+}
+
+#CircosResultTitle, #AppliResultTitle, #ServerResultTitle, #ClusterResultTitle {
+	color: cadetblue; 
+	font-weight:bold; 
+	font-size: x-large;
+	-webkit-transition: color .4s;
+	-moz-transition: color .4s;
+	transition:color .4s;
+}
+#CircosResultTitle:hover, #AppliResultTitle:hover, #ServerResultTitle:hover, #ClusterResultTitle:hover {
+	color: crimson;
+	cursor : pointer;
+}
+
+

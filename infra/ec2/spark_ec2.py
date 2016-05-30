@@ -217,6 +217,9 @@ def parse_args():
         "-v", "--spark-version", default=DEFAULT_SPARK_VERSION,
         help="Version of Spark to use: 'X.Y.Z' or a specific git hash (default: %default)")
     parser.add_option(
+        "--deploy-env", default="generic",
+        help="Name of your base deploy directory. Script will look for deploy.<envname> in current directory  (default: %default)")
+    parser.add_option(
         "--deploy-profile", default=None,
         help="If you have multiple profiles (AWS or boto config), you can configure " +
              "additional, named profiles by using this option. If not empty, this profile will be deployed"
@@ -331,6 +334,9 @@ def parse_args():
     parser.add_option(
         "--additional-security-group", type="string", default="",
         help="Additional security group to place the machines in")
+    parser.add_option(
+        "--es-security-group", type="string", default="",
+        help="Elasticsearch discovery security group, if unset local elasticsearch is not deployed")
     parser.add_option(
         "--additional-tags", type="string", default="",
         help="Additional tags to set on the machines; tags are comma-separated, while name and " +
@@ -603,10 +609,11 @@ def launch_cluster(conn, opts, cluster_name):
 
     # we use group ids to work around https://github.com/boto/boto/issues/350
     additional_group_ids = []
+    all_groups = conn.get_all_security_groups()
     if opts.additional_security_group:
-        additional_group_ids = [sg.id
-                                for sg in conn.get_all_security_groups()
-                                if opts.additional_security_group in (sg.name, sg.id)]
+        additional_group_ids += [sg.id for sg in all_groups if opts.additional_security_group in (sg.name, sg.id)]
+    if opts.es_security_group:
+        additional_group_ids += [sg.id for sg in all_groups if opts.es_security_group in (sg.name, sg.id)]
     print("Launching instances...")
 
     try:
@@ -892,6 +899,9 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
     if opts.ganglia:
         modules.append('ganglia')
 
+    if opts.es_security_group:
+        modules.append('elasticsearch')
+
     # Clear SPARK_WORKER_INSTANCES if running on YARN
     if opts.hadoop_major_version == "yarn":
         opts.worker_instances = ""
@@ -909,10 +919,11 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
                                                   b=opts.spark_ec2_git_branch)
     )
 
-    print("Deploying files to master...")
+    deploy_root = SPARK_EC2_DIR + "/" + "deploy."+opts.deploy_env
+    print("Deploying root env {s} to master...".format(s=deploy_root))
     deploy_files(
         conn=conn,
-        root_dir=SPARK_EC2_DIR + "/" + "deploy.generic",
+        root_dir=deploy_root,
         opts=opts,
         master_nodes=master_nodes,
         slave_nodes=slave_nodes,
@@ -1144,6 +1155,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
     template_vars = {
         "cluster_name": cluster_name,
+        "region": opts.region,
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
         "slave_list": '\n'.join(slave_addresses),
@@ -1170,6 +1182,10 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     else:
         template_vars["aws_access_key_id"] = ""
         template_vars["aws_secret_access_key"] = ""
+
+    if opts.es_security_group:
+        template_vars["es_discovery"]=opts.es_security_group
+        template_vars["es_clustername"]=opts.es_security_group.split('-')[0]
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them

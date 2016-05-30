@@ -30,7 +30,7 @@ trait MetaSockets {
     .distinct()
   }
 
-  def deltaMetaEncodedToResolved(path: String)(implicit sqlContext: SQLContext) = {
+  def deltaMetaEncodedToResolved(path: String, collecttype: String = "lsof")(implicit sqlContext: SQLContext) = {
     import sqlContext.implicits._
     val stage1 = EncodeServerSockets.STAGE_NAME
     val stage2 = ResolveServerSockets.STAGE_NAME
@@ -38,7 +38,23 @@ trait MetaSockets {
     val metaDf2 = aggregateMetaSockets(loadMetaSockets(path), stage2).as("metaDf2")
 
     //keep only lsof delta
-    metaDf1.filter($"metaDf1.filetype" === "lsof").join(metaDf2,
+    metaDf1.filter($"metaDf1.filetype" === collecttype).join(metaDf2,
+      ($"metaDf1.dt" === $"metaDf2.dt") and ($"metaDf1.server_ip" === $"metaDf2.server_ip")
+        and ($"metaDf1.filetype" === $"metaDf2.filetype"),
+      "left_outer")
+      .filter("metaDf2.dt is null")
+      .select(metaDf1.columns.map(metaDf1.col):_*)
+  }
+
+  def deltaMetaResolvedToAggregated(path: String, collecttype: String = "lsof")(implicit sqlContext: SQLContext) = {
+    import sqlContext.implicits._
+    val stage1 = ResolveServerSockets.STAGE_NAME
+    val stage2 = AggregateServerSockets.STAGE_NAME
+    val metaDf1 = aggregateMetaSockets(loadMetaSockets(path), stage1).as("metaDf1")
+    val metaDf2 = aggregateMetaSockets(loadMetaSockets(path), stage2).as("metaDf2")
+
+    //keep only lsof delta
+    metaDf1.filter($"metaDf1.filetype" === collecttype).join(metaDf2,
       ($"metaDf1.dt" === $"metaDf2.dt") and ($"metaDf1.server_ip" === $"metaDf2.server_ip")
         and ($"metaDf1.filetype" === $"metaDf2.filetype"),
       "left_outer")

@@ -36,6 +36,10 @@ then
   export AWS_SECRET_ACCESS_KEY="{{aws_secret_access_key}}"
 fi
 export ZEPPELIN_VERSION="{{zeppelin_version}}"
+export ZEPPELIN_USER="zeppelin"
 export ZEPPELIN_BUCKET="{{zeppelin_bucket}}"
 export PIPELINE_VERSION="{{pipeline_version}}"
 export PIPELINE_BUCKET="{{pipeline_bucket}}"
+export REGION="{{region}}"
+export ES_DISCOVERY="{{es_discovery}}"
+export ES_CLUSTERNAME="{{es_clustername}}"

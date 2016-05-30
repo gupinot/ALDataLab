@@ -30,7 +30,7 @@ case $key in
     DATERANGE=1
     begindate=$2
     enddate=$3
-    byday=$3
+    byday=$4
     shift
     shift
     shift

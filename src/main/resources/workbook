@@ -7,6 +7,16 @@ cd /Users/guillaumepinot/Dev/Alstom/V2/script/spark/IdeaProjects/ALDataLab/infra
 
 ./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --spot-price 0.2 --deploy-profile customers --instance-profile-name customers --pipeline-version=1.3.1 -s 15 launch customers2
 
+#zeppelin-prod
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 --ebs-vol-size 200 -s 5 launch zeppelin-prod
+
+
+#zeppelin-dev
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 -s 15 launch zeppelin-dev
+
+#Pipeline
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --master-instance-type m3.xlarge --copy-aws-credentials --spot-price 0.07 --master-spot-price 0.07 -s 20 launch pipeline
+
 #modify /root/zeppelin/conf/zeppelin-env.sh :
 export SPARK_SUBMIT_OPTIONS="--jars /root/pipeline/lib/ALDataLab-assembly-1.3.1.jar"
 
@@ -38,6 +48,25 @@ keytool -importkeystore -deststorepass -destkeystore server.jks -srckeystore key
 
 #to compile project
 sbt assembly universal:packageZipTarball
-aws s3 cp target/scala-2.10/ALDataLab-assembly-1.3.1.jar s3://gedatalab/binaries/
+aws s3 cp ./target/universal/aldatalab-1.3.1.tgz s3://gedatalab/binaries/
 
 
+./slaves.sh ps -ef | grep java | grep 7077 | awk '{print "ssh root@" $1 " kill " $3}'
+
+
+aws ec2 describe-instances |jq  '.Reservations[] | .Instances[] | select(.Tags[] | .Value | contains("customers")) | . | .NetworkInterfaces[] | .PrivateIpAddresses[] | .Association.PublicIp + "    " + .PrivateIpAddress'
+
+
+cd /tmp
+find . -mmin +600 -exec rm -fr {} \;
+
+###############################################
+#   zeppelin-dev cluster
+###############################################
+#create cluster
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 -s 15 launch zeppelin-dev
+
+MASTER=??
+
+#Modifify zeppelin conf
+ssh -i ~/.ssh/KeyLezoomerUs.pem root@$MASTER echo -e "\nexport SPARK_SUBMIT_OPTIONS=\"--jars /root/pipeline/lib/ALDataLab-assembly-1.3.1.jar\"" >> /root/zeppelin/zeppelin-env.sh

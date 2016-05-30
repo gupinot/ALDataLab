@@ -2,7 +2,7 @@ package com.alstom.datalab.pipelines
 
 import com.alstom.datalab.{Repo, Pipeline}
 import com.alstom.datalab.Util._
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SaveMode, SQLContext}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
 
@@ -84,17 +84,35 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
       val filename = basename(filein)
-      val Array(filetype, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
+      val Array(filetype_temp, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
       val (year, month_day) = file_date.splitAt(4)
       val (month, day) = month_day.splitAt(2)
       val filedate = s"$year-$month-$day"
+
+      val filetype = filetype_temp match {
+        case "CartoServer" => "AIP-Server"
+        case "CartoSoftInstance" => "AIP-SoftInstance"
+        case "CartoApplication" => "AIP-Application"
+        case "CartoAppGFtoApp" => "AIP-AppGFtoApp"
+        case "CartoAppSoftware" => "AIP-Software"
+        case "CartoOrgDeploy" => "AIP-OrgDeploy"
+        case _ => filetype_temp
+      }
+
 
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"${context.dirout()}/$filetype"
       println("RepoProcessInFile() : respath = " + respath)
 
-      val res = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").option("delimiter", ";")
-        .option("inferSchema", "true").option("mode", "DROPMALFORMED").option("parserLib", "UNIVOCITY")
+
+      val res = sqlContext.read
+        .format("com.databricks.spark.csv")
+        .option("header", "true")
+        .option("delimiter", ";")
+        .option("inferSchema", "true")
+        .option("mode", "DROPMALFORMED")
+        .option("parserLib", "UNIVOCITY")
+        .option("charset", "windows-1252")
         .load(filein)
 
       val res2 = filetype match {
@@ -130,14 +148,14 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"CPU Name".as("aip_server_cpu_type"),
           $"CPUs number".as("aip_server_cpu_num"),
           $"Core number".as("aip_server_cpu_cores"),
-          $"Owner".as("aip_server_owner"),
-          $"Owner Org UID".as("aip_server_owner_org_id"),
+          $"Leased or owned".as("aip_server_owner"),
+          //$"Owner Org UID".as("aip_server_owner_org_id"),
           $"Vendor".as("aip_server_vendor"),
           $"Model".as("aip_server_model"),
-          $"Installation date".as("aip_server_dt_install"),
+          //$"Installation date".as("aip_server_dt_install"),
           $"Operational role".as("aip_server_role"),
           $"Source".as("aip_server_source"),
-          $"Administrated by".as("aip_server_adminby"),
+          //$"Administrated by".as("aip_server_adminby"),
           $"OS Name".as("aip_server_os_name"),
           lit(filedate).as("filedate")
         )
@@ -146,10 +164,22 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Application Name".as("aip_app_name"),
           $"Shared Unique ID".as("aip_app_shared_unique_id"),
           $"Type".as("aip_app_type"),
+          $"Validation".as("aip_app_validation"),
           $"Current State".as("aip_app_state"),
           $"Sensitive Application".as("aip_app_sensitive"),
           $"Alstom Criticality".as("aip_app_criticality"),
           $"Sector".as("aip_app_sector"),
+          $"IT Owner".as("aip_app_it_owner"),
+          $"IS Owner".as("aip_app_is_owner"),
+          lit(filedate).as("filedate")
+        )
+
+        case "AIP-AppGFtoApp" => res.select(
+          $"Name".as("aip_appgf_name"),
+          $"Shared Unique ID".as("aip_appgf_shared_unique_id"),
+          $"Type".as("aip_appgf_type"),
+          $"GridFusion Application Name".as("aip_appgf_grid_app_name"),
+          $"Billing Code".as("aip_appgf_billing_code"),
           lit(filedate).as("filedate")
         )
 
@@ -160,21 +190,50 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"Host name".as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
           $"Application Sector".as("aip_appinstance_sector"),
+          $"Application current state".as("aip_appinstance_state"),
           lit(filedate).as("filedate")
         )
+
+        case "AIP-OrgDeploy" => res.select(
+          $"Application Name".as("aip_orgdeploy_name"),
+          $"Shared Unique ID".as("aip_orgdeploy_shared_unique_id"),
+          $"Org unit UID".as("aip_orgdeploy_unit_uid"),
+          $"Org unit Name".as("aip_orgdeploy_unit_name"),
+          $"Org unit Teranga code".as("aip_orgdeploy_unit_terranga_code"),
+          $"Org unit Type".as("aip_orgdeploy_unit_type"),
+          $"Expected number of users".as("aip_orgdeploy_users_nb"),
+          lit(filedate).as("filedate")
+        )
+
+        case "AIP-Software" => res.select(
+          $"Application".as("aip_software_name"),
+          $"Unique ID".as("aip_software_shared_unique_id"),
+          $"GAPM ID".as("aip_software_gapm_id"),
+          $"ADC Support".as("aip_software_adc_support"),
+          $"Application Based on".as("aip_software_app_based_on"),
+          $"Main Product ?".as("aip_software_main_product"),
+          $"Editor".as("aip_software_editor"),
+          $"Product Name".as("aip_software_product_name"),
+          $"Product Type".as("aip_software_product_type"),
+          $"Product Version".as("aip_software_product_version"),
+          $"Product Edition".as("aip_software_product_edition"),
+          lit(filedate).as("filedate")
+        )
+
         case "I-ID" => res.select(
           $"I_ID",
           $"SiteCode",
           $"SiteName",
           $"CountryCode",
           $"Sector",
+          $"TerangaCode",
           lit(filedate).as("filedate")
         )
         case "Storage-Master-Report" => res
           .withColumn("server", lower($"sServerName"))
           .withColumn("mount", lower($"sPartition"))
           .withColumn("type", transcodeTiers($"StorageTier"))
-          .filter($"BillableForStorage" === "Yes")
+          .filter($"ServerBillableForStorage" === "Yes")
           .withColumn("charged_total_mb", gb2mb($"TotalMeassureGb"))
           .withColumn("charged_used_mb", gb2mb($"UsedMeassureGb"))
           .select(
@@ -188,7 +247,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           sys.exit(1)
       }
 
-      res2.write.mode("append").partitionBy("filedate").parquet(respath)
+      res2.write.mode(SaveMode.Overwrite).partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
   }

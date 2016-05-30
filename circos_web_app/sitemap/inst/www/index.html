@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+	<head>
+		<title>Data lab innovation - Site Map</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/jquery.csv-0.71.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>	  
+        <script type="text/javascript" src="js/moment.js"></script>
+        <script type="text/javascript" src="js/daterangepicker.js"></script>
+
+		<script type="text/javascript" src="js/pivot.min.js"></script>
+		<script type="text/javascript" src="js/chosen.jquery.js"></script>
+		<script type="text/javascript" src="js/opencpu.js"></script>
+		<script type="text/javascript" src="js/URI.min.js"></script>
+		<script type="text/javascript" src="js/sitemap.js"></script>
+	
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/chosen.css" type="text/css">
+		<link rel="stylesheet" type="text/css" href="css/daterangepicker.css" />
+		<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">  
+		<link rel="stylesheet" href="css/pivot.min.css" type="text/css">  
+		<link rel="stylesheet" href="css/sitemap.css" type="text/css">
+	</head>
+	<body>
+    <div id="container"> 
+	    <h1>Data lab - Circos site map</h1>
+
+		<!--[if IE]>
+			<br/><br/><h1>Sorry but IE is not supported ! Please use Firefox or Chrome browser for this application. Thank you.</h1>
+		<![endif]-->
+		<![if !IE]>
+		<div id="SettingPannel">
+    		<h3  id="SiteMapSetting" onclick="HideShowSwitch('navigation')">Site Map setting</h3>
+			<div id="WaitingMsg" style="text-align: center;">
+			Loading... <br/>
+			Please wait
+			<br/>
+        	<img id="gifloading" src="img/loading.GIF"/>
+		</div>
+			<div id="navigation">
+    			<section id="filterFormLeft">
+ 	    		 	<table>	
+      		<tr>
+				<td id="col1g" >Data source</td>
+				<td id="col2g" name="datacollectionsourceSelect">
+				  <form name="datacollectionsource" style="text-align:center;">
+					<div id="datacollectionsourcediv">
+					  <input type="radio" name="datacollectionsourcefilter" value="Device" checked>
+					  <label class="labelRadio">Device</label>
+					  <input type="radio" name="datacollectionsourcefilter" value="Server">
+					  <label class="labelRadio">Server</label><br/>
+					</div>
+				  </form>
+				</td>
+			</tr>
+      		<tr>
+      			<td id="col1g" style="text-align:center;">Date range</td>
+      			<td id="col2g">
+      				<form>
+	      				<input type="text" name="daterange" style="font-size: small;width: 90%;text-align: center;margin-left: 10px;"/><br/>
+				        <select name="daterangeweekSelect" id="daterangeweekSelect" dir="rtl" style="width:auto;">
+				        	<option value="" checked>Full range</option>
+				        	<option value="6Weeks">Last 6 weeks</option>
+				        	<option value="LastWeek">Last week</options>
+				        	<option value="DayOne">From Day One</options>
+				        </select>
+				    </form>
+      			</td>
+      		</tr>
+			<tr id="OSTypeTr">
+				<td id="col1g">Source collect</td>
+				<td id="col2g">
+					<form name="Source collect">
+						<select name="SourceCollectSelect" id="SourceCollectSelect" dir="rtl" disabled>
+							<option value="Windows" checked>Windows >= 2003</option>
+							<option value="X">Unix/Linux</option>
+						</select>
+					</form>
+				</td>
+			</tr>
+      		<tr id="TrafficBasedOnTr">
+      			<td id="col1g">Traffic based on</td>
+      			<td id="col2g">
+				  <form name="VolumeUnit">
+					<select name="VolumeUnitSelect" id="VolumeUnitSelect" dir="rtl">
+					</select>
+				  </form>
+				</td>
+			</tr>
+			<tr id="deviceSiteResolMethod">
+				<td id="col1g">Device Site resolution method</td>
+				<td id="col2g">
+			      <form name="FromSiteMethod">
+			        <select name="FromSiteMethodSelect" id="FromSiteMethodSelect" dir="rtl">
+			        </select>
+			      </form>
+			    </td>
+			</tr>
+			<tr>
+				<td id="col1g" >Maximum of visualized sites</td>
+				<td id="col2g" name="MaxMatrix">
+				  <form name="MaxMatrix">
+					<input type="range" id="MaxMatrixRange" name="range" value="50" min="10" max="150" step="5">
+					<outputMaxMatrixRange>50</outputMaxMatrixRange>
+					<br/>
+				  </form>
+				</td>
+			</tr>
+			<tr></tr>
+			<tr>
+				<td id="col1g" >Sites relationship</td>
+				<td id="col2g" name="interintrafilter">
+				  <form name="Site relationship">
+					<div id="interintrafilter">
+					  <input type="radio" name="interintrafilter" value="All">
+					  <label class="labelRadio">Both</label>
+					  <input type="radio" name="interintrafilter" value="Inter" checked>
+					  <label class="labelRadio">Inter</label>
+					  <input type="radio" name="interintrafilter" value="Intra">
+					  <label class="labelRadio">Intra</label><br/>
+					</div>
+				  </form>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<table>
+			<tr>
+				<td id="col1g">Clustering setting</td>
+				<td id="col2g" name="ClusteringSetting">
+				  <form name="ClusteringAlgo">
+				    <input type="checkbox" id="ClusteringActivated" value="TRUE">
+				    <label class="labelCheckBox">Active</label>
+			        <select name="ClusteringAlgoSelect" id="ClusteringAlgoSelect" dir="rtl" style="width:auto;float:right;">
+			        	<option value="mcl" checked>MCL</option>
+			        	<option value="kmeans">KMEANS</options>
+			        </select>
+			      </form>
+				  <form name="ClusteringSettingFormIn" hidden>
+				    <div id="ClustringSettingDiv">
+					    <input type="checkbox" id="DirectedGraphClustering" value="TRUE" checked>
+					    <label class="labelCheckBox">Directed</label>
+				    </div>
+					<div id="MCLClusteringSettingDiv">
+					  	<label class="label2" style="margin-left: 13px;">Inflation</label>
+					  	<input type="range" id="InflationParameter" name="range" value="1.3" min="1.1" max="15" step="0.1">
+						<outputInflationParameter>1.3</outputInflationParameter>
+						<br/>
+					  	<label class="label2" style="margin-left: 13px;">Expansion</label>
+					  	<input type="range" id="ExpansionParameter" name="range" value="6" min="1.1" max="20" step="0.1">
+						<outputExpansionParameter>6</outputExpansionParameter>
+						<br/>
+					</div>
+					<div id="KMeansClusteringSettingDiv" hidden>
+					  	<label class="label2" style="margin-left: 13px;">Number of cluster</label>
+					  	<input type="range" id="ClusterNumber" name="range" value="100" min="5" max="300" step="5">
+						<outputClusterNumber>1.5</outputClusterNumber>
+						<br/>
+					</div>
+				  </form>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<table>
+      		<tr>
+      			<td id="col1g">Detailled flow (with server IP)</td>
+      			<td id="col2g" name="DetailledFlowSelect">
+					<form name="DetailledFlowSelectForm">
+						<input type="checkbox" class="DetailledFlowSelect" value="FALSE">
+						<label class="labelCheckBox">Activate (low performance)</label>
+					</form>
+				</td>
+      		</tr>
+			<tr id="Server2ServerTr" hidden>
+					<td id="col1g">Server to server related view</td>
+					<td id="col2g" name="Server2ServerSelect">
+						<form name="Server2ServerSelectForm">
+							<input type="checkbox" class="Server2ServerSelect" value="FALSE">
+							<label class="labelCheckBox">Activate</label>
+						</form>
+					</td>
+			</tr>
+		</table>
+	</section>
+	<section id="filterFormRight">
+    	<table>
+			<tr>
+				<td id="col1"></td>
+				<td id="col2" style="font-size: medium"><br/>Source Filtering<br/></td>
+				<td id="col3" style="font-size: medium"><br/>Operand<br/></td>
+				<td id="col4" style="font-size: medium"><br/>Destination Filtering<br/></td>
+			</tr>
+      		<tr>
+      			<td id="col1">Sector filtering</td>
+      			<td id="col2" name="SectorSelect">
+					<form name="SectorSelectForm">
+						<div id="SectorNADiv">
+							<input type="checkbox" class="SectorNA" value="TRUE" checked>
+							<label class="labelCheckBox">Sector NA</label>
+						</div>
+						<div id="SectorFilterAll" style="text-align:initial">
+						  <input type="checkbox" class="sectorAll" value="All" checked>
+						  <label class="labelCheckBox">All</label><br/>
+						</div>
+						<div id="SectorFilter" style="text-align:initial">
+						</div>
+					</form>
+				</td>
+				<td id="col3" name="SectorSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+							<div id="item">
+								<input type="radio" id = "SectorAndOperand" name="SectorSelectOperand" value="AND" checked disabled>
+								<label for="SectorAndOperand" style="font-size: x-small;">AND</label>
+							</div>
+							<div id="item">
+								<input type="radio" id = "SectorOrOperand" name="SectorSelectOperand" value="OR" disabled>
+								<label for="SectorOrOperand"  style="font-size: x-small;">OR</label>
+							</div>
+						</form>
+					</div>
+				</td>
+				<td id="col4" name="SectorSelectTo">
+					<form name="SectorSelectFormTo">
+						<div id="SectorNADivTo">
+							<input type="checkbox" class="SectorNATo" value="TRUE" checked>
+							<label class="labelCheckBox">Sector NA</label>
+						</div>
+						<div id="SectorFilterAllTo" style="text-align:initial">
+							<input type="checkbox" class="sectorAllTo" value="All" checked>
+							<label class="labelCheckBox">All</label><br/>
+						</div>
+						<div id="SectorFilterTo" style="text-align:initial">
+						</div>
+					</form>
+				</td>
+      		</tr>
+      		<tr>
+      			<td id="col1">Country filtering</td>
+      			<td id="col2" name="CountrySelectIn">
+				  <form name="CountryFilterFormIn">
+					  <select data-placeholder="Select countries..." class="chosen-select" name="CountrySelectIn" id="CountrySelectIn" multiple>
+					</select>
+				  </form>
+				</td>
+				<td id="col3" name="CountrySelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+						<div id="item">
+					  		<input type="radio" id = "CountryAndOperand" name="CountrySelectOperand" value="AND" checked>
+					  		<label for="CountryAndOperand" style="font-size: x-small;">AND</label>
+					  	</div>
+						<div id="item">
+					  		<input type="radio" id = "CountryOrOperand" name="CountrySelectOperand" value="OR">
+					  		<label for="CountryOrOperand"  style="font-size: x-small;">OR</label>
+					  	</div>
+						</form>
+					</div>
+				</td>
+      			<td id="col4" name="CountrySelectOut">
+				  <form name="CountryFilterFormOut">
+					  <select data-placeholder="Select countries..." class="chosen-select" name="CountrySelectOut" id="CountrySelectOut" multiple>
+					</select>
+				  </form>
+				</td>
+			</tr>
+			<tr>
+      			<td id="col1">Country Exclude</td>
+      			<td id="col2" name="CountryExcludeSelectIn">
+				  <form name="CountryExcludeFilterFormIn">
+					  <select data-placeholder="Select countries..." class="chosen-select" name="CountryExcludeSelectIn" id="CountryExcludeSelectIn" multiple>
+					</select>
+				  </form>
+				</td>
+				<td id="col3" name="CountryExcludeOperand">
+					<div id="Operand">
+						<form name="operandForm">
+						<div id="item">
+					  		<input type="radio" id = "CountryExcludeAndOperand" name="CountryExcludeSelectOperand" value="AND" checked>
+					  		<label for="CountryExcludeAndOperand" style="font-size: x-small;">AND</label>
+					  	</div>
+						<div id="item">
+					  		<input type="radio" id = "CountryExcludeOrOperand" name="CountryExcludeSelectOperand" value="OR">
+					  		<label for="CountryExcludeOrOperand"  style="font-size: x-small;">OR</label>
+					  	</div>
+						</form>
+					</div>
+				</td>
+      			<td id="col4" name="CountryExcludeSelectOut">
+				  <form name="CountryExcludeFilterFormOut">
+					  <select data-placeholder="Select countries..." class="chosen-select" name="CountryExcludeSelectOut" id="CountryExcludeSelectOut" multiple>
+					</select>
+				  </form>
+				</td>
+			</tr>
+			
+      		<tr>
+      			<td id="col1">Sites filtering
+      			    <label id="tools"><a href="/data/SiteCode.csv.gz"">(Sites code)</a></label>
+      			</td>
+      			<td id="col2" name="SiteSelectIn">
+				  <form name="SiteSelectFormIn">
+					<select data-placeholder="Select sites..." class="chosen-select" name="SiteSelectIn" id="SiteSelectIn" multiple>
+					</select>
+				  </form>
+				</td>
+      			<td  id="col3" name="SiteSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+						<div id="item">
+					  		<input type="radio" id = "SiteSelectAndOperand" name="SiteSelectOperand" value="AND">
+					  		<label for="SiteSelectAndOperand" style="font-size: x-small;">AND</label>
+					  	</div>
+						<div id="item">
+					  		<input type="radio" id = "SiteSelectOrOperand" name="SiteSelectOperand" value="OR" checked>
+					  		<label for="SiteSelectOrOperand"  style="font-size: x-small;">OR</label>
+					  	</div>
+						</form>
+					</div>
+				</td>
+      			<td id="col4" name="SiteSelectOut">
+				  <form name="SiteSelectFormOut">
+					<select data-placeholder="Select sites..." class="chosen-select" name="SiteSelectOut" id="SiteSelectOut" multiple>
+					</select>
+				  </form>
+				</td>
+			</tr>
+      		<tr>
+				<td id="col1" >Excluded sites</td>
+      			<td id="col2" name="RemovedSiteIn">
+				  <form name="RemovedSiteFormIn">
+				  	<input type="button" id="StrategicDataCenter" onclick="fill_StrategicDataCenterIn()" style="margin: 5px; background-color: lightseagreen; height:20px;">Add strategic data centers
+					<select data-placeholder="Select sites..." class="chosen-select" name="RemovedSiteSelectIn" id="RemovedSiteSelectIn" multiple>
+					</select>
+				  </form>
+				</td>
+      			<td  id="col3" name="RemovedSiteSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+						<div id="item">
+					  		<input type="radio" id = "RemovedSiteSelectAndOperand" name="RemovedSiteSelectOperand" value="AND">
+					  		<label for="RemovedSiteSelectAndOperand" style="font-size: x-small;">AND</label>
+					  	</div>
+						<div id="item">
+					  		<input type="radio" id = "SiteSelectOrOperand" name="RemovedSiteSelectOperand" value="OR" checked>
+					  		<label for="RemovedSiteSelectOrOperand"  style="font-size: x-small;">OR</label>
+					  	</div>
+						</form>
+					</div>
+				</td>
+      			<td id="col4" colspan="2" name="RemovedSiteOut">
+				  <form name="RemovedSiteFormOut">
+				  	<input type="button" id="StrategicDataCenter" onclick="fill_StrategicDataCenterOut()" style="margin: 5px; background-color: lightseagreen; height:20px;">Add strategic data centers
+					<select data-placeholder="Select sites..." class="chosen-select" name="RemovedSiteSelectOut" id="RemovedSiteSelectOut" multiple>
+					</select>
+				  </form>
+				</td>
+			</tr>
+      		<tr>
+      			<td id="col1">Site categories filtering</td>
+      			<td id="col2" name="SiteCategorySelectIn">
+				  <form name="SiteCategorySelectFormIn">
+					<div id="SiteCategoryFilterAllIn" style="text-align:initial">
+					  <input type="checkbox" class="SiteCategoryAllIn" value="All" checked>
+					  <label class="labelCheckBox">All</label>
+					</div>
+					<div id="SiteCategoryFilterIn" style="text-align:initial">
+					</div>
+				  </form>
+				</td>
+				<td id="col3" name="SiteCategorySelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+						<div id="item">
+					  		<input type="radio" id = "SiteCategorySelectAndOperand" name="SiteCategorySelectOperand" value="AND" checked>
+					  		<label for="SiteCategorySelectAndOperand" style="font-size: x-small;">AND</label>
+					  	</div>
+						<div id="item">
+					  		<input type="radio" id = "SiteCategorySelectOrOperand" name="SiteCategorySelectOperand" value="OR">
+					  		<label for="SiteCategorySelectOrOperand"  style="font-size: x-small;">OR</label>
+					  	</div>
+						</form>
+					</div>
+				</td>
+      			<td id="col4" name="SiteCategorySelectOut">
+				  <form name="SiteCategorySelectFormOut">
+					<div id="SiteCategoryFilterAllOut" style="text-align:initial">
+					  <input type="checkbox" class="SiteCategoryAllOut" value="All" checked>
+					  <label class="labelCheckBox">All</label>
+					</div>
+					<div id="SiteCategoryFilterOut" style="text-align:initial">
+					</div>
+				  </form>
+				</td>
+			</tr>
+			<tr>
+				<td id="col1">Specific filtering</td>
+				<td id="col2" name="AppFilterSetting">
+				  <form name="AppDeviceFilterSettingFormIn">
+					<div id="AppFilterSettingDiv">
+						<select name="AppFilterDeviceTypeSelect" id="AppFilterDeviceTypeSelect" style="width:auto;margin-left:22px;">
+				        	<option value="none" selected>No filter</option>
+				        	<option value="include">Include</option>
+				        	<option value="exclude">Exclude</options>
+				        </select>
+						<select name="AppFilterDeviceFileSelect" id="AppFilterDeviceFileSelect" style="width:auto;" hidden>
+				        	<option value="app" selected>Application file</option>
+				        	<option value="server">Your file</option>
+				        </select><br/>
+					    <a id="AppliFilterDeviceFile" href="/data/AppliFilterExclude.csv" style="float:right;margin-right:20px;" hidden>Application File</a>
+					    <div id="divuserdevicefile" hidden>
+					    	<input type="file" id="userdevicefile">
+					    </div>
+						<br/>
+						<div id="AppFilterDeviceTypeSelectLogicalOperandDiv" hidden>Operand between columns :
+							<input type="radio" id = "AppFilterDeviceTypeSelectLogicalOperand" name="AppFilterDeviceTypeSelectLogicalOperand" value="OR" checked>
+							<label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">OR</label>
+							<input type="radio" id = "AppFilterDeviceTypeSelectLogicalOperand" name="AppFilterDeviceTypeSelectLogicalOperand" value="AND">
+							<label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">AND</label>
+						</div>
+					</div>
+				  </form>
+				</td>
+				<td id="col3" name="AppFilterSelectOperand">
+					<div id="Operand">
+						<form name="operandForm">
+							<div id="item">
+								<input type="radio" id = "AppFilterSelectAndOperand" name="AppFilterSelectOperand" value="AND" checked>
+								<label for="AppFilterSelectAndOperand" style="font-size: x-small;">AND</label>
+							</div>
+							<div id="item">
+								<input type="radio" id = "AppFilterSelectOrOperand" name="AppFilterSelectOperand" value="OR">
+								<label for="AppFilterSelectOrOperand"  style="font-size: x-small;">OR</label>
+							</div>
+						</form>
+					</div>
+				</td>
+				<td id="col4" name="AppFilterSetting">
+				  <form name="AppServerFilterSettingFormIn">
+						<select name="AppFilterServerTypeSelect" id="AppFilterServerTypeSelect" style="width:auto;margin-left:22px;">
+				        	<option value="none" selected>No filter</option>
+				        	<option value="include">Include</option>
+				        	<option value="exclude">Exclude</options>
+				        </select>
+						<select name="AppFilterServerFileSelect" id="AppFilterServerFileSelect" style="width:auto;" hidden>
+				        	<option value="app" selected>Application file</option>
+				        	<option value="server">Your file</option>
+				        </select><br/>
+					    <a id="AppliFilterServerFile" href="/data/AppliDeviceFilterExclude.csv" style="float:right;margin-right:20px;" hidden>Application File</a>
+					    <div id="divuserserverfile" hidden>
+						    <input type="file" id="userserverfile">
+						</div>
+					    <br/>
+					  <div id="AppFilterServerTypeSelectLogicalOperandDiv" hidden>Operand between columns :
+						  <input type="radio" id = "AppFilterServerTypeSelectLogicalOperand" name="AppFilterServerTypeSelectLogicalOperand" value="OR" checked>
+						  <label for="AppFilterDeviceTypeSelectLogicalOperand" style="font-size: x-small;">OR</label>
+						  <input type="radio" id = "AppFilterServerTypeSelectLogicalOperand" name="AppFilterServerTypeSelectLogicalOperand" value="AND">
+						  <label for="AppFilterServerTypeSelectLogicalOperand" style="font-size: x-small;">AND</label>
+					  </div>
+					</div>
+				  </form>
+				</td>
+			</tr>
+			<tr id="PortFilteringTr" hidden>
+				<td id="col1">Protocol/Port filtering<br/>('|' as separator)</td>
+				<td id="col2" ></td>
+				<td id="col3"></td>
+				<td id="col4" name="PortFilterSetting">
+				  <form name="PortServerFilterSettingFormIn" style="text-align:right;">
+				  	<select name="PortServerFilterIncSelect" id="PortServerFilterIncSelect" dir="rtl" style="width:5%;float:left;">
+			        	<option value="include" checked>Include</option>
+				        <option value="exclude">Exclude</options>
+				    </select>
+				  	<input type="text" id="PortFilterServerSelect" style="width:86%;">
+				  </form>
+				</td>
+			</tr>
+			<tr></tr>
+		</table>
+			    </section>
+				<div id="SendButton">
+					<a class="button">Apply</a>
+				</div>
+			</div>
+		</div>
+    	<div id="circos_result" hidden>
+    		<h3  id="CircosResultTitle" onclick="HideShowSwitch('circosres')">Circos chord diagram</h3>
+	      	<div id="LoadingResult" style="font-size: x-large; display: none;">
+				Loading... <br/>
+				Please wait
+				<br/>
+    		    <img id="gifloading" src="img/loading.GIF"/>
+			</div>
+			<div id="circosres">
+		    <img id="circos_graph" src=""/>
+	    	  <label id="circos_unit"></label>
+		      <div id="dowloadData">
+				<a href="" id="circosimage"></a>
+				<a href="" id="circoscsv"></a>
+    		  </div>
+		  </div>
+	    </div>
+		<div id="Appli" hidden>
+			<div id="AppliTitle">
+	    	    <span class="AppliCsvLink" style="font-size:medium; float:right;">
+    		    	<a href="" id="statcsv"></a>
+    		    </span>
+    	    	<h3 id="AppliResultTitle" onclick="HideShowSwitch('panneauAppStat')" style="margin-left:10%;">Applications statistics <label id="AppStatSize"></label></h3>
+    	    </div>
+    		<div id="LoadingAppliStat" style="font-size: x-large;text-align: center;" hidden>
+    	    	Loading... <br/>
+				Please wait
+				<br/>
+        		<img id="gifloading" src="img/loading.GIF"/>
+		    </div>
+        	<div class="panneau" id="panneauAppStat" style="display:block;">
+	    		<span class="AppliPivotTable"></span>
+		    </div>
+		</div>
+		<div id="Server" hidden>
+			<div id="ServerTitle">
+	    	    <span class="ServerCsvLink" style="font-size:medium; float:right;">
+    		    	<a href="" id="servercsv"></a>
+    		    </span>
+    	    	<h3 id="ServerResultTitle" onclick="HideShowSwitch('panneauServerStat')" style="margin-left:10%;">Servers statistics <label id="ServerStatSize"></label></h3>
+    	    </div>
+    		<div id="LoadingServerStat" style="font-size: x-large;text-align: center;" hidden>
+    	    	Loading... <br/>
+				Please wait
+				<br/>
+        		<img id="gifloading" src="img/loading.GIF"/>
+		    </div>
+        	<div class="panneau" id="panneauServerStat" style="display:block;">
+	    		<span class="ServerPivotTable"></span>
+		    </div>
+		</div>
+    	<div id="cluster" hidden>
+    	    <h3 id="ClusterResultTitle" onclick="HideShowSwitch('panneauCluster')">Clustering table result</h3>
+        	<div class="panneau" id="panneauCluster" style="display:block;">
+	    		<span class="ClusterPivotTable"></span>
+		    	<div style="margin: 10px 20% 10px 20%;">
+		    		<table>
+		    			<tr>
+		    				<td><label>Sub Clustering</label></td>
+							<td><select name="SubClusteringSelect" data-placeholder="Select cluster number..." id="SubClusteringSelect" dir="rtl" multiple>
+								</select>
+							</td>
+							<td><a class="button" onclick="SubClustering()" style="margin-top: 0px; padding: 5px 5px 5px 5px; font-size: medium; margin: 5px;">Apply</a></td>
+						</tr>
+					</table>
+	    		</div>
+		    </div>
+		</div>
+		<![endif]>
+  	</div>
+  </body>
+</html>
