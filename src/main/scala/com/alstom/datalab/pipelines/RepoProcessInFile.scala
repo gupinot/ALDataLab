@@ -133,7 +133,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .withColumn("mdm_ip_end_int", rangeToIP($"mdm_ip_start_int", $"mdm_ip_range"))
 
         case "AIP-Server" => res.select(
-          $"Host name".as("aip_server_hostname"),
+          lower($"Host name").as("aip_server_hostname"),
           $"Physical Server name".as("aip_server_phys_host"),
           $"Size".as("aip_server_size"),
           $"Function".as("aip_server_function"),
@@ -162,7 +162,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-Application" => res.select(
           $"Application Name".as("aip_app_name"),
-          $"Shared Unique ID".as("aip_app_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
           $"Type".as("aip_app_type"),
           $"Validation".as("aip_app_validation"),
           $"Current State".as("aip_app_state"),
@@ -176,7 +176,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-AppGFtoApp" => res.select(
           $"Name".as("aip_appgf_name"),
-          $"Shared Unique ID".as("aip_appgf_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_appgf_shared_unique_id"),
           $"Type".as("aip_appgf_type"),
           $"GridFusion Application Name".as("aip_appgf_grid_app_name"),
           $"Billing Code".as("aip_appgf_billing_code"),
@@ -185,9 +185,9 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-SoftInstance" => res.select(
           $"Application name".as("aip_appinstance_name"),
-          $"Shared Unique ID".as("aip_appinstance_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_appinstance_shared_unique_id"),
           $"Type".as("aip_appinstance_type"),
-          $"Host name".as("aip_appinstance_hostname"),
+          lower($"Host name").as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
           $"Application Sector".as("aip_appinstance_sector"),
           $"Application current state".as("aip_appinstance_state"),
@@ -196,7 +196,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-OrgDeploy" => res.select(
           $"Application Name".as("aip_orgdeploy_name"),
-          $"Shared Unique ID".as("aip_orgdeploy_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_orgdeploy_shared_unique_id"),
           $"Org unit UID".as("aip_orgdeploy_unit_uid"),
           $"Org unit Name".as("aip_orgdeploy_unit_name"),
           $"Org unit Teranga code".as("aip_orgdeploy_unit_terranga_code"),
@@ -207,7 +207,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-Software" => res.select(
           $"Application".as("aip_software_name"),
-          $"Unique ID".as("aip_software_shared_unique_id"),
+          regexp_replace($"Unique ID", "^0*","").as("aip_software_shared_unique_id"),
           $"GAPM ID".as("aip_software_gapm_id"),
           $"ADC Support".as("aip_software_adc_support"),
           $"Application Based on".as("aip_software_app_based_on"),
