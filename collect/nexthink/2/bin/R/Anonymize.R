@@ -47,7 +47,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData[, NX_user_name:=tolower(NX_user_name)]
     NXData[, NX_user_name:=gsub(".ad.sys", "", NX_user_name)]
     
-    print("AnonymizeNxFile() : anozmize NX_user_name")
+    print("AnonymizeNxFile() : anonymize NX_user_name")
     Res <- Anonymize(unique(NXData$NX_user_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -55,7 +55,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- Res[NXData, nomatch=NA]
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "NX_user_name"))
 
-    print("AnonymizeNxFile() : anozmize NX_device_name")
+    print("AnonymizeNxFile() : anonymize NX_device_name")
     Res <- Anonymize(unique(NXData$NX_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -78,7 +78,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
                             wr_url, wr_device_name, 
                             wr_destination_port, wr_destination_ip, wr_application_name)]
     
-    print("AnonymizeNxFile() : anozmize wr_device_name")
+    print("AnonymizeNxFile() : anonymize wr_device_name")
     Res <- Anonymize(unique(NXData$wr_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -90,17 +90,27 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
   }
   else {
     #execution
-    setnames(NXData, c("ex_start_time", "ex_end_time",
-    "ex_bin_path", "ex_cardinality", "ex_duration",
-    "ex_status", "ex_app_category", "ex_app_company",
-    "ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
-    "ex_app_bin_version", "ex_user_name", "ex_device_name"))
+    if (length(colnames(NXData)) == 15) {
+    	setnames(NXData, c("ex_start_time", "ex_end_time",
+    	"ex_bin_path", "ex_cardinality", "ex_duration",
+    	"ex_status", "ex_app_category", "ex_app_company",
+    	"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
+    	"ex_app_bin_version", "ex_user_name", "ex_device_name", "ex_device_ip"))
+
+    }
+    else {
+    	setnames(NXData, c("ex_start_time", "ex_end_time",
+    	"ex_bin_path", "ex_cardinality", "ex_duration",
+    	"ex_status", "ex_app_category", "ex_app_company",
+    	"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
+    	"ex_app_bin_version", "ex_user_name", "ex_device_name"))
+    }
 
     #convert user_name to lower case and suppress .ad.sys suffix
     NXData[, ex_user_name:=tolower(ex_user_name)]
     NXData[, ex_user_name:=gsub(".ad.sys", "", ex_user_name)]
 
-    print("AnonymizeNxFile() : anozmize ex_user_name")
+    print("AnonymizeNxFile() : anonymize ex_user_name")
     Res <- Anonymize(unique(NXData$ex_user_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -108,7 +118,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- Res[NXData, nomatch=NA]
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "ex_user_name"))
 
-    print("AnonymizeNxFile() : anozmize ex_device_name")
+    print("AnonymizeNxFile() : anonymize ex_device_name")
     Res <- Anonymize(unique(NXData$ex_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -170,6 +180,8 @@ Anonymize <- function(namelist) {
     Res <- rbindlist(list(Res[!is.na(I_ID)], ValueKo), use.names=TRUE)
   
     Dico <- rbindlist(list(Dico, ValueKo), use.names=TRUE)
+    setkey(Dico, name)
+    Dico <- unique(Dico)
     print("Anonymize() : store new anonymized values")
     if (file.exists(DICTIONNARY)) 
       file.copy(DICTIONNARY, paste(DICTIONNARY_HIST, "/", basename(DICTIONNARY), ".", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))

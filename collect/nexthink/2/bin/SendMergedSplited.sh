@@ -15,7 +15,7 @@ then
 fi
 
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : begin"
-for var in connection webrequest
+for var in connection webrequest execution
 do
   for fic in $(ls ${MERGEDSPLITED}/${var}_*.gz)
   do
