@@ -26,7 +26,7 @@ server {
 
     add_header Strict-Transport-Security max-age=31536000;
 
-    location /app {
+    location /usage {
         if ($ssl_client_verify != SUCCESS) {
             return 401;
         }
