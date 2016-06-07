@@ -64,6 +64,11 @@
     },
     {
       "type": "shell",
+      "script": "scripts/nodejs.sh",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
       "script": "scripts/kibana.sh",
       "environment_vars": [
             "KIBANA_VERSION={{user `kibana_version`}}"
