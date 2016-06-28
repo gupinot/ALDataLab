@@ -53,7 +53,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .select(wr_parquet.columns.map(wr_parquet.col):_*)
 
     println("pipeline3to4() : data resolutions")
-    val cnx_resolved = resolveSite(resolveAIP(resolveSector(cnx_filtered)))
+    val cnx_resolved = resolveAIP(resolveSector(resolveSite(cnx_filtered)))
 
     wr_filtered.registerTempTable("webrequests")
     cnx_resolved.registerTempTable("connections")
@@ -81,6 +81,7 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       """.stripMargin)
       .write.mode(SaveMode.Append)
       .partitionBy("month").parquet(context.dirout())
+
 
     val cnx_meta_result = cnx_meta_delta_ok.withColumn("stage", lit(Pipeline3To4.STAGE_NAME))
       .withColumnRenamed("min_filedt", "filedt")
@@ -126,35 +127,42 @@ class Pipeline3To4(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
     df.join(dfAIP.as("destAip"), $"dest_ip" === $"destAip.aip_server_ip", "left_outer")
       .join(dfAIP.as("sourceAip"), $"source_ip" === $"sourceAip.aip_server_ip", "left_outer")
+      .withColumn("source_site_temp", when($"source_site" === "nf", formatSite($"sourceAip.aip_server_site")).otherwise($"source_site"))
+      .withColumn("dest_site_temp", when($"dest_site" === "nf", formatSite($"destAip.aip_server_site")).otherwise($"dest_site"))
       .select((df.columns.toList.map(df.col) ++
         List($"destAip.aip_server_adminby" as "dest_aip_server_adminby",
-        $"destAip.aip_server_hostname" as "dest_aip_server_hostname",
-        $"destAip.aip_server_function" as "dest_aip_server_function",
-        $"destAip.aip_server_subfunction" as "dest_aip_server_subfunction",
-        $"destAip.aip_app_name" as "dest_aip_app_name",
-        $"destAip.aip_app_type" as "dest_aip_app_type",
-        $"destAip.aip_appinstance_type" as "dest_aip_appinstance_type",
-        $"destAip.aip_app_state" as "dest_aip_app_state",
-        $"destAip.aip_app_sensitive" as "dest_aip_app_sensitive",
-        $"destAip.aip_app_criticality" as "dest_aip_app_criticality",
-        $"destAip.aip_app_sector" as "dest_aip_app_sector",
-        $"destAip.aip_appinstance_sector" as "dest_aip_appinstance_sector",
-        $"destAip.aip_appinstance_state" as "dest_aip_appinstance_state",
-        $"destAip.aip_app_shared_unique_id" as "dest_aip_app_shared_unique_id",
-        $"sourceAip.aip_server_adminby" as "source_aip_server_adminby",
-        $"sourceAip.aip_server_hostname" as "source_aip_server_hostname",
-        $"sourceAip.aip_server_function" as "source_aip_server_function",
-        $"sourceAip.aip_server_subfunction" as "source_aip_server_subfunction",
-        $"sourceAip.aip_app_name" as "source_aip_app_name",
-        $"sourceAip.aip_app_type" as "source_aip_app_type",
-        $"sourceAip.aip_appinstance_type" as "source_aip_appinstance_type",
-        $"sourceAip.aip_app_state" as "source_aip_app_state",
-        $"sourceAip.aip_app_sensitive" as "source_aip_app_sensitive",
-        $"sourceAip.aip_app_criticality" as "source_aip_app_criticality",
-        $"sourceAip.aip_app_sector" as "source_aip_app_sector",
-        $"sourceAip.aip_appinstance_sector" as "source_aip_appinstance_sector",
-        $"sourceAip.aip_appinstance_state" as "source_aip_appinstance_state",
-        $"sourceAip.aip_app_shared_unique_id" as "source_aip_app_shared_unique_id")):_*
+          $"destAip.aip_server_hostname" as "dest_aip_server_hostname",
+          $"destAip.aip_server_function" as "dest_aip_server_function",
+          $"destAip.aip_server_subfunction" as "dest_aip_server_subfunction",
+          $"destAip.aip_app_name" as "dest_aip_app_name",
+          $"destAip.aip_app_type" as "dest_aip_app_type",
+          $"destAip.aip_appinstance_type" as "dest_aip_appinstance_type",
+          $"destAip.aip_app_state" as "dest_aip_app_state",
+          $"destAip.aip_app_sensitive" as "dest_aip_app_sensitive",
+          $"destAip.aip_app_criticality" as "dest_aip_app_criticality",
+          $"destAip.aip_app_sector" as "dest_aip_app_sector",
+          $"destAip.aip_appinstance_sector" as "dest_aip_appinstance_sector",
+          $"destAip.aip_appinstance_state" as "dest_aip_appinstance_state",
+          $"destAip.aip_app_shared_unique_id" as "dest_aip_app_shared_unique_id",
+          $"sourceAip.aip_server_adminby" as "source_aip_server_adminby",
+          $"sourceAip.aip_server_hostname" as "source_aip_server_hostname",
+          $"sourceAip.aip_server_function" as "source_aip_server_function",
+          $"sourceAip.aip_server_subfunction" as "source_aip_server_subfunction",
+          $"sourceAip.aip_app_name" as "source_aip_app_name",
+          $"sourceAip.aip_app_type" as "source_aip_app_type",
+          $"sourceAip.aip_appinstance_type" as "source_aip_appinstance_type",
+          $"sourceAip.aip_app_state" as "source_aip_app_state",
+          $"sourceAip.aip_app_sensitive" as "source_aip_app_sensitive",
+          $"sourceAip.aip_app_criticality" as "source_aip_app_criticality",
+          $"sourceAip.aip_app_sector" as "source_aip_app_sector",
+          $"sourceAip.aip_appinstance_sector" as "source_aip_appinstance_sector",
+          $"sourceAip.aip_appinstance_state" as "source_aip_appinstance_state",
+          $"sourceAip.aip_app_shared_unique_id" as "source_aip_app_shared_unique_id",
+          $"source_site_temp", $"dest_site_temp")):_*
       )
+      .withColumn("source_site", $"source_site_temp")
+      .drop("source_site_temp")
+      .withColumn("dest_site", $"dest_site_temp")
+      .drop("dest_site_temp")
   }
 }

@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+DirLog=$HOME/pipeline/log;
+if [[ ! -d "${DirLog}" ]]
+then
+  mkdir "${DirLog}"
+fi
+exec &> >(tee -a "${DirLog}/syncHdfsS3.log")
+
 CONF=$HOME/pipeline/conf/syncHdfsS3.conf
 
 
@@ -55,25 +62,25 @@ case $method in
         CMD="aws s3 rm ${dirpipelines3/s3n:/s3:}/done/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         CMD="aws s3 mv ${dircollectserverusages3/s3n:/s3:}/ ${dirins3/s3n:/s3:}/serverusage/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         ret=0 &&\
-        (for var in connection webrequest repo serverusage serversockets
+        (for var in connection webrequest repo serverusage serversockets execution
         do
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}')"
 
             [[ $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
                 (hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var}) &&\
-                (for fic in $(hdfs dfs -ls ${dirins3}/${var}/* | awk '{print $6}')
-                do
-                    (aws s3 mv ${fic/s3n:/s3:} ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) &&\
-                    aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/$(basename $fic) ${dirinsaves3/s3n:/s3:}/${var}/$(basename $fic)) || return 1
-                done) || ret=1
+                (CMD1="aws s3 mv ${dirins3/s3n:/s3:}/${var}/ ${dirpipelines3/s3n:/s3:}/in/${var}/ --recursive" &&\
+                CMD2="aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/ ${dirinsaves3/s3n:/s3:}/${var}/ --recursive" &&\
+                echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD1" && $CMD1 &&\
+                echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD2" && $CMD2) || (false; exit)
         done
-        )
-        [[ $ret -eq 0 ]] && CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
+        ) || ret =1
+        [[ $ret -eq 0 ]] &&\
+        CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
         hdfs dfs -rm -f -R ${dirpipelinehdfs} && $CMD; ret=$?
         [[ $ret -eq 0 ]] &&\
         hdfs dfs -mkdir -p ${dirpipelinehdfs}/done &&\
-        for var in connection webrequest repo serverusage serversockets
+        for var in connection webrequest repo serverusage serversockets execution
         do
             hdfs dfs -mkdir -p ${dirpipelinehdfs}/done/$var
         done
@@ -81,11 +88,11 @@ case $method in
     ;;
     fromS3Simple)
         ret=0
-        for dir in out repo meta
+        for dir in out repo meta metasockets
         do
             retcmd=0
-            CMDRM="hadoop dfs -rm -f -R ${dirpipelinehdfs}/$dir"
-            CMDCP="hadoop distcp ${dirpipelines3}/$dir ${dirpipelinehdfs}/$dir"
+            CMDRM="hdfs dfs -rm -f -R ${dirpipelinehdfs}/$dir"
+            CMDCP="hadoop distcp ${dirpipelines3}/$dir/ ${dirpipelinehdfs}/$dir"
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMDRM && $CMDCP"
             $CMDRM && $CMDCP && retcmd=$?
             [[ $retcmd -ne 0 ]] && ret=$(($ret+1))
@@ -95,7 +102,13 @@ case $method in
     toS3)
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3"
         aws s3 rm ${dirpipelines3/s3n:/s3:} --recursive &&\
-        hadoop distcp ${dirpipelinehdfs}/* ${dirpipelines3}/; ret=$?
+        ret=0 &&\
+        (for rep in done in meta metasockets out repo
+         do
+            CMD="hadoop distcp ${dirpipelinehdfs}/${rep}/* ${dirpipelines3}/${rep}/"
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || (false; exit)
+         done
+        ) || ret=1
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3 exit with $ret"
     ;;
 esac

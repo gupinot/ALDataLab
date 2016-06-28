@@ -14,6 +14,7 @@ class PipelineRegistry(implicit val sqlContext: SQLContext) {
 
   register("pipeline2to3",classOf[Pipeline2To3].asInstanceOf[Class[Pipeline]])
   register("pipeline3to4",classOf[Pipeline3To4].asInstanceOf[Class[Pipeline]])
+  register("pipeline3to4Exec",classOf[Pipeline3To4Exec].asInstanceOf[Class[Pipeline]])
   register("pipeline4to5",classOf[Pipeline4To5].asInstanceOf[Class[Pipeline]])
   register("WebApp",classOf[WebApp].asInstanceOf[Class[Pipeline]])
   register("ServerUsage",classOf[EncodeServerUsage].asInstanceOf[Class[Pipeline]])

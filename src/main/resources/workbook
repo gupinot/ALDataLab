@@ -15,7 +15,7 @@ cd /Users/guillaumepinot/Dev/Alstom/V2/script/spark/IdeaProjects/ALDataLab/infra
 ./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.07 --master-spot-price 0.07 --deploy-env dev --zeppelin-bucket gecustomers --es-security-group elasticsearch-discovery -s 15 launch zeppelin-dev
 
 #Pipeline
-./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --master-instance-type m3.xlarge --copy-aws-credentials --spot-price 0.07 --master-spot-price 0.07 -s 20 launch pipeline
+./spark-ec2 -k KeyLezoomerUs -i ~/.ssh/KeyLezoomerUs.pem --pipeline-version=1.3.1 --region=us-east-1 --zone=us-east-1a --instance-type m3.xlarge --master-instance-type m3.xlarge --copy-aws-credentials --spot-price 0.07 --master-spot-price 0.07 -s 30 launch pipeline
 
 #modify /root/zeppelin/conf/zeppelin-env.sh :
 export SPARK_SUBMIT_OPTIONS="--jars /root/pipeline/lib/ALDataLab-assembly-1.3.1.jar"
