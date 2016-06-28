@@ -8,10 +8,7 @@ function synchro() {
 	SERVERIP=$1
 	RET_SYNCHRO=1
 	TIMEDELTA=""
-	deltatime_M=$((($(date --utc --date 'now' +'%s') - $(ssh -o ConnectTimeout=10 datalab@$SERVERIP "date --utc --date 'now' +'%s'"))/60))
-	[[ $deltatime_M -eq 0 ]] && TIMEDELTA=""
-	[[ $deltatime_M -gt 0 ]] && TIMEDELTA="+$deltatime_M minutes"
-	[[ $deltatime_M -lt 0 ]] && TIMEDELTA="-$(echo $deltatime_M | tr -d -) minutes"
+	TIMEDELTA=$((($(perl -e 'print time, "\n"') - $(ssh -o ConnectTimeout=10 datalab@$SERVERIP "perl -e 'print time, \"\n\"'"))/60))
 	ssh -o ConnectTimeout=10 datalab@$SERVERIP "echo TIMEDELTA=\\\"$TIMEDELTA\\\" > timedelta.sh" &&\
 	RET_SYNCHRO=0
 	return $RET_SYNCHRO
@@ -136,6 +133,25 @@ function test() {
 		return $LSOF_RET
 	) && LSOF_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && LSOF_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && LSOF_ERR="$LSOF_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
+
+	PFILES_RET=1
+	PFILES_ERR=""
+	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && [[ "$OSTYPE" != "linux" ]]  &&\    #test sudo pfiles /proc/* for unix os if lsof not working
+	(
+		rm -f $errlog
+		rm -f $stdoutlog
+		ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "sudo pfiles /proc/*" 1>$stdoutlog 2>$errlog && PFILES_RET=0
+		return $PFILES_RET
+	) && PFILES_RET=$? &&\
+	    if [[ $PFILES_RET -ne 0 ]]; then
+	        PFILES_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" &&\
+	        PFILES_ERR="$PFILES_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
+	        LSOF_ERR="$LSOF_ERR | $PFILES_ERR"
+	    else
+	        LSOF_RET=0
+	        LSOF_ERR="sudo lsof ko but sudo pfiles ok"
+	    fi
+
 	
 
 	#crontab
@@ -173,13 +189,13 @@ do
         exit 0
         ;;
      test|deploy|update|collect|undeploy|synchro)
-	method=$key
-	serverIP=$2
-	host=$3
-	ServerType=$4
-	shift
-	shift
-	shift
+        method=$key
+        serverIP=$2
+        host=$3
+        ServerType=$4
+        shift
+        shift
+        shift
         ;;
     esac
     shift # past argument or value
