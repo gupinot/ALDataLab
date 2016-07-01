@@ -88,7 +88,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     
     NXData <- NXData[, !c("wr_device_name"), with=FALSE]
   }
-  else {
+  else if (FileType == "execution") {
     #execution
     if (length(colnames(NXData)) == 15) {
     	setnames(NXData, c("ex_start_time", "ex_end_time",
@@ -127,17 +127,42 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_D", "ex_device_name"))
 
     NXData <- NXData[, !c("ex_device_name", "ex_user_name"), with=FALSE]
+  }
+  else if (FileType == "bigfix") {
+    #bigfix
+    setnames(NXData, c("bf_device_name", "LastReportTime", "ComputerCountry",
+    "ComputerLocation", "PrimaryUser", "PrimaryUserAlstomIdFromIDM", "PrimaryUserEmailFromIDM",
+    "PrimaryUserCountryFromIDM", "PrimaryUserLocationFromIDM",
+    "PrimaryUserSectorFromIDM", "tem_server", "Program", "ProductCode",
+    "Version", "UserInstallation", "Count", "ClassName", "SuperClassName"))
 
-}
-  
-  #add engine and filedt columns
-  reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
-  enginename<-reg[[1]][3]
-  filedate<-reg[[1]][4]
-  print(paste("AnonymizeNxFile() : enginename=", enginename, sep=""))
-  print(paste("AnonymizeNxFile() : filedate=", filedate, sep=""))
-  NXData[, engine:=enginename]
-  NXData[, filedt:=filedate]
+
+    print("AnonymizeNxFile() : anonymize bf_device_name")
+    Res <- Anonymize(unique(NXData$bf_device_name))
+    if (is.null(Res)) return(NULL)
+    setkey(Res, name)
+    setkey(NXData, bf_device_name)
+    NXData <- Res[NXData, nomatch=NA]
+    setnames(NXData, c("I_ID", "name"), c("I_ID_D", "bf_device_name"))
+
+    NXData <- NXData[, !c("bf_device_name"), with=FALSE]
+
+  }
+  else {
+    print(paste("AnonymizeNxFile() : FileType not known : ", FileType, sep=""))
+    return(NULL)
+  }
+
+  if   (FileType != "bigfix") {
+    #add engine and filedt columns
+    reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
+    enginename<-reg[[1]][3]
+    filedate<-reg[[1]][4]
+    print(paste("AnonymizeNxFile() : enginename=", enginename, sep=""))
+    print(paste("AnonymizeNxFile() : filedate=", filedate, sep=""))
+    NXData[, engine:=enginename]
+    NXData[, filedt:=filedate]
+  }
   
   
   write.table(NXData, gzfile(FileOut), sep=";", row.names=FALSE)
@@ -167,7 +192,8 @@ Anonymize <- function(namelist) {
     Dico <- fread(DICTIONNARY, sep=";")
 
   print("Anonymize() : join ")
-  Res <- data.table(name=namelist)
+  Res <- data.table(name=tolower(namelist))
+  Dico[, name:=tolower(name)]
   setkey(Dico, name)
   setkey(Res, name)
   Res <- Dico[Res, nomatch=NA]
