@@ -13,3 +13,7 @@ bin/plugin install royrusso/elasticsearch-HQ
 yes | bin/plugin install cloud-aws
 chown elasticsearch:elasticsearch -R .
 update-rc.d elasticsearch defaults
+
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo 'deb http://packages.elastic.co/curator/3/debian stable main' > /etc/apt/sources.list.d/curator.list
+apt-get update && apt-get install -y python-elasticsearch-curator

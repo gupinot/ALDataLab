@@ -16,6 +16,11 @@ export ES_AWS_SECRET="{{aws_secret}}"
 export ES_SNAPSHOT_BUCKET="aldatalabtest"
 export ES_SNAPSHOT_PATH="snapshots"
 
+# Install certs from s3
+if [ -x /usr/bin/aws ]; then
+   aws s3 sync s3://gedatalab/certs /etc/nginx/certs
+fi
+
 # Update config files
 /usr/local/bin/configure.sh /etc/templates/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 /usr/local/bin/configure.sh /etc/templates/default /etc/default/elasticsearch
