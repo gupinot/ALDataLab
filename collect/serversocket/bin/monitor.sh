@@ -2,47 +2,104 @@
 
 HOSTNAME="HOST_NAME"
 OSTYPE="OS_TYPE"
+VERSION=v2
+MAX_SPACE_USED=1000000
+MAX_SPACE_LEFT=100000
+
 if [[ -f $HOME/timedelta.sh ]]
 then
 	. $HOME/timedelta.sh
 else
 	TIMEDELTA=""
 fi
-datH=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H")
-datM=$(date --utc --date "now $TIMEDELTA" +"%Y%m%d-%H%M")
-datMM=$(date --utc --date "now $TIMEDELTA" +"%Y-%m-%dT%H:%M:00")
+if [[ "$OSTYPE" == "linux" ]]; then
+    datH=$(date --utc +"%Y%m%d-%H")
+    datMM=$(date --utc +"%Y-%m-%dT%H:%M:00")
+else
+    datH=$(date -u +"%Y%m%d-%H")
+    datMM=$(date -u +"%Y-%m-%dT%H:%M:00")
+fi
+
 DIR_MONITOR=~/monitor && [[ -d $DIR_MONITOR ]] || mkdir -p $DIR_MONITOR
 DIR_COLLECT=~/collect && [[ -d $DIR_COLLECT ]] || mkdir -p $DIR_COLLECT
-MAX_SPACE_USED=1000000
-MAX_SPACE_LEFT=100000
-LSOF_MONITOR=${DIR_MONITOR}/lsof_${HOSTNAME}_${datH}.csv.gz
-NETSTAT_MONITOR=${DIR_MONITOR}/netstat_${HOSTNAME}_${datH}.csv.gz
-PS_MONITOR=${DIR_MONITOR}/ps_${HOSTNAME}_${datH}.csv.gz
 
-export PATH=$PATH:/usr/sbin
+LSOF_MONITOR=${DIR_MONITOR}/${VERSION}_${OSTYPE}_lsof_${HOSTNAME}_${datH}.csv.gz
+NETSTAT_MONITOR=${DIR_MONITOR}/${VERSION}_${OSTYPE}_netstat_${HOSTNAME}_${datH}.csv.gz
+PS_MONITOR=${DIR_MONITOR}/${VERSION}_${OSTYPE}_ps_${HOSTNAME}_${datH}.csv.gz
 
+export PATH=$PATH:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+function monitor_linux() {
+    ret=0
+    retcmd=1
+	sudo lsof -nPi | sed 1d | \
+	awk -vdat=${datMM} -vdeltatime=$TIMEDELTA -vserver=$HOSTNAME -vos=$OSTYPE \
+	'$8 ~ /UDP|TCP/ {print "\""os"\";\""server"\";\""dat"\";\""timedelta"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
+	 $7 ~ /UDP|TCP/ {print "\""os"\";\""server"\";\""dat"\";\""timedelta"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR && retcmd=0
+    [[ retcmd -ne 0 ]] && ret=$(($ret+1))
+
+    retcmd=1
+	ps -ef | sed 1d | \
+	perl -pe "s/([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ].*)/\"${OSTYPE}\";\"${HOSTNAME}\";\"${datMM}\";\"${TIMEDELTA}\";\"\1\";\"\2\";\"\3\";\"\7\";\"\8\"/" |\
+	gzip -c >> $PS_MONITOR && retcmd=0
+	[[ retcmd -ne 0 ]] && ret=$(($ret+1))
+
+    retcmd=1
+	sudo netstat --ip -anp | sed 1d | \
+	awk -vdat=${datMM} -vdeltatime=$TIMEDELTA -vserver=$HOSTNAME -vos=$OSTYPE \
+	'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $7 != "" {print "\""os"\";\""server"\";\""dat"\";\""deltatime"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\""$7"\""}' | \
+	gzip -c >> $NETSTAT_MONITOR && retcmd=0
+	[[ retcmd -ne 0 ]] && ret=$(($ret+1))
+	return $ret
+}
+
+function monitor_aix() {
+    ret=0
+    retcmd=1
+	sudo lsof -nPi | sed 1d | \
+	awk -vdat=${datMM} -vdeltatime=$TIMEDELTA -vserver=$HOSTNAME -vos=$OSTYPE \
+	'$8 ~ /UDP|TCP/ {print "\""os"\";\""server"\";\""dat"\";\""timedelta"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
+	 $7 ~ /UDP|TCP/ {print "\""os"\";\""server"\";\""dat"\";\""timedelta"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR && retcmd=0
+    [[ retcmd -ne 0 ]] && ret=$(($ret+1))
+
+    retcmd=1
+	ps -ef | sed 1d | \
+	perl -pe "s/([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ].*)/\"${OSTYPE}\";\"${HOSTNAME}\";\"${datMM}\";\"${TIMEDELTA}\";\"\1\";\"\2\";\"\3\";\"\7\";\"\8\"/" |\
+	gzip -c >> $PS_MONITOR && retcmd=0
+	[[ retcmd -ne 0 ]] && ret=$(($ret+1))
+
+    retcmd=1
+    sudo netstat --ip -an | sed 1d | \
+	awk -vdat=${datMM} -vdeltatime=$TIMEDELTA -vserver=$HOSTNAME -vos=$OSTYPE \
+	'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $6 != "" {print "\""os"\";\""server"\";\""dat"\";\""deltatime"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\""-"\""}' | \
+	gzip -c >> $NETSTAT_MONITOR && retcmd=0
+	[[ retcmd -ne 0 ]] && ret=$(($ret+1))
+	return $ret
+}
+
+function monitor_sun() {
+    monitor_aix
+}
+
+function monitor_hp() {
+    monitor_aix
+}
 
 function monitor() {
-	sudo lsof -nPi | sed 1d | \
-	awk -vdat=${datMM} -vserver=$HOSTNAME \
-	'$8 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$8"\";\""$9"\";\""$10"\""}\
-	 $7 ~ /UDP|TCP/ {print "\""server"\";\""dat"\";\""$1"\";\""$2"\";\""$3"\";\""$7"\";\""$8"\";\""$9"\""}' | gzip -c >> $LSOF_MONITOR
-
-	ps -Ao "\"%U\"|||\"%p\"|||\"%P\"|||\"%x\"|||\"%a\"|||" | sed 1d | \
-	sed -e "s/\"|||\" */\"|||\"/g" | sed -e "s/ *\"|||\"/\"|||\"/g" | sed -e "s/ *\"|||/\"|||/g" | \
-	awk -vdat=${datMM} -vserver=$HOSTNAME -F'\n' '{print "\""server"\"|||\""dat"\"|||"$1}' | \
-	sed -e "s/|||/;/g" | sed -e "s/;$//" | gzip -c >> $PS_MONITOR
-
-	if [[ "$OSTYPE" == "linux" ]]
-	then
-		sudo netstat --ip -anp | sed 1d | \
-		awk -vdat=${datMM} -vserver=$HOSTNAME \
-		'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $7 != "" {print "\""server"\";\""dat"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\""$7"\""}' | gzip -c >> $NETSTAT_MONITOR
-	else
-		sudo netstat --ip -an | sed 1d | \
-		awk -vdat=${datMM} -vserver=$HOSTNAME \
-		'$1 ~  /udp|tcp|Udp|Tcp|UDP|TCP/ && $6 != "" {print "\""server"\";\""dat"\";\""$1"\";\""$4"\";\""$5"\";\""$6"\";\"-\""}' | gzip -c >> $NETSTAT_MONITOR
-	fi
+    case ${OSTYPE} in
+        linux)
+	        monitor_linux
+            ;;
+        aix)
+	        monitor_aix
+            ;;
+        sunos)
+	        monitor_sun
+            ;;
+        hp-ux)
+	        monitor_hp
+            ;;
+    esac
 }
 
 function server_info() {
@@ -50,8 +107,11 @@ function server_info() {
 }
 
 function free_space() {
+    DF=df
+    [[ "$OSTYPE" == "sunos" ]] && DF=/usr/xpg4/bin/df
+
 	space_used=$(du -s ~ | awk '{print $1}')
-	space_left=$(($(stat -f --format="%a*%S" ~)))
+	space_left=$($DF -kP | awk '{print $4}')
 	([[ $space_used -gt $MAX_SPACE_USED ]] || [[ $space_left -lt $MAX_SPACE_LEFT  ]]) &&\
 	 find $DIR_MONITOR -maxdepth 1 -name "*.gz" -mtime +10 | xargs rm -f
 	return 0
@@ -81,7 +141,7 @@ do
         exit 0
         ;;
      monitor|collect|free_space)
-	method=$key
+	    method=$key
         ;;
     esac
     shift # past argument or value

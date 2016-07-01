@@ -34,6 +34,7 @@ DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 curdir=$(pwd)
 cd $DIR_COLLECT
 
+//version init
 type="linux"
 for col in lsof ps netstat
 do
@@ -49,5 +50,26 @@ do
 		rm -f $tmpfile
 	done
 done
+
+//version v2
+version="v2"
+for type in linux aix hp-ux
+do
+    for col in lsof ps netstat
+    do
+        for filedt in $(ls ${version}_${type}_${col}_*.csv.gz | cut -d_ -f5 | cut -d. -f1 | sort -u)
+        do
+            tmpfile=$(mktemp)
+            for fic in $(ls ${version}_${type}_${col}_*_${filedt}.csv.gz)
+            do
+                echo $fic >> $tmpfile
+            done &&\
+            CMD="merge_sockets $tmpfile ${DIR_TOSEND}/${version}_${type}_${col}_${filedt}_${DATECUR}.csv.gz" &&\
+            echo "$CMD" && $CMD
+            rm -f $tmpfile
+        done
+    done
+done
+
 send_sockets
 cd $curdir
