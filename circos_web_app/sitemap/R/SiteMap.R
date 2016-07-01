@@ -711,7 +711,11 @@ siteMap <- function(deviceOrServer = "Device", FromSite = "IDM",
     setnames(Data, "source_site", "SiteCode_Source")
   }
   setnames(Data, "dest_site", "SiteCode_Destination")
-  
+
+  #verrue
+  Data[SiteCode_Source=="", SiteCode_Source:="nf"]
+  Data[SiteCode_Destination=="", SiteCode_Destination:="nf"]
+
   if (!DetailledFlow) {
     portsfiltering=""
   }
