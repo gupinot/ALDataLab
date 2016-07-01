@@ -46,7 +46,7 @@ object Util {
 
   def formatSite = udf (
     (site: String) => {
-      if (site == null) "nf" else site
+      if (site == null || site == "" ) "nf" else site
     }
   )
 
