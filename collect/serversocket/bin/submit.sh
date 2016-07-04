@@ -118,7 +118,7 @@ function test() {
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		if ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "[[ -f /usr/sbin/lsof ]] ||[[ -f /usr/bin/lsof ]]"
+		if ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "bash -c \"[[ -f /usr/sbin/lsof ]] || [[ -f /usr/bin/lsof ]] || [[ -f /usr/local/bin/lsof ]]\""
 		then
 			if [[ "$OSTYPE" == "linux" ]]
 			then
@@ -134,6 +134,7 @@ function test() {
 	) && LSOF_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && LSOF_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && LSOF_ERR="$LSOF_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
 
+    #test pfiles if lsof not working for Unix OS
 	PFILES_RET=1
 	PFILES_ERR=""
 	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && [[ "$OSTYPE" != "linux" ]]  &&\    #test sudo pfiles /proc/* for unix os if lsof not working
