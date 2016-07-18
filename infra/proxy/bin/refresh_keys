@@ -1,0 +1,7 @@
+#!/bin/bash
+
+REGION=$(aws configure get region)
+AWS_KEY=$(aws configure get aws_access_key_id)
+AWS_SECRET=$(aws configure get aws_secret_access_key)
+generate_signing_key -u $AWS_KEY -k $AWS_SECRET -r us-east-1 -s s3 >/etc/nginx/conf.d/aws.conf
+systemctl reload nginx
