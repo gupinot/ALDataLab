@@ -13,7 +13,7 @@ export ES_AVAILABILITY_ZONES=""
 export ES_AWS_REGION="us-east-1"
 export ES_AWS_KEY="{{aws_key}}"
 export ES_AWS_SECRET="{{aws_secret}}"
-export ES_SNAPSHOT_BUCKET="aldatalabtest"
+export ES_SNAPSHOT_BUCKET="gekibana"
 export ES_SNAPSHOT_PATH="snapshots"
 
 # Configure elasticsearch
@@ -33,13 +33,5 @@ update-rc.d nginx disable -f
 
 killall -15 java
 service elasticsearch start
-
-echo "Starting elasticsearch... waiting 5s"
-sleep 5
-if ! curl -o /dev/null -sf http://localhost:9200/_snapshot/s3repo
-then
-  curl -XPUT http://localhost:9200/_snapshot/s3repo \
-       -d '{"type":"s3","settings": {"bucket": "gekibana","compress":"true"}}'
-fi
 
 echo "End of elastic.sh config"

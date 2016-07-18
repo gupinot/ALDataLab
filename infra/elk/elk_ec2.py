@@ -123,7 +123,7 @@ EC2_INSTANCE_TYPES = {
 
 DEFAULT_AMIS={
     "us-east-1":{
-        "hvm":"ami-5adc2437"
+        "hvm":"ami-74d45b63"
     }
 }
 
