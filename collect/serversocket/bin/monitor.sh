@@ -64,7 +64,7 @@ function monitor_aix() {
 
     retcmd=1
 	ps -ef | sed 1d | \
-	perl -pe "s/([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ].*)/\"${OSTYPE}\";\"${HOSTNAME}\";\"${datMM}\";\"${TIMEDELTA}\";\"\1\";\"\2\";\"\3\";\"\7\";\"\8\"/" |\
+	perl -ne " print if s/([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ].*)/\"${OSTYPE}\";\"${HOSTNAME}\";\"${datMM}\";\"${TIMEDELTA}\";\"\1\";\"\2\";\"\3\";\"\7\";\"\8\"/" |\
 	gzip -c >> $PS_MONITOR && retcmd=0
 	[[ retcmd -ne 0 ]] && ret=$(($ret+1))
 
