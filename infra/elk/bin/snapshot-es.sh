@@ -1,3 +1,5 @@
 #!/bin/bash
 
-curator snapshot --repository s3repo indices --all-indices
+repo=${1:-s3repo}
+/usr/local/bin/create-repo.sh $repo
+curator snapshot --repository $repo indices --all-indices

@@ -1,0 +1,56 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "aws_region": "us-east-1",
+    "aws_source_ami": "ami-ddf13fb0",
+    "aws_instance_type": "t2.nano",
+    "aws_vpc_id": "vpc-2dae8d48",
+    "aws_subnet_id": "subnet-6c8e3447",
+    "ami_name_prefix": "proxy"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "{{user `aws_region`}}",
+    "vpc_id": "{{user `aws_vpc_id`}}",
+    "subnet_id": "{{user `aws_subnet_id`}}",
+    "source_ami": "{{user `aws_source_ami`}}",
+    "instance_type": "{{user `aws_instance_type`}}",
+    "ssh_username": "ubuntu",
+    "ami_name": "{{user `ami_name_prefix`}}-{{timestamp}}",
+    "tags": {
+        "OS_Version": "Ubuntu",
+        "Platform": "Ubuntu",
+        "Release": "16.04"
+     }
+  }],
+  "provisioners": [
+    {
+        "type": "file",
+        "source": "bin",
+        "destination": "/tmp"
+    },
+    {
+        "type": "file",
+        "source": "deb",
+        "destination": "/tmp"
+    },
+    {
+        "type": "file",
+        "source": "templates",
+        "destination": "/tmp/templates"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/default.sh",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/nginx.sh",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
+    }
+  ]
+}

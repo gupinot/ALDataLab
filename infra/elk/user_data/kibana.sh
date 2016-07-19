@@ -13,17 +13,18 @@ export ES_AVAILABILITY_ZONES=""
 export ES_AWS_REGION="us-east-1"
 export ES_AWS_KEY="{{aws_key}}"
 export ES_AWS_SECRET="{{aws_secret}}"
-export ES_SNAPSHOT_BUCKET="aldatalabtest"
+export ES_SNAPSHOT_BUCKET="gekibana"
 export ES_SNAPSHOT_PATH="snapshots"
 
 # Install certs from s3
-if [ -x /usr/bin/aws ]; then
-   aws s3 sync s3://gedatalab/certs /etc/nginx/certs
-fi
-
 # Update config files
 /usr/local/bin/configure.sh /etc/templates/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 /usr/local/bin/configure.sh /etc/templates/default /etc/default/elasticsearch
+mkdir -p /etc/elasticsearch/commands
+for cmd in /etc/templates/commands/*
+do
+   /usr/local/bin/configure.sh $cmd /etc/elasticsearch/commands/$(basename $cmd)
+done
 
 # Install startup scripts
 cp /etc/templates/kibana.conf /etc/init/
@@ -41,5 +42,7 @@ chmod 644 /home/ubuntu/.ssh/authorized_keys
 killall -15 java
 service elasticsearch start
 start kibana
+
+cp /usr/local/bin/snapshot-es.sh /etc/cron.weekly/snapshot-es
 
 echo "End of kibana.sh config"

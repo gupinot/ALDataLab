@@ -1,16 +1,20 @@
 name := "ALDataLab"
 
-version := "1.3.1"
+version := "1.3.2"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.6.0" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.6.0" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.6.0" % "provided"
-libraryDependencies += "com.databricks" %% "spark-csv" % "1.3.0"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.6.2" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.6.2" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.6.2" % "provided"
+libraryDependencies += "com.databricks" %% "spark-csv" % "1.4.0"
 libraryDependencies += "joda-time" % "joda-time" % "2.9.2"
 
 enablePlugins(UniversalPlugin)
+
+mappings in Universal <+= (packageBin in Compile) map { jar =>
+  jar -> ("lib/" + jar.getName)
+}
 
 mappings in Universal <+= (assembly in assembly, assemblyJarName in assembly) map { (jar,name) => {
   println(jar.toString)
