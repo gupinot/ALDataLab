@@ -276,6 +276,15 @@ def parse_args():
         "--zeppelin-bucket", default="gezeppelin",
         help="the s3 bucket name to use for zeppelin notebooks")
     parser.add_option(
+        "--hive-db", default="hive",
+        help="the mysql database name to use for hive metastore")
+    parser.add_option(
+        "--hive-user", default="hive",
+        help="the mysql username to use for hive metastore")
+    parser.add_option(
+        "--hive-password", default="hive",
+        help="the mysql password to use for hive metastore")
+    parser.add_option(
         "--pipeline-bucket", default="gedatalab",
         help="the s3 bucket name to use for pipeline binaries")
     parser.add_option(
@@ -870,7 +879,7 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
             ssh_write(slave_address, opts, ['tar', 'x'], dot_ssh_tar)
 
     modules = ['spark', 'ephemeral-hdfs', 'persistent-hdfs',
-               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio',
+               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio','mysql'
                'zeppelin','pipeline','s3proxy']
 
     if opts.hadoop_major_version == "1":
@@ -1151,6 +1160,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "zeppelin_bucket": opts.zeppelin_bucket,
         "pipeline_version": opts.pipeline_version,
         "pipeline_bucket": opts.pipeline_bucket,
+        "hive_db": opts.hive_db,
+        "hive_user": opts.hive_user,
+        "hive_password": opts.hive_password,
         "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
         "spark_master_opts": opts.master_opts
