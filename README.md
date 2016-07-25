@@ -14,7 +14,9 @@
   [server usage](https://serverusage.gadatalab.com)  
     
   [circos web app](https://circos.gadatalab.com)  
-    Launch ami-22911b35, m3.xlarge, spot 0.1$, zone us-east-1a, security group SiteMapWebApp  
+    Launch ami-e8be34ff, m3.xlarge, spot 0.1$, zone us-east-1a, security group SiteMapWebApp  
     Associate fixed IP 52.4.60.249 to new instance  </br>
     
   [Wiki](https://wiki.gadatalab.com)  
+    ssh -i ~/.ssh/AlWikiKey.pem ec2-user@ec2-54-164-93-140.compute-1.amazonaws.com
+    cd ALWiki; nohup forever ./node_modules/jingo/jingo -c config.yaml &
