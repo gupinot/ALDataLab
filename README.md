@@ -18,5 +18,5 @@
     Associate fixed IP 52.4.60.249 to new instance  </br>
     
   [Wiki](https://wiki.gadatalab.com)  
-    ssh -i ~/.ssh/AlWikiKey.pem ec2-user@ec2-54-164-93-140.compute-1.amazonaws.com
+    ssh -i ~/.ssh/*AlWikiKey*.pem ec2-user@ec2-54-164-93-140.compute-1.amazonaws.com
     cd ALWiki; nohup forever ./node_modules/jingo/jingo -c config.yaml &
