@@ -95,6 +95,7 @@ function test() {
 	stdoutlog=$(mktemp)
 
 	#ssh with key
+	[[ "$DEBUG" == "YES" ]] && echo "test ssh"
 	ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "pwd" 1>$stdoutlog 2>$errlog && SSH_RET=0
 	[[ $SSH_RET -ne 0 ]] && SSH_ERR="$(head -n 1 $errlog | tr -d '\n' | tr -d '\r')"
 
@@ -102,6 +103,7 @@ function test() {
 	[[ $SSH_RET -eq 0 ]] && grep -q datalab $stdoutlog && HOME_DIR="$(head -n 1 $stdoutlog)"
 
 	#sudo on netstat
+	[[ "$DEBUG" == "YES" ]] && echo "test netstat"
 	[[ $SSH_RET -eq 0 ]] &&\
 	(
 		rm -f $errlog
@@ -110,24 +112,25 @@ function test() {
 		then
 			ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "sudo -n netstat -anp || yes | sudo netstat -anp" 1>$stdoutlog 2>$errlog && NETSTAT_RET=0
 		else
-			ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "yes | sudo netstat -an" 1>$stdoutlog 2>$errlog && NETSTAT_RET=0
+			ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "PATH=\"/usr/local/bin:/opt/sfw/bin:/opt/csw/bin:$PATH\"; yes | sudo netstat -an" 1>$stdoutlog 2>$errlog && NETSTAT_RET=0
 		fi
 		return $NETSTAT_RET
 	) && NETSTAT_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -ne 0 ]] && NETSTAT_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding"| grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && NETSTAT_ERR="$NETSTAT_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
 
 	#sudo on lsof
+	[[ "$DEBUG" == "YES" ]] && echo "test lsof"
 	[[ $SSH_RET -eq 0 ]] &&\
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
-		if ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "[[ -f /usr/sbin/lsof ]] ||[[ -f /usr/bin/lsof ]]"
+		if ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "bash -c \"[[ -f /usr/sbin/lsof ]] ||[[ -f /usr/bin/lsof ]] ||[[ -f /usr/local/bin/lsof ]]\""
 		then
 			if [[ "$OSTYPE" == "linux" ]]
 			then
 				ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "sudo -n /usr/sbin/lsof -nP -i || sudo -n /usr/bin/lsof -nP -i || yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
 			else
-				ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
+				ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "PATH=\"/usr/local/bin:/opt/sfw/bin:/opt/csw/bin:$PATH\"; yes | sudo /usr/sbin/lsof -nP -i || yes | sudo /usr/bin/lsof -nP -i || yes | sudo /usr/local/bin/lsof -nP -i" 1>$stdoutlog 2>$errlog && LSOF_RET=0
 			fi
 		else
 			echo "no lsof found" > $errlog
@@ -139,17 +142,18 @@ function test() {
 	
 
 	#crontab
+	[[ "$DEBUG" == "YES" ]] && echo "test crontab"
 	[[ $SSH_RET -eq 0 ]] &&\
 	(
 		rm -f $errlog
 		rm -f $stdoutlog
 		ssh -o ConnectTimeout=10 -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "echo '00 09 * * 1-5 echo hello' >> mycron && (crontab -l > crontab_save 2>/dev/null || echo "nothing" 1>/dev/null) && crontab mycron && crontab -l && rm mycron && crontab -r && (crontab crontab_save 2>/dev/null || echo "nothing" 1>/dev/null)" 1>$stdoutlog 2>$errlog &&\
-		([[ ! -f $errlog ]] || [[ $(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | wc -l | awk '{print $1}') -eq 0 ]]) && CRONTAB_RET=0
+		([[ ! -f $errlog ]] || [[ $(cat $errlog |grep -v "warning" | grep -v "using fake authentication data for X11 forwarding" | wc -l | awk '{print $1}') -eq 0 ]]) && CRONTAB_RET=0
 		return $CRONTAB_RET
 	) && CRONTAB_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $CRONTAB_RET -ne 0 ]] && CRONTAB_ERR="$(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | head -n 1 | tr -d '\n' | tr -d '\r')"
 
-	echo "\"$(date +"%Y%m%d-%H%M%S")\";\"$HOST\";\"$SERVERIP\";\"${SSH_RET}\";\"${SSH_ERR}\";\"${HOME_DIR}\";\"$NETSTAT_RET\";\"${NETSTAT_ERR}\";\"$LSOF_RET\";\"${LSOF_ERR}\";\"${CRONTAB_RET}\";\"${CRONTAB_ERR}\""
+	echo "\"$(date +"%Y-%m-%dT%H:%M:%S.000Z")\";\"$HOST\";\"$SERVERIP\";\"${SSH_RET}\";\"${SSH_ERR}\";\"${HOME_DIR}\";\"$NETSTAT_RET\";\"${NETSTAT_ERR}\";\"$LSOF_RET\";\"${LSOF_ERR}\";\"${CRONTAB_RET}\";\"${CRONTAB_ERR}\""
 	
 	TEST_RET=1
 	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -eq 0 ]] && [[ $LSOF_RET -eq 0 ]] && [[ $CRONTAB_RET -eq 0 ]] && TEST_RET=0
