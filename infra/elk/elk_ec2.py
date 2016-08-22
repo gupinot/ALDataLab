@@ -123,7 +123,7 @@ EC2_INSTANCE_TYPES = {
 
 DEFAULT_AMIS={
     "us-east-1":{
-        "hvm":"ami-295ab844"
+        "hvm":"ami-74d45b63"
     }
 }
 
@@ -216,10 +216,6 @@ def parse_args():
     parser.add_option(
         "--spot-price", metavar="PRICE", type="float", default="0.05",
         help="If specified, launch slaves as spot instances with the given " +
-             "maximum price (in dollars)")
-    parser.add_option(
-        "--master-spot-price", metavar="MASTER_PRICE", type="float", default="0.05",
-        help="If specified, launch master as spot instance with the given " +
              "maximum price (in dollars)")
     parser.add_option(
         "-u", "--user", default="ubuntu",
@@ -329,7 +325,8 @@ def launch_cluster(conn, opts, cluster_name):
     template_vars = {
         'cluster_name':cluster_name,
         'master_security_group': cluster_name + "-master",
-        'slave_security_group': cluster_name + "-slaves"
+        'slave_security_group': cluster_name + "-slaves",
+        'discovery_security_group': cluster_name + "-discovery"
     }
 
     if opts.copy_aws_credentials:
@@ -354,45 +351,49 @@ def launch_cluster(conn, opts, cluster_name):
     print("Setting up security groups...")
     master_group = get_or_make_group(conn, template_vars['master_security_group'], opts.vpc_id)
     slave_group = get_or_make_group(conn, template_vars['slave_security_group'], opts.vpc_id)
+    discovery_group = get_or_make_group(conn, template_vars['discovery_security_group'], opts.vpc_id)
     authorized_address = opts.authorized_address
 
     if master_group.rules == []:  # Group was just now created
         if opts.vpc_id is None:
             master_group.authorize(src_group=master_group)
             master_group.authorize(src_group=slave_group)
+            master_group.authorize(src_group=discovery_group)
         else:
             master_group.authorize(ip_protocol='icmp', from_port=-1, to_port=-1,
-                                   src_group=master_group)
+                                   src_group=discovery_group)
             master_group.authorize(ip_protocol='tcp', from_port=0, to_port=65535,
-                                   src_group=master_group)
+                                   src_group=discovery_group)
             master_group.authorize(ip_protocol='udp', from_port=0, to_port=65535,
-                                   src_group=master_group)
-            master_group.authorize(ip_protocol='icmp', from_port=-1, to_port=-1,
-                                   src_group=slave_group)
-            master_group.authorize(ip_protocol='tcp', from_port=0, to_port=65535,
-                                   src_group=slave_group)
-            master_group.authorize(ip_protocol='udp', from_port=0, to_port=65535,
-                                   src_group=slave_group)
+                                   src_group=discovery_group)
         master_group.authorize('tcp', 22, 22, authorized_address)
 
     if slave_group.rules == []:  # Group was just now created
         if opts.vpc_id is None:
             slave_group.authorize(src_group=master_group)
             slave_group.authorize(src_group=slave_group)
+            slave_group.authorize(src_group=discovery_group)
         else:
             slave_group.authorize(ip_protocol='icmp', from_port=-1, to_port=-1,
-                                  src_group=master_group)
+                                  src_group=discovery_group)
             slave_group.authorize(ip_protocol='tcp', from_port=0, to_port=65535,
-                                  src_group=master_group)
+                                  src_group=discovery_group)
             slave_group.authorize(ip_protocol='udp', from_port=0, to_port=65535,
-                                  src_group=master_group)
-            slave_group.authorize(ip_protocol='icmp', from_port=-1, to_port=-1,
-                                  src_group=slave_group)
-            slave_group.authorize(ip_protocol='tcp', from_port=0, to_port=65535,
-                                  src_group=slave_group)
-            slave_group.authorize(ip_protocol='udp', from_port=0, to_port=65535,
-                                  src_group=slave_group)
+                                  src_group=discovery_group)
         slave_group.authorize('tcp', 22, 22, authorized_address)
+
+    if discovery_group.rules == []:  # Group was just now created
+        if opts.vpc_id is None:
+            discovery_group.authorize(src_group=master_group)
+            discovery_group.authorize(src_group=slave_group)
+            discovery_group.authorize(src_group=discovery_group)
+        else:
+            discovery_group.authorize(ip_protocol='icmp', from_port=-1, to_port=-1,
+                                  src_group=discovery_group)
+            discovery_group.authorize(ip_protocol='tcp', from_port=0, to_port=65535,
+                                  src_group=discovery_group)
+            discovery_group.authorize(ip_protocol='udp', from_port=0, to_port=65535,
+                                  src_group=discovery_group)
 
     # Check if instances are already running in our groups
     existing_masters, existing_slaves = get_existing_cluster(conn, opts, cluster_name,
@@ -409,12 +410,13 @@ def launch_cluster(conn, opts, cluster_name):
     # we use group ids to work around https://github.com/boto/boto/issues/350
     additional_group_ids = []
     if opts.additional_security_group:
-        additional_group_ids = [sg.id
-                                for sg in conn.get_all_security_groups()
-                                if opts.additional_security_group in (sg.name, sg.id)]
-    template_vars['security_groups']= ','.join(
-        [template_vars['master_security_group'],template_vars['slave_security_group']]
-    )
+        all_groups = conn.get_all_security_groups()
+        additional_group_ids = []
+        for group in opts.additional_security_group.split(','):
+            additional_group_ids += [sg.id for sg in all_groups if group in (sg.name, sg.id)]
+
+    template_vars['security_groups']= template_vars['discovery_security_group']
+
     print("Launching instances...")
 
     try:
@@ -471,7 +473,7 @@ def launch_cluster(conn, opts, cluster_name):
                 placement=zone,
                 count=num_slaves_this_zone,
                 key_name=opts.key_pair,
-                security_group_ids=[slave_group.id] + additional_group_ids,
+                security_group_ids=[slave_group.id,discovery_group.id] + additional_group_ids,
                 instance_type=opts.instance_type,
                 block_device_map=block_map,
                 subnet_id=opts.subnet_id,
@@ -524,7 +526,7 @@ def launch_cluster(conn, opts, cluster_name):
             if num_slaves_this_zone > 0:
                 slave_res = image.run(
                     key_name=opts.key_pair,
-                    security_group_ids=[slave_group.id] + additional_group_ids,
+                    security_group_ids=[slave_group.id,discovery_group.id] + additional_group_ids,
                     instance_type=opts.instance_type,
                     placement=zone,
                     min_count=num_slaves_this_zone,
@@ -559,14 +561,13 @@ def launch_cluster(conn, opts, cluster_name):
 
         if opts.spot_price is not None:
             # Launch spot instance with the requested price
-            print("Requesting master as spot instance with price $%.3f" %
-                  (opts.master_spot_price))
+            print("Requesting master as spot instance with price $%.3f" % (opts.spot_price))
             master_reqs = conn.request_spot_instances(
-                    price=opts.master_spot_price,
+                    price=opts.spot_price,
                     image_id=opts.ami,
                     key_name=opts.key_pair,
                     launch_group="master-group-%s" % cluster_name,
-                    security_group_ids=[master_group.id] + additional_group_ids,
+                    security_group_ids=[master_group.id,discovery_group.id] + additional_group_ids,
                     instance_type=master_type,
                     placement=opts.zone,
                     count=1,
@@ -603,7 +604,7 @@ def launch_cluster(conn, opts, cluster_name):
         else:
             master_res = image.run(
                 key_name=opts.key_pair,
-                security_group_ids=[master_group.id] + additional_group_ids,
+                security_group_ids=[master_group.id,discovery_group.id] + additional_group_ids,
                 instance_type=master_type,
                 placement=opts.zone,
                 min_count=1,

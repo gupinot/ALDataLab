@@ -20,12 +20,20 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
   private val myIO = new com.alstom.datalab.IO
 
+  import java.util.Calendar
+  import java.text.SimpleDateFormat
+  private val curTimeFormat = new SimpleDateFormat("YYYYmmdd-HHMMSS")
+  private val dirout = context.dirout() + "/data_" + curTimeFormat.format(Calendar.getInstance.getTime)
+
+
   def splitudf(splitcar: String) = udf(
     (chaine: String) => chaine.split(splitcar)
   )
 
   def aggregatedf(df: DataFrame, collecttype: String = "device", date_range: String, level: String, resolution: String) = {
     val myConcat = new ConcatUniqueString(",")
+
+
     val res = {
       if (collecttype == "device") {
         {
@@ -106,13 +114,11 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     }
     val fileout = s"Stat${filename1}${filename2}.csv.gz"
 
-    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), dstfile =  s"${fileout}", s3root = s"${context.dirout()}", skipVerify = true)
+    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), dstfile =  s"${fileout}", s3root = s"${dirout}", skipVerify = true)
   }
 
   def execute(): Unit = {
 
-
-    val jobidcur:Long = System.currentTimeMillis/1000
 
     //read meta to compute
     val meta45 = aggregateMeta(loadMeta(context.meta()), Pipeline4To5.STAGE_NAME).as("meta45")
@@ -122,7 +128,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .filter($"collecttype" === "device")
       .groupBy("dt")
       .agg(countDistinct($"engine").as("engine_count"))
-      .filter("engine_count >= 20")
+      .filter("engine_count >= 18")
       .select($"dt")
       .distinct()
     val dt_server = meta45
@@ -160,7 +166,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         val tmp = sqlContext.sparkContext.parallelize(rows)
         val daterange = sqlContext.createDataFrame(tmp, daterangeSchema)
 
-        myIO.writeCsvToS3(daterange, dstfile = s"${filedaterange}", s3root = s"${context.dirout()}", skipVerify = true)
+        myIO.writeCsvToS3(daterange, dstfile = s"${filedaterange}", s3root = s"${dirout}", skipVerify = true)
 
         val aggregated = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/${collecttype}")
         val aggregated_dtok =  aggregated
@@ -179,8 +185,8 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     }
 
     //Eval and write SectorCode file
-    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
-    myIO.writeCsvToS3(context.repo().readAIPApplication().select($"aip_app_sector" as "Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCodeServer.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
+    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${dirout}", skipVerify = true)
+    myIO.writeCsvToS3(context.repo().readAIPApplication().select($"aip_app_sector" as "Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCodeServer.csv.gz", s3root = s"${dirout}", skipVerify = true)
 
     //eval and write SiteCode file
     val SiteCode = context.repo().readI_ID()
@@ -201,7 +207,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .agg(first($"SiteName").as("SiteName"), first($"CountryCode").as("CountryCode"))
 
     myIO.writeCsvToS3(SiteCode,
-        dstfile = "SiteCode.csv.gz", s3root = s"${context.dirout()}", skipVerify = true)
+        dstfile = "SiteCode.csv.gz", s3root = s"${dirout}", skipVerify = true)
   }
 }
 

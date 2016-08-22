@@ -13,7 +13,7 @@ export ES_AVAILABILITY_ZONES=""
 export ES_AWS_REGION="us-east-1"
 export ES_AWS_KEY="{{aws_key}}"
 export ES_AWS_SECRET="{{aws_secret}}"
-export ES_SNAPSHOT_BUCKET="aldatalabtest"
+export ES_SNAPSHOT_BUCKET="gekibana"
 export ES_SNAPSHOT_PATH="snapshots"
 
 # Configure elasticsearch

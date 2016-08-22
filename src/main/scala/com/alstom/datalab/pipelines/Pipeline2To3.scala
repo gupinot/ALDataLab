@@ -88,6 +88,81 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
             to_date($"wr_end_time") as "dt",
             date_format(to_date($"wr_end_time"),"yyyy-MM") as "month"
           )
+          case "execution" =>
+            if (df.columns.contains("ex_app_bin_hash")) {
+              df.select(
+                $"I_ID_D",
+                $"I_ID_U",
+                $"ex_start_time" as "start",
+                $"ex_end_time" as "end",
+                $"ex_bin_path" as "bin_path",
+                $"ex_cardinality" as "cardinality",
+                $"ex_duration" as "duration",
+                $"ex_status" as "status",
+                $"ex_app_category" as "app_category",
+                $"ex_app_company" as "app_company",
+                $"ex_app_name" as "app_name",
+                $"ex_app_bin_exec_name" as "app_bin_exec_name",
+                $"ex_app_bin_paths" as "app_bin_paths",
+                $"ex_app_bin_version" as "app_bin_version",
+                $"ex_app_bin_hash" as "app_bin_hash",
+                $"ex_device_ip" as "source_ip",
+                $"engine",
+                $"filedt",
+                getCollectType($"engine") as "collecttype",
+                to_date($"ex_end_time") as "dt",
+                date_format(to_date($"ex_end_time"),"yyyy-MM") as "month"
+              )
+            }
+            else {
+              if (df.columns.contains("ex_device_ip")) {
+                df.select(
+                  $"I_ID_D",
+                  $"I_ID_U",
+                  $"ex_start_time" as "start",
+                  $"ex_end_time" as "end",
+                  $"ex_bin_path" as "bin_path",
+                  $"ex_cardinality" as "cardinality",
+                  $"ex_duration" as "duration",
+                  $"ex_status" as "status",
+                  $"ex_app_category" as "app_category",
+                  $"ex_app_company" as "app_company",
+                  $"ex_app_name" as "app_name",
+                  $"ex_app_bin_exec_name" as "app_bin_exec_name",
+                  $"ex_app_bin_paths" as "app_bin_paths",
+                  $"ex_app_bin_version" as "app_bin_version",
+                  $"ex_device_ip" as "source_ip",
+                  $"engine",
+                  $"filedt",
+                  getCollectType($"engine") as "collecttype",
+                  to_date($"ex_end_time") as "dt",
+                  date_format(to_date($"ex_end_time"),"yyyy-MM") as "month"
+                )
+              } else {
+                df.select(
+                  $"I_ID_D",
+                  $"I_ID_U",
+                  $"ex_start_time" as "start",
+                  $"ex_end_time" as "end",
+                  $"ex_bin_path" as "bin_path",
+                  $"ex_cardinality" as "cardinality",
+                  $"ex_duration" as "duration",
+                  $"ex_status" as "status",
+                  $"ex_app_category" as "app_category",
+                  $"ex_app_company" as "app_company",
+                  $"ex_app_name" as "app_name",
+                  $"ex_app_bin_exec_name" as "app_bin_exec_name",
+                  $"ex_app_bin_paths" as "app_bin_paths",
+                  $"ex_app_bin_version" as "app_bin_version",
+                  lit("") as "source_ip",
+                  $"engine",
+                  $"filedt",
+                  getCollectType($"engine") as "collecttype",
+                  to_date($"ex_end_time") as "dt",
+                  date_format(to_date($"ex_end_time"),"yyyy-MM") as "month"
+                )
+              }
+            }
           case _ => df
         }
         selectedDf
@@ -117,7 +192,7 @@ class Pipeline2To3(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         .agg(min(hour(endColumn)).as("min_hour"),max(hour(endColumn)).as("max_hour"))
         .filter($"min_hour" <= 3 and $"max_hour" >= 23)
 
-      val resDf = if (filetype == "connection") {
+      val resDf = if (filetype == "connection" || filetype == "execution") {
         joinedCachedDf.as("all").join(broadcast(completeDf).as("complete"),
           ($"all.dt" === $"complete.dt") and ($"all.engine" === $"complete.engine")
             and ($"all.collecttype" === $"complete.collecttype") and ($"all.filedt" === $"complete.filedt"),"inner")

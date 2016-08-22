@@ -67,7 +67,7 @@ function mergefiledt() {
 
 TMPFILE="${TMP}/$(basename $(mktemp))"
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : TMPFILE=${TMPFILE}"
-for var in connection webrequest
+for var in connection webrequest execution
 do
 	ls $ANONYMIZED | grep "${var}" | grep "${PATTERN}" > ${TMPFILE}_${var}
 	for filedt in $(cat ${TMPFILE}_${var} | cut -d_ -f3 | cut -d. -f1 | sort -u)

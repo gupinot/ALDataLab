@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-exec 1>>/root/log/zeppelin-restart.log
+exec 1>>/root/zeppelin/logs/zeppelin-restart.log
 exec 2>&1
+
 echo ""
 echo "$(date +"%Y-%m-%dT%H:%M") : begin"
 

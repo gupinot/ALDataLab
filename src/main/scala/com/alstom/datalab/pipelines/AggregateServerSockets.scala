@@ -1,5 +1,8 @@
 package com.alstom.datalab.pipelines
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import com.alstom.datalab.Util._
 import com.alstom.datalab.{MetaSockets, Meta, Pipeline}
 import org.apache.spark.sql.{SaveMode, SQLContext}
@@ -22,8 +25,7 @@ class AggregateServerSockets(implicit sqlContext: SQLContext) extends Pipeline w
 
 
         val jobidcur:Long = System.currentTimeMillis/1000
-
-        //read meta to compute
+      //read meta to compute
         val meta_delta_ok = deltaMetaResolvedToAggregated(context.meta())
 
         val meta = meta_delta_ok.cache()

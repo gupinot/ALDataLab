@@ -84,14 +84,26 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
   override def execute(): Unit = {
     this.inputFiles.foreach(f = (filein) => {
       val filename = basename(filein)
-      val Array(filetype, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
+      val Array(filetype_temp, file_date) = filename.replaceAll("\\.[^_]+$", "").split("_")
       val (year, month_day) = file_date.splitAt(4)
       val (month, day) = month_day.splitAt(2)
       val filedate = s"$year-$month-$day"
 
+      val filetype = filetype_temp match {
+        case "CartoServer" => "AIP-Server"
+        case "CartoSoftInstance" => "AIP-SoftInstance"
+        case "CartoApplication" => "AIP-Application"
+        case "CartoAppGFtoApp" => "AIP-AppGFtoApp"
+        case "CartoAppSoftware" => "AIP-Software"
+        case "CartoOrgDeploy" => "AIP-OrgDeploy"
+        case _ => filetype_temp
+      }
+
+
       println("RepoProcessInFile() : filename=" + filein + ", filetype=" + filetype + ", filedate=" + filedate)
       val respath = s"${context.dirout()}/$filetype"
       println("RepoProcessInFile() : respath = " + respath)
+
 
       val res = sqlContext.read
         .format("com.databricks.spark.csv")
@@ -121,7 +133,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           .withColumn("mdm_ip_end_int", rangeToIP($"mdm_ip_start_int", $"mdm_ip_range"))
 
         case "AIP-Server" => res.select(
-          $"Host name".as("aip_server_hostname"),
+          lower($"Host name").as("aip_server_hostname"),
           $"Physical Server name".as("aip_server_phys_host"),
           $"Size".as("aip_server_size"),
           $"Function".as("aip_server_function"),
@@ -136,35 +148,65 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           $"CPU Name".as("aip_server_cpu_type"),
           $"CPUs number".as("aip_server_cpu_num"),
           $"Core number".as("aip_server_cpu_cores"),
-          $"Owner".as("aip_server_owner"),
-          $"Owner Org UID".as("aip_server_owner_org_id"),
+          $"Leased or owned".as("aip_server_owner"),
+          //$"Owner Org UID".as("aip_server_owner_org_id"),
           $"Vendor".as("aip_server_vendor"),
           $"Model".as("aip_server_model"),
           //$"Installation date".as("aip_server_dt_install"),
           $"Operational role".as("aip_server_role"),
           $"Source".as("aip_server_source"),
-          $"Administrated by".as("aip_server_adminby"),
+          //$"Administrated by".as("aip_server_adminby"),
           $"OS Name".as("aip_server_os_name"),
           lit(filedate).as("filedate")
         )
 
-        case "AIP-Application" => res.select(
-          $"Application Name".as("aip_app_name"),
-          $"Shared Unique ID".as("aip_app_shared_unique_id"),
-          $"Type".as("aip_app_type"),
-          $"Validation".as("aip_app_validation"),
-          $"Current State".as("aip_app_state"),
-          $"Sensitive Application".as("aip_app_sensitive"),
-          $"Alstom Criticality".as("aip_app_criticality"),
-          $"Sector".as("aip_app_sector"),
-          $"IT Owner".as("aip_app_it_owner"),
-          $"IS Owner".as("aip_app_is_owner"),
-          lit(filedate).as("filedate")
-        )
+        case "AIP-Application" =>
+          if (res.columns.contains("x-Alstom Criticality"))
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"x-Alstom Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
+          else if (res.columns.contains("Alstom Criticality"))
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"Alstom Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
+          else
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
 
         case "AIP-AppGFtoApp" => res.select(
           $"Name".as("aip_appgf_name"),
-          $"Shared Unique ID".as("aip_appgf_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_appgf_shared_unique_id"),
           $"Type".as("aip_appgf_type"),
           $"GridFusion Application Name".as("aip_appgf_grid_app_name"),
           $"Billing Code".as("aip_appgf_billing_code"),
@@ -173,9 +215,9 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-SoftInstance" => res.select(
           $"Application name".as("aip_appinstance_name"),
-          $"Shared Unique ID".as("aip_appinstance_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_appinstance_shared_unique_id"),
           $"Type".as("aip_appinstance_type"),
-          $"Host name".as("aip_appinstance_hostname"),
+          lower($"Host name").as("aip_appinstance_hostname"),
           $"IP address".as("aip_appinstance_ip"),
           $"Application Sector".as("aip_appinstance_sector"),
           $"Application current state".as("aip_appinstance_state"),
@@ -184,7 +226,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-OrgDeploy" => res.select(
           $"Application Name".as("aip_orgdeploy_name"),
-          $"Shared Unique ID".as("aip_orgdeploy_shared_unique_id"),
+          regexp_replace($"Shared Unique ID", "^0*","").as("aip_orgdeploy_shared_unique_id"),
           $"Org unit UID".as("aip_orgdeploy_unit_uid"),
           $"Org unit Name".as("aip_orgdeploy_unit_name"),
           $"Org unit Teranga code".as("aip_orgdeploy_unit_terranga_code"),
@@ -195,7 +237,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
 
         case "AIP-Software" => res.select(
           $"Application".as("aip_software_name"),
-          $"Unique ID".as("aip_software_shared_unique_id"),
+          regexp_replace($"Unique ID", "^0*","").as("aip_software_shared_unique_id"),
           $"GAPM ID".as("aip_software_gapm_id"),
           $"ADC Support".as("aip_software_adc_support"),
           $"Application Based on".as("aip_software_app_based_on"),
@@ -235,7 +277,7 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           sys.exit(1)
       }
 
-      res2.write.mode(SaveMode.Append).partitionBy("filedate").parquet(respath)
+      res2.write.mode(SaveMode.Overwrite).partitionBy("filedate").parquet(respath)
       println("RepoProcessInFile() : load.write done")
     })
   }

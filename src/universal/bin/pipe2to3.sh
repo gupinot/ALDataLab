@@ -63,7 +63,7 @@ done
 
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
-for var in connection webrequest
+for var in connection webrequest execution
 do
     hdfs dfs -ls ${dirin}/${var}/ | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
 	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
