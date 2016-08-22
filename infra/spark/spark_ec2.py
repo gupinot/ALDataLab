@@ -51,56 +51,36 @@ else:
     raw_input = input
     xrange = range
 
-SPARK_EC2_VERSION = "1.6.0"
+SPARK_EC2_VERSION = "1.6.2"
 SPARK_EC2_DIR = os.path.dirname(os.path.realpath(__file__))
 
 VALID_SPARK_VERSIONS = set([
-    "0.7.3",
-    "0.8.0",
-    "0.8.1",
-    "0.9.0",
-    "0.9.1",
-    "0.9.2",
-    "1.0.0",
-    "1.0.1",
-    "1.0.2",
-    "1.1.0",
-    "1.1.1",
-    "1.2.0",
-    "1.2.1",
-    "1.3.0",
-    "1.3.1",
     "1.4.0",
     "1.4.1",
     "1.5.0",
     "1.5.1",
     "1.5.2",
     "1.6.0",
+    "1.6.2"
 ])
 
 SPARK_ZEPPELIN_MAP = {
-    "1.6.0": "0.6.0-incubating-SNAPSHOT"
+    "1.6.0": "0.6.0-incubating-SNAPSHOT",
+    "1.6.2": "0.6.0"
 }
 
 SPARK_TACHYON_MAP = {
-    "1.0.0": "0.4.1",
-    "1.0.1": "0.4.1",
-    "1.0.2": "0.4.1",
-    "1.1.0": "0.5.0",
-    "1.1.1": "0.5.0",
-    "1.2.0": "0.5.0",
-    "1.2.1": "0.5.0",
-    "1.3.0": "0.5.0",
-    "1.3.1": "0.5.0",
     "1.4.0": "0.6.4",
     "1.4.1": "0.6.4",
     "1.5.0": "0.7.1",
     "1.5.1": "0.7.1",
     "1.5.2": "0.7.1",
     "1.6.0": "0.8.2",
+    "1.6.2": "0.8.2"
 }
 
 DEFAULT_SPARK_VERSION = SPARK_EC2_VERSION
+DEFAULT_PIPELINE_VERSION = "1.3.2"
 DEFAULT_SPARK_GITHUB_REPO = "https://github.com/apache/spark"
 
 # Default location to get the spark-ec2 scripts (and ami-list) from
@@ -296,10 +276,19 @@ def parse_args():
         "--zeppelin-bucket", default="gezeppelin",
         help="the s3 bucket name to use for zeppelin notebooks")
     parser.add_option(
+        "--hive-db", default="hive",
+        help="the mysql database name to use for hive metastore")
+    parser.add_option(
+        "--hive-user", default="hive",
+        help="the mysql username to use for hive metastore")
+    parser.add_option(
+        "--hive-password", default="hive",
+        help="the mysql password to use for hive metastore")
+    parser.add_option(
         "--pipeline-bucket", default="gedatalab",
         help="the s3 bucket name to use for pipeline binaries")
     parser.add_option(
-        "--pipeline-version", default="1.3.1",
+        "--pipeline-version", default=DEFAULT_PIPELINE_VERSION,
         help="the version of pipeline to use")
     parser.add_option(
         "--ganglia", action="store_true", default=False,
@@ -890,7 +879,7 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
             ssh_write(slave_address, opts, ['tar', 'x'], dot_ssh_tar)
 
     modules = ['spark', 'ephemeral-hdfs', 'persistent-hdfs',
-               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio',
+               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio','mysql'
                'zeppelin','pipeline','s3proxy']
 
     if opts.hadoop_major_version == "1":
@@ -1171,6 +1160,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "zeppelin_bucket": opts.zeppelin_bucket,
         "pipeline_version": opts.pipeline_version,
         "pipeline_bucket": opts.pipeline_bucket,
+        "hive_db": opts.hive_db,
+        "hive_user": opts.hive_user,
+        "hive_password": opts.hive_password,
         "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
         "spark_master_opts": opts.master_opts
