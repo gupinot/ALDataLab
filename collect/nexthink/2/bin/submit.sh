@@ -38,6 +38,11 @@ ${MERGE_SPLIT_SHELL}
 ${SENDMERGEDSPLITED_SHELL}
 # also executed in crontab
 
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse oracle files"
+${DISTRIB_SHELL} "0" "${INORAFILES}/listener*.gz" "${ORAPIPE_RSHELL}" "listener"
+${DISTRIB_SHELL} "0" "${INORAFILES}/LISTENER*.gz" "${ORAPIPE_RSHELL}" "listener"
+${SENDORACLE_SHELL}
+
 ########################################################
 #Create updated version of I-ID csv file and send to s3
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Anonymize IDM"

@@ -26,11 +26,11 @@ require(uuid)
 AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
   print("AnonymizeFile() : begin")
 
-  print("AnonymizeFile() : read file...")
-  NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
   
   
   if (FileType == "connection") {
+    print("AnonymizeFile() : read file...")
+    NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
     setnames(NXData, c("NX_con_start_time", "NX_con_end_time", 
                        "NX_con_duration", "NX_con_cardinality", "NX_con_destination_ip", 
                        "NX_con_out_traffic", "NX_con_in_traffic", "NX_con_type", "NX_con_status", "NX_con_port", 
@@ -56,6 +56,7 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "NX_user_name"))
 
     print("AnonymizeFile() : anonymize NX_device_name")
+    NXData[, NX_device_name:=tolower(NX_device_name)]
     Res <- Anonymize(unique(NXData$NX_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -76,6 +77,8 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     
   }
   else if (FileType == "webrequest") {
+    print("AnonymizeFile() : read file...")
+    NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
     #webrequest
     NXData <- NXData[, c(1, 2, 3, 11, 15, 17, 18, 20, 21, 24), with=FALSE]
     setnames(NXData, c("wr_id", "wr_start_time", "wr_end_time", 
@@ -107,6 +110,8 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData[, filedt:=filedate]
   }
   else if (FileType == "execution") {
+    print("AnonymizeFile() : read file...")
+    NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
     #execution
     if (length(colnames(NXData)) == 16) {
     	setnames(NXData, c("ex_start_time", "ex_end_time",
@@ -165,6 +170,8 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData[, filedt:=filedate]
   }
   else if (FileType == "bigfix") {
+    print("AnonymizeFile() : read file...")
+    NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
     #bigfix
     setnames(NXData, c("bf_device_name", "LastReportTime", "ComputerCountry",
     "ComputerLocation", "PrimaryUser", "PrimaryUserAlstomIdFromIDM", "PrimaryUserEmailFromIDM",
@@ -184,14 +191,17 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
 
   }
   else if (FileType == "listener") {
+    print("AnonymizeFile() : read file...")
+    NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep=";")
     
     #convert user_name to lower case and suppress .ad.sys suffix
     NXData[, source_user:=tolower(source_user)]
     NXData[, source_user:=gsub(".ad.sys", "", source_user)]
     
     #when source_user has not @domX value included, find this value in IDM if exists
-    NXData_ok <- NXData[grepl('@', source_user]
-    NXData_ko <- NXData[!grepl('@', source_user]
+    NXData_ok <- NXData[grepl('@', source_user)]
+    NXData_ko <- NXData[!grepl('@', source_user)]
+    IDMFILES<-Sys.getenv("IDMFileList")
     for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
 
       print(paste("IDMFILE used : ",IDMFILE, sep=""))
@@ -202,31 +212,27 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
              c("ID", "ADLogin", "ADDomain", "Status"))
 
       IDM<-IDM[ADLogin!="" & Status == "ACTIVE" & ADDomain!="", ]
+      IDM[, ADLogin:=tolower(ADLogin)]
   
-      IDM[, Login:=paste(tolower(ADLogin), "@", tolower(ADDomain), sep="")]
+      IDM[, Login:=paste(ADLogin, "@", tolower(ADDomain), sep="")]
 
-      IDM<-IDM[, list(ID, Login)]
+      IDM<-IDM[, list(ADLogin, Login)]
 
-      setkey(IDM,ID)
+      setkey(IDM,ADLogin)
       IDM<-unique(IDM)
 
       #join Dico and IDM
-      setkey(IDM, ID)
+      setkey(IDM, ADLogin)
       setkey(NXData_ko, source_user)
 
-      tmp <- IDM[NXData_ko, nomatch=0]
+      tmp <- NXData_ko[IDM, nomatch=0]
       tmp[, source_user:=Login]
+      tmp <- tmp[, !c("Login"), with=FALSE]
       
-      NXData_ok <- rbindlist(list(NXData_ok, tmp[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]), use.names=TRUE)
-      setkey(I_ID_ok, I_ID)
-      I_ID_ok <- unique(I_ID_ok)
-      print(paste("dim(I_ID_ok) : ",dim(I_ID_ok), sep=""))
-      I_ID_ko <- I_ID_ko[!IDM][, list(I_ID, name)]
-      print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
+      NXData_ok <- rbindlist(list(NXData_ok, tmp), use.names=TRUE)
+      NXData_ko <- NXData_ko[!IDM]
     }
-    
-    
-    NXData[, source_host_name:=toupper(source_host_name)]
+    NXData <- rbindlist(list(NXData_ok, NXData_ko), use.names=TRUE)
 
     print("AnonymizeFile() : anonymize source_user")
     Res <- Anonymize(unique(NXData$source_user))
@@ -237,6 +243,7 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "source_user"))
 
     print("AnonymizeFile() : anonymize source_host_name")
+    NXData[, source_host_name:=tolower(source_host_name)]
     Res <- Anonymize(unique(NXData$source_host_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
