@@ -160,19 +160,49 @@ class RepoProcessInFile(sqlContext: SQLContext) extends Pipeline {
           lit(filedate).as("filedate")
         )
 
-        case "AIP-Application" => res.select(
-          $"Application Name".as("aip_app_name"),
-          regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
-          $"Type".as("aip_app_type"),
-          $"Validation".as("aip_app_validation"),
-          $"Current State".as("aip_app_state"),
-          $"Sensitive Application".as("aip_app_sensitive"),
-          $"Alstom Criticality".as("aip_app_criticality"),
-          $"Sector".as("aip_app_sector"),
-          $"IT Owner".as("aip_app_it_owner"),
-          $"IS Owner".as("aip_app_is_owner"),
-          lit(filedate).as("filedate")
-        )
+        case "AIP-Application" =>
+          if (res.columns.contains("x-Alstom Criticality"))
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"x-Alstom Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
+          else if (res.columns.contains("Alstom Criticality"))
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"Alstom Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
+          else
+            res.select(
+              $"Application Name".as("aip_app_name"),
+              regexp_replace($"Shared Unique ID", "^0*","").as("aip_app_shared_unique_id"),
+              $"Type".as("aip_app_type"),
+              $"Validation".as("aip_app_validation"),
+              $"Current State".as("aip_app_state"),
+              $"Sensitive Application".as("aip_app_sensitive"),
+              $"Criticality".as("aip_app_criticality"),
+              $"Sector".as("aip_app_sector"),
+              $"IT Owner".as("aip_app_it_owner"),
+              $"IS Owner".as("aip_app_is_owner"),
+              lit(filedate).as("filedate")
+            )
 
         case "AIP-AppGFtoApp" => res.select(
           $"Name".as("aip_appgf_name"),

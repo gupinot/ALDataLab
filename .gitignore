@@ -8,3 +8,9 @@ build
 derby.log
 *.tfvars
 *.tfstate*
+server/alstom-serverusage-server-0.7.0
+server/alstom-serverusage-server-0.7.0.tgz
+server/build/
+server/web/
+data
+collect

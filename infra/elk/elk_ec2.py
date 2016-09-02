@@ -123,7 +123,7 @@ EC2_INSTANCE_TYPES = {
 
 DEFAULT_AMIS={
     "us-east-1":{
-        "hvm":"ami-295ab844"
+        "hvm":"ami-74d45b63"
     }
 }
 
@@ -216,10 +216,6 @@ def parse_args():
     parser.add_option(
         "--spot-price", metavar="PRICE", type="float", default="0.05",
         help="If specified, launch slaves as spot instances with the given " +
-             "maximum price (in dollars)")
-    parser.add_option(
-        "--master-spot-price", metavar="MASTER_PRICE", type="float", default="0.05",
-        help="If specified, launch master as spot instance with the given " +
              "maximum price (in dollars)")
     parser.add_option(
         "-u", "--user", default="ubuntu",
@@ -565,10 +561,9 @@ def launch_cluster(conn, opts, cluster_name):
 
         if opts.spot_price is not None:
             # Launch spot instance with the requested price
-            print("Requesting master as spot instance with price $%.3f" %
-                  (opts.master_spot_price))
+            print("Requesting master as spot instance with price $%.3f" % (opts.spot_price))
             master_reqs = conn.request_spot_instances(
-                    price=opts.master_spot_price,
+                    price=opts.spot_price,
                     image_id=opts.ami,
                     key_name=opts.key_pair,
                     launch_group="master-group-%s" % cluster_name,

@@ -1,6 +1,6 @@
 package com.alstom.datalab
 
-import com.alstom.datalab.pipelines.{Pipeline3To4, Pipeline4To5, Pipeline2To3}
+import com.alstom.datalab.pipelines.{Pipeline3To4Exec, Pipeline3To4, Pipeline4To5, Pipeline2To3}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{SQLContext, DataFrame, Row}
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
@@ -56,6 +56,23 @@ trait Meta {
         and ($"cnx_meta_delta.min_filedt" === $"metaDf1.min_filedt"),
       "inner")
       .select(cnx_meta_delta.columns.map(cnx_meta_delta.col):_*)
+  }
+
+  def deltaMeta3to4Exec(path: String)(implicit sqlContext: SQLContext) = {
+    import sqlContext.implicits._
+    val stage1 = Pipeline2To3.STAGE_NAME
+    val stage2 = Pipeline3To4Exec.STAGE_NAME
+    val metaDf1 = aggregateMeta(loadMeta(path), stage1).as("metaDf1")
+    val metaDf2 = aggregateMeta(loadMeta(path), stage2).as("metaDf2")
+
+    //keep only connection delta (meta23 not in meta34)
+    metaDf1.filter($"metaDf1.filetype" === "execution").join(metaDf2,
+      ($"metaDf1.dt" === $"metaDf2.dt") and ($"metaDf1.engine" === $"metaDf2.engine")
+        and ($"metaDf1.collecttype" === $"metaDf2.collecttype") and ($"metaDf1.filetype" === $"metaDf2.filetype")
+        and ($"metaDf1.min_filedt" === $"metaDf2.min_filedt"),
+      "left_outer")
+      .filter("metaDf2.dt is null")
+      .select(metaDf1.columns.map(metaDf1.col):_*).as("ex_meta_delta")
   }
 
   def deltaMeta4to5(path: String)(implicit sqlContext: SQLContext) = {

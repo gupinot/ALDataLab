@@ -163,7 +163,25 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     print(paste("AnonymizeFile() : filedate=", filedate, sep=""))
     NXData[, engine:=enginename]
     NXData[, filedt:=filedate]
-  
+  }
+  else if (FileType == "bigfix") {
+    #bigfix
+    setnames(NXData, c("bf_device_name", "LastReportTime", "ComputerCountry",
+    "ComputerLocation", "PrimaryUser", "PrimaryUserAlstomIdFromIDM", "PrimaryUserEmailFromIDM",
+    "PrimaryUserCountryFromIDM", "PrimaryUserLocationFromIDM",
+    "PrimaryUserSectorFromIDM", "tem_server", "Program", "ProductCode",
+    "Version", "UserInstallation", "Count", "ClassName", "SuperClassName"))
+
+    print("AnonymizeFile() : anonymize bf_device_name")
+    Res <- Anonymize(unique(NXData$bf_device_name))
+    if (is.null(Res)) return(NULL)
+    setkey(Res, name)
+    setkey(NXData, bf_device_name)
+    NXData <- Res[NXData, nomatch=NA]
+    setnames(NXData, c("I_ID", "name"), c("I_ID_D", "bf_device_name"))
+
+    NXData <- NXData[, !c("bf_device_name"), with=FALSE]
+
   }
   else if (FileType == "listener") {
     
@@ -260,7 +278,8 @@ Anonymize <- function(namelist) {
     Dico <- fread(DICTIONNARY, sep=";")
 
   print("Anonymize() : join ")
-  Res <- data.table(name=namelist)
+  Res <- data.table(name=tolower(namelist))
+  Dico[, name:=tolower(name)]
   setkey(Dico, name)
   setkey(Res, name)
   Res <- Dico[Res, nomatch=NA]

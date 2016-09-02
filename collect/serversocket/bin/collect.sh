@@ -18,7 +18,6 @@ do
 	Server[$i]=$(echo $ListServer | awk -F ' ' -v NumRow=$i '{print $NumRow}')
 done
 
-
 #init ServerPID
 for ((i=1; i<=$NbServer;i++))
 do

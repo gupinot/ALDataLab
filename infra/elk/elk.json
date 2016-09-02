@@ -3,8 +3,8 @@
     "aws_access_key": "",
     "aws_secret_key": "",
     "aws_region": "us-east-1",
-    "aws_source_ami": "ami-2b594f41",
-    "aws_instance_type": "t2.nano",
+    "aws_source_ami": "ami-ddf13fb0",
+    "aws_instance_type": "t2.small",
     "aws_vpc_id": "vpc-2dae8d48",
     "aws_subnet_id": "subnet-6c8e3447",
     "ami_name_prefix": "elk",
@@ -59,7 +59,7 @@
     },
     {
       "type": "shell",
-      "script": "scripts/nginx.sh",
+      "script": "scripts/nodejs.sh",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
     },
     {
