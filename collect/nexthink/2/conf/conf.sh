@@ -22,6 +22,11 @@ export OUTNXFILES="${OUT}/NXFiles"
 export ANONYMIZED="${OUTNXFILES}/anonymized"
 export MERGEDSPLITED="${OUTNXFILES}/merged-splited"
 
+export INORAFILES="${IN}/oracle"
+export DONEORAFILESIN="${DONE}/oracle/in"
+export ORAANONYMIZED="${OUT}/oracle/anonymized"
+export DONEORAANONYMIZED="${DONE}/oracle/anonymized"
+
 export INREPO="${IN}/Repo"
 export DONEREPO="${DONE}/Repo"
 export OUTREPO="${OUT}/Repo"
