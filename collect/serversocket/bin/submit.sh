@@ -137,7 +137,6 @@ function test() {
 	) && LSOF_RET=$?
 	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && LSOF_ERR="$(cat $errlog | grep -v "Invalid argument" | grep -v "Connection to .* closed." | grep -v "using fake authentication data for X11 forwarding" | grep -vi "sudo: illegal option" | head -n 1 | tr -d '\n' | tr -d '\r')" && LSOF_ERR="$LSOF_ERR | $(head -n 1 $stdoutlog |  tr -d '\n' | tr -d '\r')"
 
-    #test pfiles if lsof not working for Unix OS
 	PFILES_RET=1
 	PFILES_ERR=""
 	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && [[ "$OSTYPE" != "linux" ]]  &&\    #test sudo pfiles /proc/* for unix os if lsof not working
@@ -156,7 +155,7 @@ function test() {
 	        LSOF_ERR="sudo lsof ko but sudo pfiles ok"
 	    fi
 
-	
+
 
 	#crontab
 	[[ "$DEBUG" == "YES" ]] && echo "test crontab"
@@ -171,7 +170,7 @@ function test() {
 	[[ $SSH_RET -eq 0 ]] && [[ $CRONTAB_RET -ne 0 ]] && CRONTAB_ERR="$(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | head -n 1 | tr -d '\n' | tr -d '\r')"
 
 	echo "\"$(date +"%Y-%m-%dT%H:%M:%S.000Z")\";\"$HOST\";\"$SERVERIP\";\"${SSH_RET}\";\"${SSH_ERR}\";\"${HOME_DIR}\";\"$NETSTAT_RET\";\"${NETSTAT_ERR}\";\"$LSOF_RET\";\"${LSOF_ERR}\";\"${CRONTAB_RET}\";\"${CRONTAB_ERR}\""
-	
+
 	TEST_RET=1
 	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -eq 0 ]] && [[ $LSOF_RET -eq 0 ]] && [[ $CRONTAB_RET -eq 0 ]] && TEST_RET=0
 	return $TEST_RET
