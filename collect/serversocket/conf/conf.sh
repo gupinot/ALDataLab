@@ -37,5 +37,5 @@ SERVERSTATUS_COLLECTHISTORY_S3="s3://gecustomers/document/ServerSockets/ge_serve
 SERVERTOTEST="$ROOTDIR/conf/serversToTest.csv"
 SERVERTOTEST_S3="s3://gecustomers/document/ServerSockets/serversToTest.csv"
 
-TESTREPORT="$ROOTDIR/conf/test_report"
+TESTREPORT="$ROOTDIR/log/test_report"
 TESTREPORT_S3="s3://gecustomers/document/ServerSockets/test_report"
