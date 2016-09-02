@@ -23,10 +23,10 @@ require(uuid)
 #   sauvegarder dictionnaire
 
 ########################################################################################################################
-AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
-  print("AnonymizeNxFile() : begin")
+AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
+  print("AnonymizeFile() : begin")
 
-  print("AnonymizeNxFile() : read file...")
+  print("AnonymizeFile() : read file...")
   NXData <- fread(paste("gunzip -c ", FileIn, sep=""), sep="\t")
   
   
@@ -47,7 +47,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData[, NX_user_name:=tolower(NX_user_name)]
     NXData[, NX_user_name:=gsub(".ad.sys", "", NX_user_name)]
     
-    print("AnonymizeNxFile() : anonymize NX_user_name")
+    print("AnonymizeFile() : anonymize NX_user_name")
     Res <- Anonymize(unique(NXData$NX_user_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -55,7 +55,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- Res[NXData, nomatch=NA]
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "NX_user_name"))
 
-    print("AnonymizeNxFile() : anonymize NX_device_name")
+    print("AnonymizeFile() : anonymize NX_device_name")
     Res <- Anonymize(unique(NXData$NX_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -64,6 +64,15 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_D", "NX_device_name"))
     
     NXData <- NXData[, !c("NX_device_name", "NX_user_name"), with=FALSE]
+
+    #add engine and filedt columns
+    reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
+    enginename<-reg[[1]][3]
+    filedate<-reg[[1]][4]
+    print(paste("AnonymizeFile() : enginename=", enginename, sep=""))
+    print(paste("AnonymizeFile() : filedate=", filedate, sep=""))
+    NXData[, engine:=enginename]
+    NXData[, filedt:=filedate]
     
   }
   else if (FileType == "webrequest") {
@@ -78,7 +87,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
                             wr_url, wr_device_name, 
                             wr_destination_port, wr_destination_ip, wr_application_name)]
     
-    print("AnonymizeNxFile() : anonymize wr_device_name")
+    print("AnonymizeFile() : anonymize wr_device_name")
     Res <- Anonymize(unique(NXData$wr_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -87,30 +96,48 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_D", "wr_device_name"))
     
     NXData <- NXData[, !c("wr_device_name"), with=FALSE]
-  }
-  else {
-    #execution
-    if (length(colnames(NXData)) == 15) {
-    	setnames(NXData, c("ex_start_time", "ex_end_time",
-    	"ex_bin_path", "ex_cardinality", "ex_duration",
-    	"ex_status", "ex_app_category", "ex_app_company",
-    	"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
-    	"ex_app_bin_version", "ex_user_name", "ex_device_name", "ex_device_ip"))
 
-    }
-    else {
+    #add engine and filedt columns
+    reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
+    enginename<-reg[[1]][3]
+    filedate<-reg[[1]][4]
+    print(paste("AnonymizeFile() : enginename=", enginename, sep=""))
+    print(paste("AnonymizeFile() : filedate=", filedate, sep=""))
+    NXData[, engine:=enginename]
+    NXData[, filedt:=filedate]
+  }
+  else if (FileType == "execution") {
+    #execution
+    if (length(colnames(NXData)) == 16) {
     	setnames(NXData, c("ex_start_time", "ex_end_time",
     	"ex_bin_path", "ex_cardinality", "ex_duration",
     	"ex_status", "ex_app_category", "ex_app_company",
     	"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
-    	"ex_app_bin_version", "ex_user_name", "ex_device_name"))
+    	"ex_app_bin_version", "ex_app_bin_hash", "ex_user_name", "ex_device_name", "ex_device_ip"))
+
+    } else {
+	if (length(colnames(NXData)) == 15) {
+    		setnames(NXData, c("ex_start_time", "ex_end_time",
+    		"ex_bin_path", "ex_cardinality", "ex_duration",
+    		"ex_status", "ex_app_category", "ex_app_company",
+    		"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
+    		"ex_app_bin_version", "ex_user_name", "ex_device_name", "ex_device_ip"))
+
+    	}
+    	else {
+    		setnames(NXData, c("ex_start_time", "ex_end_time",
+    		"ex_bin_path", "ex_cardinality", "ex_duration",
+    		"ex_status", "ex_app_category", "ex_app_company",
+    		"ex_app_name", "ex_app_bin_exec_name", "ex_app_bin_paths",
+    		"ex_app_bin_version", "ex_user_name", "ex_device_name"))
+    	}
     }
 
     #convert user_name to lower case and suppress .ad.sys suffix
     NXData[, ex_user_name:=tolower(ex_user_name)]
     NXData[, ex_user_name:=gsub(".ad.sys", "", ex_user_name)]
 
-    print("AnonymizeNxFile() : anonymize ex_user_name")
+    print("AnonymizeFile() : anonymize ex_user_name")
     Res <- Anonymize(unique(NXData$ex_user_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -118,7 +145,7 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
     NXData <- Res[NXData, nomatch=NA]
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "ex_user_name"))
 
-    print("AnonymizeNxFile() : anonymize ex_device_name")
+    print("AnonymizeFile() : anonymize ex_device_name")
     Res <- Anonymize(unique(NXData$ex_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -128,21 +155,87 @@ AnonymizeNxFile <- function(FileIn, FileOut, FileType = "connection") {
 
     NXData <- NXData[, !c("ex_device_name", "ex_user_name"), with=FALSE]
 
-}
+    #add engine and filedt columns
+    reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
+    enginename<-reg[[1]][3]
+    filedate<-reg[[1]][4]
+    print(paste("AnonymizeFile() : enginename=", enginename, sep=""))
+    print(paste("AnonymizeFile() : filedate=", filedate, sep=""))
+    NXData[, engine:=enginename]
+    NXData[, filedt:=filedate]
   
-  #add engine and filedt columns
-  reg<-regmatches(basename(FileIn), regexec("^([^_]+)_([^_]+)_(.*)(\\.tgz\\.csv)", basename(FileIn)))
-  enginename<-reg[[1]][3]
-  filedate<-reg[[1]][4]
-  print(paste("AnonymizeNxFile() : enginename=", enginename, sep=""))
-  print(paste("AnonymizeNxFile() : filedate=", filedate, sep=""))
-  NXData[, engine:=enginename]
-  NXData[, filedt:=filedate]
+  }
+  else if (FileType == "listener") {
+    
+    #convert user_name to lower case and suppress .ad.sys suffix
+    NXData[, source_user:=tolower(source_user)]
+    NXData[, source_user:=gsub(".ad.sys", "", source_user)]
+    
+    #when source_user has not @domX value included, find this value in IDM if exists
+    NXData_ok <- NXData[grepl('@', source_user]
+    NXData_ko <- NXData[!grepl('@', source_user]
+    for (IDMFILE in strsplit(IDMFILES, " ")[[1]]) {
+
+      print(paste("IDMFILE used : ",IDMFILE, sep=""))
+      #Read IDM
+      IDM<-fread(paste("gunzip -c ", IDMFILE, sep=""), sep=";")
+      IDM<-IDM[, c(1, 23, 22, 18), with=FALSE]
+      setnames(IDM,
+             c("ID", "ADLogin", "ADDomain", "Status"))
+
+      IDM<-IDM[ADLogin!="" & Status == "ACTIVE" & ADDomain!="", ]
   
+      IDM[, Login:=paste(tolower(ADLogin), "@", tolower(ADDomain), sep="")]
+
+      IDM<-IDM[, list(ID, Login)]
+
+      setkey(IDM,ID)
+      IDM<-unique(IDM)
+
+      #join Dico and IDM
+      setkey(IDM, ID)
+      setkey(NXData_ko, source_user)
+
+      tmp <- IDM[NXData_ko, nomatch=0]
+      tmp[, source_user:=Login]
+      
+      NXData_ok <- rbindlist(list(NXData_ok, tmp[, list(I_ID, Sector, SiteCode, SiteName, CountryCode, TerangaCode)]), use.names=TRUE)
+      setkey(I_ID_ok, I_ID)
+      I_ID_ok <- unique(I_ID_ok)
+      print(paste("dim(I_ID_ok) : ",dim(I_ID_ok), sep=""))
+      I_ID_ko <- I_ID_ko[!IDM][, list(I_ID, name)]
+      print(paste("dim(I_ID_ko) : ",dim(I_ID_ko), sep=""))
+    }
+    
+    
+    NXData[, source_host_name:=toupper(source_host_name)]
+
+    print("AnonymizeFile() : anonymize source_user")
+    Res <- Anonymize(unique(NXData$source_user))
+    if (is.null(Res)) return(NULL)
+    setkey(Res, name)
+    setkey(NXData, source_user)
+    NXData <- Res[NXData, nomatch=NA]
+    setnames(NXData, c("I_ID", "name"), c("I_ID_U", "source_user"))
+
+    print("AnonymizeFile() : anonymize source_host_name")
+    Res <- Anonymize(unique(NXData$source_host_name))
+    if (is.null(Res)) return(NULL)
+    setkey(Res, name)
+    setkey(NXData, source_host_name)
+    NXData <- Res[NXData, nomatch=NA]
+    setnames(NXData, c("I_ID", "name"), c("I_ID_D", "source_host_name"))
+    
+    NXData <- NXData[, !c("source_host_name", "source_user"), with=FALSE]
+  }
+  else {
+	print(paste("AnonymizeFile() : ERR : FileType not supported (", FileType, ")", sep=""))
+	return(NULL)
+  }
   
   write.table(NXData, gzfile(FileOut), sep=";", row.names=FALSE)
 
-  print("AnonymizeNxFile() : end")
+  print("AnonymizeFile() : end")
 }
 
 ########################################################################################################################
