@@ -24,12 +24,12 @@ echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : begin"
 #Parse Nexthink csv files (connection and webrequest) list and :
 # - anonymize I_U_ID and I_D_ID
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse nexthink connection files"
-${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/connection*.gz" "${NXPIPE_RSHELL}" "connection"
+${DISTRIB_SHELL} "0" "${INNXFILES}/connection*.gz" "${NXPIPE_RSHELL}" "connection"
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse nexthink webrequest files"
-${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/webrequest*.gz" "${NXPIPE_RSHELL}" "webrequest"
+${DISTRIB_SHELL} "0" "${INNXFILES}/webrequest*.gz" "${NXPIPE_RSHELL}" "webrequest"
 
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse nexthink execution files"
-${DISTRIB_SHELL} "0 1 2 3" "${INNXFILES}/execution*.gz" "${NXPIPE_RSHELL}" "execution"
+${DISTRIB_SHELL} "0" "${INNXFILES}/execution*.gz" "${NXPIPE_RSHELL}" "execution"
 
 # - merge anonymized files by file date and split if result too large
 ${MERGE_SPLIT_SHELL}
