@@ -7,6 +7,7 @@ ROOTDIR=/home/datalab
 export S3GEDL="s3://gedatalab"
 export S3IN="${S3GEDL}/in"
 export S3REPOIN="${S3IN}/repo"
+export ORAS3IN="s3://gerepo/in/oracle"
 
 #Directory
 export REPO="${ROOTDIR}/Repo"
@@ -26,7 +27,6 @@ export INORAFILES="${IN}/oracle"
 export DONEORAFILESIN="${DONE}/oracle/in"
 export ORAANONYMIZED="${OUT}/oracle/anonymized"
 export DONEORAANONYMIZED="${DONE}/oracle/anonymized"
-export ORAS3IN="${S3GEDL}/oracle/in"
 
 export INREPO="${IN}/Repo"
 export DONEREPO="${DONE}/Repo"

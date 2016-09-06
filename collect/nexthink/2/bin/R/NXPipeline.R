@@ -10,7 +10,7 @@ setwd(R_WD)
 
 File <- basename(File)
 
-paste("Rscript : ", ServeurID, " : ", File, sep="")
+print(paste("Rscript : ", ServeurID, " : ", File, sep=""))
 try(source("NX_pipeline.R")) 
 NX_pipe_connection(FileType = FileType, patternin=File, MoveScannedFileToArchive = TRUE)
 print("NXPipeline.R : End")
