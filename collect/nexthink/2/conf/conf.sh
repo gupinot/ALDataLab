@@ -26,6 +26,7 @@ export INORAFILES="${IN}/oracle"
 export DONEORAFILESIN="${DONE}/oracle/in"
 export ORAANONYMIZED="${OUT}/oracle/anonymized"
 export DONEORAANONYMIZED="${DONE}/oracle/anonymized"
+export ORAS3IN="${S3GEDL}/oracle/in"
 
 export INREPO="${IN}/Repo"
 export DONEREPO="${DONE}/Repo"
@@ -39,16 +40,19 @@ export DICTIONNARY_HIST="${REPO}/dictionnary-hist"
 
 export IDMFILE="${REPO}/IDM.csv"
 export IDMFILES="${REPO}/IDM_*.csv.gz"
+export IDMFileList=$(ls $IDMFILES | sort -t_ -k2 -r | tr '\n' ' ')
 export I_ID_REF="${REPO}/I-ID.csv.gz"
 export I_ID="${OUTREPO}/I-ID"
 
 export DISTRIB_SHELL="${ROOTDIR}/bin/distribute.sh"
 export NXPIPE_RSHELL="${ROOTDIR}/bin/R/NXPipeline.R"
+export ORAPIPE_RSHELL="${ROOTDIR}/bin/R/ORAPipeline.R"
 export ANONYMIZEIDM_RSHELL="${ROOTDIR}/bin/R/AnonymizeIDM.R"
 export MERGE_SPLIT_SHELL="${ROOTDIR}/bin/merge_split.sh"
 export REPO_SHELL="${ROOTDIR}/bin/repo.sh"
 export ANONYMIZEIDM_SHELL="${ROOTDIR}/bin/AnonymizeIDM.sh"
 export SENDMERGEDSPLITED_SHELL="${ROOTDIR}/bin/SendMergedSplited.sh"
+export SENDORACLE_SHELL="${ROOTDIR}/bin/SendOracle.sh"
 export R_WD="${ROOTDIR}/bin/R"
 export TMP=$HOME/tmp
 

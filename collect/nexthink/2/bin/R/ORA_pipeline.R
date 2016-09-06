@@ -21,6 +21,7 @@ ORA_pipe_connection <- function(FileType = "listener", patternin = "^listener.*.
     if (MoveScannedFileToArchive & class(res) != "try-error") {
       print("   Move FileIn to done directory...")
       DestFile<-paste(DONEORAFILESIN, "/", basename(filein), sep="")
+      print(paste("command : file.rename(", filein, ", ", DestFile, ")", sep=""))
       file.rename(filein, DestFile)
       print("   Move FileIn to done directory : done")
     }
