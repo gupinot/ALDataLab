@@ -1,30 +1,25 @@
-/**
-  * Created by guillaumepinot on 28/11/2015.
-  */
 package com.alstom.datalab.pipelines
 
-import java.awt.GraphicsDevice
-import java.io.Serializable
-import java.sql.Date
 
-import com.alstom.datalab.Util.{ConcatUniqueString, ConcatString, countSeparator}
+import com.alstom.datalab.Util.{ConcatUniqueString, countSeparator}
 import com.alstom.datalab._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType}
-import org.apache.spark.sql.{Row, SaveMode, DataFrame, SQLContext}
+import org.apache.spark.sql.{Row, DataFrame, SQLContext}
 
+/**
+  * Created by guillaumepinot on 22/01/2016.
+  */
+
+object WebApp {
+  val STAGE_NAME = "WebApp"
+}
 
 class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
 
   import sqlContext.implicits._
 
   private val myIO = new com.alstom.datalab.IO
-
-  import java.util.Calendar
-  import java.text.SimpleDateFormat
-  private val curTimeFormat = new SimpleDateFormat("YYYYmmdd-HHMMSS")
-  private val dirout = context.dirout() + "/data_" + curTimeFormat.format(Calendar.getInstance.getTime)
-
 
   def splitudf(splitcar: String) = udf(
     (chaine: String) => chaine.split(splitcar)
@@ -102,7 +97,7 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     res
   }
 
-  def generate(df: DataFrame, collecttype: String = "device", date_range: String, level: String, resolution: String) = {
+  def generate(df: DataFrame, collecttype: String = "device", date_range: String, level: String, resolution: String, s3dirout: String) = {
 
     val filename1 = collecttype match {
       case "device" => if (level == "detail") s"${resolution}AppliSiteServer" else s"${resolution}AppliSite"
@@ -114,10 +109,21 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
     }
     val fileout = s"Stat${filename1}${filename2}.csv.gz"
 
-    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), dstfile =  s"${fileout}", s3root = s"${dirout}", skipVerify = true)
+    println(s"WebApp() : generate() : myIO.writeCsvToS3() : fileout = ${fileout}")
+    myIO.writeCsvToS3(aggregatedf(df, collecttype, date_range, level, resolution), dstfile =  s"${fileout}", s3root = s"${s3dirout}", skipVerify = true)
   }
 
   def execute(): Unit = {
+
+    println(s"WebApp() : context.dirout() =${context.dirout()}")
+
+    import java.util.Calendar
+    import java.text.SimpleDateFormat
+    val curTimeFormat = new SimpleDateFormat("YYYYMMdd-HHmmss")
+    val s3dirout = context.dirout() + "/data_" + curTimeFormat.format(Calendar.getInstance.getTime)
+
+
+    println(s"WebApp() : s3dirout =${s3dirout}")
 
 
     //read meta to compute
@@ -166,7 +172,8 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         val tmp = sqlContext.sparkContext.parallelize(rows)
         val daterange = sqlContext.createDataFrame(tmp, daterangeSchema)
 
-        myIO.writeCsvToS3(daterange, dstfile = s"${filedaterange}", s3root = s"${dirout}", skipVerify = true)
+        println(s"WebApp() : myIO.writeCsvToS3() : fileout = ${filedaterange}")
+        myIO.writeCsvToS3(daterange, dstfile = s"${filedaterange}", s3root = s"${s3dirout}", skipVerify = true)
 
         val aggregated = sqlContext.read.option("mergeSchema", "false").parquet(s"${context.dirin()}/${collecttype}")
         val aggregated_dtok =  aggregated
@@ -179,14 +186,16 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
         aggregated_dtok.cache()
 
         for (resolution <- List("IDM", "Device"); level <- List("detail", "nodetail")) {
-          generate(aggregated_dtok, collecttype, date_range, level, resolution)
+          generate(aggregated_dtok, collecttype, date_range, level, resolution, s3dirout)
         }
       }
     }
 
     //Eval and write SectorCode file
-    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${dirout}", skipVerify = true)
-    myIO.writeCsvToS3(context.repo().readAIPApplication().select($"aip_app_sector" as "Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCodeServer.csv.gz", s3root = s"${dirout}", skipVerify = true)
+    println(s"WebApp() : myIO.writeCsvToS3() : dstfile = SectorCode.csv.gz")
+    myIO.writeCsvToS3(context.repo().readI_ID().select("Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCode.csv.gz", s3root = s"${s3dirout}", skipVerify = true)
+    println(s"WebApp() : myIO.writeCsvToS3() : dstfile = SectorCodeServer.csv.gz")
+    myIO.writeCsvToS3(context.repo().readAIPApplication().select($"aip_app_sector" as "Sector").filter("Sector is not null").filter($"Sector" !== "").orderBy("Sector").distinct(), dstfile = "SectorCodeServer.csv.gz", s3root = s"${s3dirout}", skipVerify = true)
 
     //eval and write SiteCode file
     val SiteCode = context.repo().readI_ID()
@@ -206,8 +215,9 @@ class WebApp(implicit sqlContext: SQLContext) extends Pipeline with Meta {
       .groupBy("SiteCode")
       .agg(first($"SiteName").as("SiteName"), first($"CountryCode").as("CountryCode"))
 
+    println(s"WebApp() : myIO.writeCsvToS3() :  SiteCode() : dstfile = SiteCode.csv.gz")
     myIO.writeCsvToS3(SiteCode,
-        dstfile = "SiteCode.csv.gz", s3root = s"${dirout}", skipVerify = true)
+        dstfile = "SiteCode.csv.gz", s3root = s"${s3dirout}", skipVerify = true)
   }
 }
 
