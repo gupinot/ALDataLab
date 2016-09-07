@@ -41,6 +41,7 @@ ${SENDMERGEDSPLITED_SHELL}
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : Parse oracle files"
 ${DISTRIB_SHELL} "0" "${INORAFILES}/listener*.gz" "${ORAPIPE_RSHELL}" "listener"
 ${DISTRIB_SHELL} "0" "${INORAFILES}/LISTENER*.gz" "${ORAPIPE_RSHELL}" "listener"
+${DISTRIB_SHELL} "0" "${INORAFILES}/Listener*.gz" "${ORAPIPE_RSHELL}" "listener"
 ${SENDORACLE_SHELL}
 
 ########################################################

@@ -1,0 +1,25 @@
+<config>
+    <engine>
+        <network>10.0.0.0/8</network>
+        <network>172.16.0.0/12</network>
+        <network>192.168.0.0/16</network>
+        <network>169.254.0.0/16</network>
+        <network>255.255.255.255/32</network>
+        <network>224.0.0.0/4</network>
+        <network>127.0.0.0/8</network>
+        <limit>
+            <max_connections>60000000</max_connections>
+        </limit>
+        <alib>
+            <activated>true</activated>
+        </alib>
+    	<tweak>
+            <static_now>2016-04-13T02:13:25</static_now>
+    	</tweak>
+        <finder>
+            <improvement_program_status>disabled_by_default</improvement_program_status>
+        </finder>
+        <server>Nxt-BA-6</server>
+        <dns>192.168.17.3</dns>
+    </engine>
+</config>

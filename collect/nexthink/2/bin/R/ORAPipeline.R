@@ -10,7 +10,7 @@ setwd(R_WD)
 
 File <- basename(File)
 
-paste("Rscript : ", ServeurID, " : ", File, sep="")
+print(paste("Rscript : ", ServeurID, " : ", File, sep=""))
 try(source("ORA_pipeline.R")) 
 ORA_pipe_connection(FileType = FileType, patternin=File, MoveScannedFileToArchive = TRUE)
 print("ORAPipeline.R : End")
