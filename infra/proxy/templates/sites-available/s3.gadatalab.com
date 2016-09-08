@@ -4,16 +4,13 @@ server {
 
     add_header Strict-Transport-Security max-age=31536000;
 
+    #aws_access_key AKIAIVELPAADXQE7QMFQ;
+    #aws_key_scope 20160718/us-east-1/s3/aws4_request;
+    #aws_signing_key DH/11FrMP3MXTuPquG6KhnEwL7OnbB5/2MBOT3Tf0Po=;
     aws_s3_bucket gecustomers;
 
     location / {
-        if ($ssl_client_verify != SUCCESS) {
-            return 401;
-        }
-
-        if ($ssl_client_s_dn_cn !~ "^(.*@aptiwan.com|.*@lezoomer.com|geuser|Guillaume PINOT)$") {
-            return 403;
-        }
+        include includes/acl.conf;
 
 	aws_sign;
         rewrite /(.*) /document/$1 break;
