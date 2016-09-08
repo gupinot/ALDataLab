@@ -879,7 +879,7 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key,cluster_
             ssh_write(slave_address, opts, ['tar', 'x'], dot_ssh_tar)
 
     modules = ['spark', 'ephemeral-hdfs', 'persistent-hdfs',
-               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio','mysql'
+               'mapreduce', 'spark-standalone', 'tachyon', 'rstudio','mysql',
                'zeppelin','pipeline','s3proxy']
 
     if opts.hadoop_major_version == "1":
