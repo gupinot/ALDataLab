@@ -22,7 +22,7 @@
     "source_ami": "{{user `aws_source_ami`}}",
     "instance_type": "{{user `aws_instance_type`}}",
     "ssh_username": "ec2-user",
-    "ami_name": "{{user `ami_name_prefix`}}-{{timestamp}}"
+    "ami_name": "{{user `ami_name_prefix`}}-hvm-{{timestamp}}"
   },{
     "type": "amazon-ebs",
     "name": "aws-pvm",
@@ -34,7 +34,7 @@
     "source_ami": "{{user `aws_source_ami_pvm`}}",
     "instance_type": "{{user `aws_instance_type_pvm`}}",
     "ssh_username": "ec2-user",
-    "ami_name": "{{user `ami_name_prefix`}}-{{timestamp}}"
+    "ami_name": "{{user `ami_name_prefix`}}-pvm-{{timestamp}}"
   }],
   "provisioners": [
     {
@@ -45,6 +45,16 @@
     {
       "type": "shell",
       "script": "scripts/java.sh",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/hadoop-native.sh",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/other-packages.sh",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E '{{ .Path }}'"
     }
   ]
