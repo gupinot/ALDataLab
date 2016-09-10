@@ -12,7 +12,7 @@ sed -i 's/^.*AuthorizedKeysFile/AuthorizedKeysFile .ssh\/authorized_keys2 /' /et
 sed -i 's/disable_root.*/disable_root: 0/g' /etc/cloud/cloud.cfg
 
 # Set up ephemeral mounts
-sed -i 's/mounts.*//g' /etc/cloud/cloud.cfg
+sed -i 's/.*mounts.*//g' /etc/cloud/cloud.cfg
 sed -i 's/.*ephemeral.*//g' /etc/cloud/cloud.cfg
 sed -i 's/.*swap.*//g' /etc/cloud/cloud.cfg
 
@@ -23,7 +23,7 @@ for x in {0..23}; do
         mnt="/mnt"
     else
         mnt="/mnt$((x+1))"
-    fi
+   fi
     echo " - [ ephemeral$x, $mnt, auto, \"defaults,noatime,nodiratime\", \"0\", \"0\" ]" >> /etc/cloud/cloud.cfg
 done
 

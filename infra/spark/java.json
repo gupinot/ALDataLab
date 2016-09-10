@@ -3,10 +3,11 @@
     "aws_access_key": "",
     "aws_secret_key": "",
     "aws_region": "us-east-1",
+    "aws_zone": "us-east-1a",
     "aws_source_ami": "ami-6869aa05",
     "aws_source_ami_pvm": "ami-2a69aa47",
-    "aws_instance_type": "t2.small",
-    "aws_instance_type_pvm": "m1.small",
+    "aws_instance_type": "m3.xlarge",
+    "aws_instance_type_pvm": "m1.xlarge",
     "aws_vpc_id": "vpc-2dae8d48",
     "aws_subnet_id": "subnet-6c8e3447",
     "ami_name_prefix": "java"
@@ -17,24 +18,48 @@
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
     "region": "{{user `aws_region`}}",
+    "availability_zone": "{{user `aws_zone`}}",
     "vpc_id": "{{user `aws_vpc_id`}}",
     "subnet_id": "{{user `aws_subnet_id`}}",
     "source_ami": "{{user `aws_source_ami`}}",
     "instance_type": "{{user `aws_instance_type`}}",
     "ssh_username": "ec2-user",
-    "ami_name": "{{user `ami_name_prefix`}}-hvm-{{timestamp}}"
+    "ami_name": "{{user `ami_name_prefix`}}-hvm-{{timestamp}}",
+    "ami_block_device_mappings": [
+        { "device_name": "/dev/sdb", "virtual_name": "ephemeral0" },
+        { "device_name": "/dev/sdc", "virtual_name": "ephemeral1" },
+        { "device_name": "/dev/sdd", "virtual_name": "ephemeral2" },
+        { "device_name": "/dev/sde", "virtual_name": "ephemeral3" },
+        { "device_name": "/dev/sdf", "virtual_name": "ephemeral4" },
+        { "device_name": "/dev/sdg", "virtual_name": "ephemeral5" },
+        { "device_name": "/dev/sdh", "virtual_name": "ephemeral6" },
+        { "device_name": "/dev/sdi", "virtual_name": "ephemeral7" },
+        { "device_name": "/dev/sdj", "virtual_name": "ephemeral8" }
+    ]
   },{
     "type": "amazon-ebs",
     "name": "aws-pvm",
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
     "region": "{{user `aws_region`}}",
+    "availability_zone": "{{user `aws_zone`}}",
     "vpc_id": "{{user `aws_vpc_id`}}",
     "subnet_id": "{{user `aws_subnet_id`}}",
     "source_ami": "{{user `aws_source_ami_pvm`}}",
     "instance_type": "{{user `aws_instance_type_pvm`}}",
     "ssh_username": "ec2-user",
-    "ami_name": "{{user `ami_name_prefix`}}-pvm-{{timestamp}}"
+    "ami_name": "{{user `ami_name_prefix`}}-pvm-{{timestamp}}",
+    "ami_block_device_mappings": [
+        { "device_name": "/dev/sdb", "virtual_name": "ephemeral0" },
+        { "device_name": "/dev/sdc", "virtual_name": "ephemeral1" },
+        { "device_name": "/dev/sdd", "virtual_name": "ephemeral2" },
+        { "device_name": "/dev/sde", "virtual_name": "ephemeral3" },
+        { "device_name": "/dev/sdf", "virtual_name": "ephemeral4" },
+        { "device_name": "/dev/sdg", "virtual_name": "ephemeral5" },
+        { "device_name": "/dev/sdh", "virtual_name": "ephemeral6" },
+        { "device_name": "/dev/sdi", "virtual_name": "ephemeral7" },
+        { "device_name": "/dev/sdj", "virtual_name": "ephemeral8" }
+    ]
   }],
   "provisioners": [
     {

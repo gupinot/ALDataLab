@@ -68,7 +68,7 @@ VALID_SPARK_VERSIONS = set([
 SPARK_ZEPPELIN_MAP = {
     "1.6.0": "0.6.0",
     "1.6.2": "0.6.0",
-    "2.0.0": "0.6.0"
+    "2.0.0": "0.6.1"
 }
 
 SPARK_TACHYON_MAP = {
@@ -78,7 +78,8 @@ SPARK_TACHYON_MAP = {
     "1.5.1": "0.7.1",
     "1.5.2": "0.7.1",
     "1.6.0": "0.8.2",
-    "1.6.2": "0.8.2"
+    "1.6.2": "0.8.2",
+    "2.0.0": "0.8.2"
 }
 
 # Source: http://aws.amazon.com/amazon-linux-ami/instance-type-matrix/
@@ -147,7 +148,7 @@ DEFAULT_SPARK_GITHUB_REPO = "https://github.com/apache/spark"
 
 # Default location to get the spark-ec2 scripts (and ami-list) from
 DEFAULT_SPARK_EC2_GITHUB_REPO = "https://github.com/rluta/spark-ec2"
-DEFAULT_SPARK_EC2_BRANCH = "zeppelin"
+DEFAULT_SPARK_EC2_BRANCH = "spark-2.0"
 DEFAULT_INSTANCE_TYPE="m1.xlarge"
 
 def setup_external_libs(libs):
@@ -256,7 +257,7 @@ def parse_args():
         "-v", "--spark-version", default=DEFAULT_SPARK_VERSION,
         help="Version of Spark to use: 'X.Y.Z' or a specific git hash (default: %default)")
     parser.add_option(
-        "--deploy-env", default="generic",
+        "--deploy-env", default="prod",
         help="Name of your base deploy directory. Script will look for deploy.<envname> in current directory  (default: %default)")
     parser.add_option(
         "--deploy-profile", default=None,
@@ -283,7 +284,7 @@ def parse_args():
         help="Github repo branch of spark-ec2 to use (default: %default)")
     parser.add_option(
         "--deploy-root-dir",
-        default=None,
+        default=SPARK_EC2_DIR+"/deploy.master/",
         help="A directory to copy into / on the first master. " +
              "Must be absolute. Note that a trailing slash is handled as per rsync: " +
              "If you omit it, the last directory of the --deploy-root-dir path will be created " +
@@ -862,10 +863,7 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key, cluster
             print(slave_address)
             ssh_write(slave_address, opts, ['tar', 'x'], dot_ssh_tar)
 
-    modules = ['spark', 'ephemeral-hdfs', 'spark-standalone', 'mysql', 'zeppelin', 'pipeline']
-
-    if opts.hadoop_major_version == "1":
-        modules = list(filter(lambda x: x != "mapreduce", modules))
+    modules = ['hdfs', 'spark', 'spark-standalone', 'mysql', 'zeppelin', 'pipeline']
 
     if opts.ganglia:
         modules.append('ganglia')
@@ -1098,12 +1096,12 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     active_master = get_dns_name(master_nodes[0], opts.private_ips)
 
     num_disks = get_num_disks(opts.instance_type)
-    hdfs_data_dirs = "/mnt/ephemeral-hdfs/data"
+    hdfs_data_dirs = "/mnt/hdfs/data"
     mapred_local_dirs = "/mnt/hadoop/mrlocal"
     spark_local_dirs = "/mnt/spark"
     if num_disks > 1:
         for i in range(2, num_disks + 1):
-            hdfs_data_dirs += ",/mnt%d/ephemeral-hdfs/data" % i
+            hdfs_data_dirs += ",/mnt%d/hdfs/data" % i
             mapred_local_dirs += ",/mnt%d/hadoop/mrlocal" % i
             spark_local_dirs += ",/mnt%d/spark" % i
 
