@@ -17,3 +17,6 @@ chmod a+x /usr/bin/realpath
 
 # Ganglia
 yum install -y ganglia ganglia-web ganglia-gmond ganglia-gmetad
+
+# Make sur we don't have a legacy openjdk 1.7.0 lingering somewhere
+yum erase -y java-1.7.0-openjdk

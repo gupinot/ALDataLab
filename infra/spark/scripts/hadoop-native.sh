@@ -1,6 +1,7 @@
 #!/bin/bash
 
 HADOOP_NATIVE_HOME=/root/hadoop-native
+VERSIONS="2.4.1 2.7.3"
 
 # Install Maven (for Hadoop)
 cd /tmp
@@ -16,17 +17,19 @@ echo "export PATH=\$PATH:\$M2_HOME/bin" >> ~/.bash_profile
 source ~/.bash_profile
 
 # Build Hadoop to install native libs
-mkdir -p ${HADOOP_NATIVE_HOME}
-cd /opt
-yum install -y protobuf-compiler cmake openssl-devel
-wget -O - "http://archive.apache.org/dist/hadoop/common/hadoop-2.4.1/hadoop-2.4.1-src.tar.gz" | tar xvzf -
-cd hadoop-2.4.1-src
-mvn package -Pdist,native -DskipTests -Dtar
-mv hadoop-dist/target/hadoop-2.4.1/lib/native/* ${HADOOP_NATIVE_HOME}
+yum install -y protobuf-compiler cmake openssl-devel snappy
+for version in $VERSIONS
+do
+    target=${HADOOP_NATIVE_HOME}-$version
+    cd /opt
+    mkdir -p $target
+    wget -O - "http://archive.apache.org/dist/hadoop/common/hadoop-$version/hadoop-$version-src.tar.gz" | tar xvzf -
+    cd hadoop-${version}-src
+    mvn package -Pdist,native -DskipTests -Dtar
+    mv hadoop-dist/target/hadoop-${version}/lib/native/* ${HADOOP_NATIVE_HOME}
+    ln -sf /usr/lib64/libsnappy.so.1 ${HADOOP_NATIVE_HOME}/.
+    rm -rf /opt/hadoop-${version}-src
+done
 
-# Install Snappy lib (for Hadoop)
-yum install -y snappy
-ln -sf /usr/lib64/libsnappy.so.1 ${HADOOP_NATIVE_HOME}/.
-
-rm -rf /opt/apache-maven-3.2.3 /opt/hadoop-2.4.1-src
+rm -rf /opt/apache-maven-3.2.3
 

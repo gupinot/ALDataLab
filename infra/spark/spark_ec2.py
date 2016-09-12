@@ -55,31 +55,28 @@ SPARK_EC2_VERSION = "1.6.2"
 SPARK_EC2_DIR = os.path.dirname(os.path.realpath(__file__))
 
 VALID_SPARK_VERSIONS = set([
-    "1.4.0",
-    "1.4.1",
-    "1.5.0",
-    "1.5.1",
-    "1.5.2",
-    "1.6.0",
     "1.6.2",
     "2.0.0"
 ])
 
 SPARK_ZEPPELIN_MAP = {
-    "1.6.0": "0.6.0",
-    "1.6.2": "0.6.0",
+    "1.6.2": "0.6.1",
     "2.0.0": "0.6.1"
 }
 
+SPARK_HADOOP_MAP = {
+    "1.6.2": "2.4",
+    "2.0.0": "2.7"
+}
+
+SPARK_SCALA_MAP = {
+    "1.6.2": "2.10",
+    "2.0.0": "2.11"
+}
+
 SPARK_TACHYON_MAP = {
-    "1.4.0": "0.6.4",
-    "1.4.1": "0.6.4",
-    "1.5.0": "0.7.1",
-    "1.5.1": "0.7.1",
-    "1.5.2": "0.7.1",
-    "1.6.0": "0.8.2",
     "1.6.2": "0.8.2",
-    "2.0.0": "0.8.2"
+    "2.0.0": "1.2.0"
 }
 
 # Source: http://aws.amazon.com/amazon-linux-ami/instance-type-matrix/
@@ -292,9 +289,11 @@ def parse_args():
              "the directory is not created and its contents are copied directly into /. " +
              "(default: %default).")
     parser.add_option(
-        "--hadoop-major-version", default="yarn",
-        help="Major version of Hadoop. Valid options are 1 (Hadoop 1.0.4), 2 (CDH 4.2.0), yarn " +
-             "(Hadoop 2.4.0) (default: %default)")
+        "--yarn", action="store_true", default=False,
+        help="Enable YARN support in spark and start YARN daemon in Hadoop (default: %default)")
+    parser.add_option(
+        "--tachyon", action="store_true", default=False,
+        help="Enable Tachyon support in spark and start Tachyon daemon in Hadoop (default: %default)")
     parser.add_option(
         "-D", metavar="[ADDRESS:]PORT", dest="proxy_port",
         help="Use SSH dynamic port forwarding to create a SOCKS proxy at " +
@@ -336,15 +335,6 @@ def parse_args():
         "--zeppelin-bucket", default="gezeppelin",
         help="the s3 bucket name to use for zeppelin notebooks")
     parser.add_option(
-        "--hive-db", default="hive",
-        help="the mysql database name to use for hive metastore")
-    parser.add_option(
-        "--hive-user", default="hive",
-        help="the mysql username to use for hive metastore")
-    parser.add_option(
-        "--hive-password", default="hive",
-        help="the mysql password to use for hive metastore")
-    parser.add_option(
         "--pipeline-bucket", default="gedatalab",
         help="the s3 bucket name to use for pipeline binaries")
     parser.add_option(
@@ -369,7 +359,7 @@ def parse_args():
     parser.add_option(
         "--worker-instances", type="int", default=1,
         help="Number of instances per worker: variable SPARK_WORKER_INSTANCES. Not used if YARN " +
-             "is used as Hadoop major version (default: %default)")
+             "is enabled (default: %default)")
     parser.add_option(
         "--master-opts", type="string", default="",
         help="Extra options to give to master through SPARK_MASTER_OPTS variable " +
@@ -475,6 +465,16 @@ def get_tachyon_version(spark_version):
 def get_zeppelin_version(spark_version):
     """Find a Zeppelin version matching the selected Spark version"""
     return SPARK_ZEPPELIN_MAP.get(spark_version, "")
+
+
+def get_hadoop_version(spark_version):
+    """Find a Zeppelin version matching the selected Spark version"""
+    return SPARK_HADOOP_MAP.get(spark_version, "")
+
+
+def get_scala_version(spark_version):
+    """Find a Zeppelin version matching the selected Spark version"""
+    return SPARK_SCALA_MAP.get(spark_version, "")
 
 
 def get_spark_ami(opts):
@@ -871,8 +871,14 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key, cluster
     if opts.es_security_group:
         modules.append('elasticsearch')
 
+    if opts.tachyon:
+        modules.append('tachyon')
+
+    if opts.yarn:
+        modules.append('yarn')
+
     # Clear SPARK_WORKER_INSTANCES if running on YARN
-    if opts.hadoop_major_version == "yarn":
+    if opts.yarn:
         opts.worker_instances = ""
 
     # NOTE: We should clone the repository before running deploy_files to
@@ -1112,10 +1118,12 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         spark_v = get_validate_spark_version(opts.spark_version, opts.spark_git_repo)
         tachyon_v = get_tachyon_version(spark_v)
         zeppelin_v = get_zeppelin_version(spark_v)
+        hadoop_v = get_hadoop_version(spark_v)
     else:
         # Spark-only custom deploy
         spark_v = "%s|%s" % (opts.spark_git_repo, opts.spark_version)
         tachyon_v = ""
+        hadoop_v = "2.4"
         print("Deploying Spark via git hash; Tachyon won't be set up")
         modules = filter(lambda x: x != "tachyon", modules)
 
@@ -1136,16 +1144,14 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "modules": '\n'.join(modules),
         "spark_version": spark_v,
         "tachyon_version": tachyon_v,
+        "scala_version": get_scala_version(spark_v),
+        "hadoop_major_version": hadoop_v,
         "zeppelin_version": zeppelin_v,
         "zeppelin_bucket": opts.zeppelin_bucket,
         "pipeline_version": opts.pipeline_version,
         "pipeline_bucket": opts.pipeline_bucket,
-        "hive_db": opts.hive_db,
-        "hive_user": opts.hive_user,
-        "hive_password": opts.hive_password,
-        "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
-        "spark_master_opts": opts.master_opts
+        "spark_master_opts": opts.master_opts,
     }
 
     if opts.copy_aws_credentials:
