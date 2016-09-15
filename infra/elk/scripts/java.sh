@@ -2,8 +2,7 @@
 
 set -e
 
-apt-get update
-apt-get install -y openjdk-8-jdk
+yum install -y java-1.8.0-openjdk-devel
 
 echo "Check installation"
 java -version

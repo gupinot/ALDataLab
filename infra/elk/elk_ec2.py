@@ -123,7 +123,8 @@ EC2_INSTANCE_TYPES = {
 
 DEFAULT_AMIS={
     "us-east-1":{
-        "hvm":"ami-74d45b63"
+        "hvm":"ami-6e6bff79",
+        "pvm":"ami-f86afeef"
     }
 }
 
@@ -218,7 +219,7 @@ def parse_args():
         help="If specified, launch slaves as spot instances with the given " +
              "maximum price (in dollars)")
     parser.add_option(
-        "-u", "--user", default="ubuntu",
+        "-u", "--user", default="ec2-user",
         help="The SSH user you want to connect as (default: %default)")
     parser.add_option(
         "--delete-groups", action="store_true", default=False,

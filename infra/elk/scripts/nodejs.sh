@@ -2,8 +2,6 @@
 
 set -e
 
-curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-echo 'deb https://deb.nodesource.com/node_6.x trusty main' > /etc/apt/sources.list.d/nodesource.list
-
-apt-get update
-apt-get install -y nodejs
+yum -y install gcc-c++ make
+curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
+yum -y install nodejs

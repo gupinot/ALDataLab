@@ -2,18 +2,22 @@
 
 set -e
 
-cd /tmp
-curl -L -o elastic.deb https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/${ELASTIC_VERSION}/elasticsearch-${ELASTIC_VERSION}.deb
-dpkg -i elastic.deb
-rm elastic.deb
+rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+cat > /etc/yum.repos.d/elasticsearch.repo <<EOF
+[elasticsearch-2.x]
+name=Elasticsearch repository for 2.x packages
+baseurl=https://packages.elastic.co/elasticsearch/2.x/centos
+gpgcheck=1
+gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+EOF
+yum -y install elasticsearch
 
 cd /usr/share/elasticsearch
 bin/plugin install mobz/elasticsearch-head
 bin/plugin install royrusso/elasticsearch-HQ
 yes | bin/plugin install cloud-aws
 chown elasticsearch:elasticsearch -R .
-update-rc.d elasticsearch defaults
+chkconfig --add elasticsearch
 
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo 'deb http://packages.elastic.co/curator/3/debian stable main' > /etc/apt/sources.list.d/curator.list
-apt-get update && apt-get install -y python-elasticsearch-curator
+pip install elasticsearch-curator==3.5.1
