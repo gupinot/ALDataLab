@@ -73,7 +73,7 @@ case $method in
                 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD1" && $CMD1 &&\
                 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD2" && $CMD2) || (false; exit)
         done
-        ) || ret =1
+        ) || ret=1
         [[ $ret -eq 0 ]] &&\
         CMD="hadoop distcp ${dirpipelines3} ${dirpipelinehdfs}" &&\
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" &&\
@@ -103,10 +103,10 @@ case $method in
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3"
         aws s3 rm ${dirpipelines3/s3n:/s3:} --recursive &&\
         ret=0 &&\
-        (for rep in done in meta metasockets out repo
+        (for rep in done/repo done/connection done/execution done/serversockets done/serverusage done/webrequest in meta metasockets out/aggregated  out/encoded out/resolved out/resolved_execution out/resolved_serversockets out/serverusage repo
          do
             CMD="hadoop distcp ${dirpipelinehdfs}/${rep}/* ${dirpipelines3}/${rep}/"
-            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || (false; exit)
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
          done
         ) || ret=1
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3 exit with $ret"

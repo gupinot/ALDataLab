@@ -56,9 +56,10 @@ aws s3 cp ./target/universal/aldatalab-1.3.1.tgz s3://gedatalab/binaries/
 aws s3api put-object-acl --bucket gedatalab --key binaries/zeppelin-0.6.0-incubating-SNAPSHOT.tar.gz --grant-read uri=http://acs.amazonaws.com/groups/global/AllUsers`
 
 
-
+#Reboot des slaves
+cd ~/spark/sbin; ./stop-slaves.sh
 ./slaves.sh ps -ef | grep java | grep 7077 | awk '{print "ssh root@" $1 " kill " $3}'
-
+./start-slaves.sh
 
 aws ec2 describe-instances |jq  '.Reservations[] | .Instances[] | select(.Tags[] | .Value | contains("customers")) | . | .NetworkInterfaces[] | .PrivateIpAddresses[] | .Association.PublicIp + "    " + .PrivateIpAddress'
 
