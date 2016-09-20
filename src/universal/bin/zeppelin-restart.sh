@@ -15,7 +15,7 @@ do
     sleep 5
 done
 
-curl http://localhost:8080/api/notebook \
+curl http://localhost:8080/api/notebook 2>/dev/null\
 | jq -c '.body | sort_by(.name) | map(select(.name | contains("- prod"))) | .[] | .id'\
 | tr -d '"' | xargs -I@ curl -d '' http://localhost:8080/api/notebook/job/@
 

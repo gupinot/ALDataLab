@@ -3,10 +3,11 @@ name := "ALDataLab"
 version := "1.3.2"
 
 scalaVersion := "2.10.5"
+val sparkVersion = "1.6.2"
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.6.2" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.6.2" % "provided"
-libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.6.2" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-core" % sparkVersion % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % sparkVersion  % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-hive" % sparkVersion % "provided"
 libraryDependencies += "com.databricks" %% "spark-csv" % "1.4.0"
 libraryDependencies += "joda-time" % "joda-time" % "2.9.2"
 

@@ -155,7 +155,7 @@ function test() {
 	        LSOF_ERR="sudo lsof ko but sudo pfiles ok"
 	    fi
 
-	
+
 
 	#crontab
 	[[ "$DEBUG" == "YES" ]] && echo "test crontab"
@@ -170,7 +170,7 @@ function test() {
 	[[ $SSH_RET -eq 0 ]] && [[ $CRONTAB_RET -ne 0 ]] && CRONTAB_ERR="$(cat $errlog | grep -v "using fake authentication data for X11 forwarding" | head -n 1 | tr -d '\n' | tr -d '\r')"
 
 	echo "\"$(date +"%Y-%m-%dT%H:%M:%S.000Z")\";\"$HOST\";\"$SERVERIP\";\"${SSH_RET}\";\"${SSH_ERR}\";\"${HOME_DIR}\";\"$NETSTAT_RET\";\"${NETSTAT_ERR}\";\"$LSOF_RET\";\"${LSOF_ERR}\";\"${CRONTAB_RET}\";\"${CRONTAB_ERR}\""
-	
+
 	TEST_RET=1
 	[[ $SSH_RET -eq 0 ]] && [[ $NETSTAT_RET -eq 0 ]] && [[ $LSOF_RET -eq 0 ]] && [[ $CRONTAB_RET -eq 0 ]] && TEST_RET=0
 	return $TEST_RET

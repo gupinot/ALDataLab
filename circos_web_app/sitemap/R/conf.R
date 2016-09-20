@@ -1,6 +1,6 @@
 #SitemapSourceDir
 SiteMapDir <- "/home/datalab/SiteMap"
-MasterURL <- "//circos.datalab.gealstom.eu"
+MasterURL <- "//circos.gadatalab.com"
 #SiteMapDir <- "/Users/guillaumepinot/Dev/Alstom/SiteMap"
 
 HttpServerDir <- "data"
