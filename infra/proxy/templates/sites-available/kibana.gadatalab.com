@@ -7,7 +7,9 @@ server {
     add_header Strict-Transport-Security max-age=31536000;
 
     location / {
-        include includes/acl.conf;
+        include includes/jwt-config.conf;
+        include includes/jwt-auth.conf;
+        include includes/jwt-acl.conf;
 
         proxy_pass http://kibana;
     }

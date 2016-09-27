@@ -14,7 +14,10 @@ server {
     }
 
     location / {
-        include includes/acl.conf;
+        include includes/jwt-config.conf;
+        include includes/jwt-auth.conf;
+        include includes/jwt-acl.conf;
+
         proxy_pass http://zeppelin;
     }
 }

@@ -10,7 +10,9 @@ server {
     aws_s3_bucket gecustomers;
 
     location / {
-        include includes/acl.conf;
+        include includes/jwt-config.conf;
+        include includes/jwt-auth.conf;
+        include includes/jwt-acl.conf;
 
 	aws_sign;
         rewrite /(.*) /document/$1 break;
