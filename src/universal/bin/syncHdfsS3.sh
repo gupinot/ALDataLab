@@ -57,8 +57,14 @@ done
 case $method in
     fromS3)
         DATE=$(date +"%Y%m%d-%H%M%S")
-        ret=1
-        CMD="hadoop distcp ${dirpipelines3}/ ${dirpipelinesaves3}/$DATE/" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
+        ret=0 &&\
+        (for rep in done/repo done/connection done/execution done/serversockets done/serverusage done/webrequest in/connection in/execution in/repo in/serversockets in/serverusage in/webrequest meta metasockets out/aggregated  out/encoded out/resolved out/resolved_execution out/resolved_serversockets out/serverusage repo
+         do
+            CMD="${dirpipelines3}/${rep}/* ${dirpipelinesaves3}/$DATE/${rep}/"
+            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
+         done
+        ) || ret=1
+        [[ $ret -eq 0 ]] &&\
         CMD="aws s3 rm ${dirpipelines3/s3n:/s3:}/done/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         CMD="aws s3 mv ${dircollectserverusages3/s3n:/s3:}/ ${dirins3/s3n:/s3:}/serverusage/ --recursive" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : ${CMD}" && ${CMD} &&\
         ret=0 &&\
