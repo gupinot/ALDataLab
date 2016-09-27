@@ -36,6 +36,7 @@ function waitServerIdle {
 	ServerIdle=0
 	while [[ $ServerIdle -eq 0 ]]
 	do
+		echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : checking ServerPID list"
 		for ((i=1; i<=${#ServerPID[@]}; i++))
 		do
 			if [[ "${ServerPID[$i]}" == "" ]]
@@ -54,19 +55,23 @@ function waitServerIdle {
 		done
 		if [[ $ServerIdle -eq 0 ]]
 		then
+			echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : waiting serverIdle..."
 			sleep 10
 		fi
 	done
+	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() serverIdle found"
 	return $ServerIdle
 }
 
 function runscript {
+	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : runscript() : ficin : $1"
 	waitServerIdle
 	ServerID=$?
 	CMD="$scriptToCall ${Server[$ServerID]} $1 $scriptArgList"
 	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : execute $CMD & ..."
 	$CMD &
 	ServerPID[$ServerID]=$!
+	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : PID : ${ServerPID[$ServerID]}"
 }
 
 for fichier in $(ls -tr $ListInputFile)

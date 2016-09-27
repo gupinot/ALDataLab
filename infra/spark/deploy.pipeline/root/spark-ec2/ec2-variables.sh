@@ -38,6 +38,8 @@ then
   export AWS_SECRET_ACCESS_KEY="{{aws_secret_access_key}}"
 fi
 export ZEPPELIN_VERSION="{{zeppelin_version}}"
+export ZEPPELIN_MODE="git"
+export ZEPPELIN_GIT_ORIGIN="-b prod git@github.com:gupinot/zeppelin-notebook.git"
 export ZEPPELIN_USER="zeppelin"
 export ZEPPELIN_BUCKET="{{zeppelin_bucket}}"
 export ZEPPELIN_INTERPRETERS="spark"
