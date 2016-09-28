@@ -11,10 +11,10 @@ server {
 
     location / {
         include includes/jwt-config.conf;
-        include includes/jwt-auth.conf;
         include includes/jwt-acl.conf;
+        include includes/jwt-auth.conf;
 
-	aws_sign;
+    	aws_sign;
         rewrite /(.*) /document/$1 break;
         proxy_pass http://gecustomers.s3.amazonaws.com;
     }

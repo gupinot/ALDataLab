@@ -27,7 +27,7 @@ local cookie_expire = ngx.cookie_time(ngx.time() +expires)
 ngx.header["Set-Cookie"] = "jwt=" .. jwt_token .. "; path=/; HttpOnly; Secure; domain=.gadatalab.com; Expires=" .. cookie_expire;
 
 -- redirect if next url is set
-local next_url = ngx.var.arg_next
+local next_url = ngx.unescape_uri(ngx.var.arg_next)
 if jwt_token then
     if next_url then
         ngx.redirect(next_url)

@@ -8,8 +8,9 @@ server {
 
     location / {
         include includes/jwt-config.conf;
-        include includes/jwt-auth.conf;
         include includes/jwt-acl.conf;
+        include includes/jwt-auth.conf;
+        include includes/proxy-fakeauth.conf;
 
         proxy_pass http://serverusage;
     }
