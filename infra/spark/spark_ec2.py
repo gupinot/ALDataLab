@@ -292,7 +292,7 @@ def parse_args():
              "the directory is not created and its contents are copied directly into /. " +
              "(default: %default).")
     parser.add_option(
-        "--yarn", action="store_true", default=False,
+        "--yarn", action="store_true", default=True,
         help="Enable YARN support in spark and start YARN daemon in Hadoop (default: %default)")
     parser.add_option(
         "--tachyon", action="store_true", default=False,
