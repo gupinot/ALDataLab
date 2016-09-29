@@ -254,6 +254,9 @@ def parse_args():
         "-v", "--spark-version", default=DEFAULT_SPARK_VERSION,
         help="Version of Spark to use: 'X.Y.Z' or a specific git hash (default: %default)")
     parser.add_option(
+        "--scala-version", default=None,
+        help="Version of Scala to use: 'X.Y' (default: %default)")
+    parser.add_option(
         "--deploy-env", default="prod",
         help="Name of your base deploy directory. Script will look for deploy.<envname> in current directory  (default: %default)")
     parser.add_option(
@@ -1112,7 +1115,6 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
             spark_local_dirs += ",/mnt%d/spark" % i
 
     cluster_url = "%s:7077" % active_master
-
     if "." in opts.spark_version:
         # Pre-built Spark deploy
         spark_v = get_validate_spark_version(opts.spark_version, opts.spark_git_repo)
@@ -1126,6 +1128,11 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         hadoop_v = "2.4"
         print("Deploying Spark via git hash; Tachyon won't be set up")
         modules = filter(lambda x: x != "tachyon", modules)
+
+    if opts.scala_version:
+        scala_v = opts.scala_version
+    else:
+        scala_v = get_scala_version(spark_v)
 
     master_addresses = [get_dns_name(i, opts.private_ips) for i in master_nodes]
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
@@ -1144,7 +1151,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "modules": '\n'.join(modules),
         "spark_version": spark_v,
         "tachyon_version": tachyon_v,
-        "scala_version": get_scala_version(spark_v),
+        "scala_version": scala_v,
         "hadoop_major_version": hadoop_v,
         "zeppelin_version": zeppelin_v,
         "zeppelin_bucket": opts.zeppelin_bucket,
