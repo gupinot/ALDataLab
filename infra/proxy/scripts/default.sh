@@ -5,6 +5,10 @@ set -e
 apt-get update
 apt-get install -y awscli
 
+if [ -z "$(getent passwd ubuntu)" ]; then
+   useradd ubuntu
+fi
+
 chmod 755 /tmp/bin/*
 mv /tmp/bin/* /usr/local/bin
 rmdir /tmp/bin
