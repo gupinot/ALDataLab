@@ -54,13 +54,27 @@ esac
 shift # past argument or value
 done
 
+function ls_aws() {
+    dirn1=$1
+    dirn2=$2
+    aws s3 ls ${dirn1/s3n:/s3:}/${dirn2}/  | egrep -o "[^ ]+/$" | sed -E "s/(.*)\/$/${dirn2//\//\/}\/\1/g"
+}
+
+function ls_hdfs() {
+    dirn1=$1
+    dirn2=$2
+    hdfs dfs -ls ${dirn1}/${dirn2}/  | egrep -o "${dirn1}[^ ]+$" | sed -E "s/${dirn1//\//\/}(.*)$/\1/g"
+}
+
+
 case $method in
     fromS3)
         DATE=$(date +"%Y%m%d-%H%M%S")
         ret=0 &&\
-        (for rep in done/repo done/connection done/execution done/serversockets done/serverusage done/webrequest in/connection in/execution in/repo in/serversockets in/serverusage in/webrequest meta metasockets out/aggregated  out/encoded out/resolved out/resolved_execution out/resolved_serversockets out/serverusage repo
+        (for rep in $(ls_aws ${dirpipelines3} done) $(ls_aws ${dirpipelines3} in) meta metasockets $(ls_aws ${dirpipelines3} out/aggregated) $(ls_aws ${dirpipelines3} out/encoded) out/resolved out/resolved_execution out/resolved_serversockets $(ls_aws ${dirpipelines3} out/serverusage) repo
          do
-            CMD="${dirpipelines3}/${rep}/* ${dirpipelinesaves3}/$DATE/${rep}/"
+            [[ $((hdfs dfs -count ${dirpipelines3}/${rep}/ 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
+            CMD="hadoop distcp ${dirpipelines3}/${rep}/* ${dirpipelinesaves3}/$DATE/${rep}/" &&\
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
          done
         ) || ret=1
@@ -109,7 +123,7 @@ case $method in
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3"
         aws s3 rm ${dirpipelines3/s3n:/s3:} --recursive &&\
         ret=0 &&\
-        (for rep in done/repo done/connection done/execution done/serversockets done/serverusage done/webrequest in meta metasockets out/aggregated  out/encoded out/resolved out/resolved_execution out/resolved_serversockets out/serverusage repo
+        (for rep in $(ls_hdfs ${dirpipelinehdfs} done) $(ls_hdfs ${dirpipelinehdfs} in) meta metasockets $(ls_hdfs ${dirpipelinehdfs} out/aggregated) $(ls_hdfs ${dirpipelinehdfs} out/encoded) out/resolved out/resolved_execution out/resolved_serversockets $(ls_hdfs ${dirpipelinehdfs} out/serverusage)  repo
          do
             CMD="hadoop distcp ${dirpipelinehdfs}/${rep}/* ${dirpipelines3}/${rep}/"
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
