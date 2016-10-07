@@ -1,0 +1,28 @@
+Enterprise IT Digital twin
+==============
+BAYRAMOV Matin bayramov.matin-ext@power.alstom.com
+v1.0, 2012-02-10
+:pdf-page-size: A4
+
+== Collection DB access logs
+
+Log files are provided by CSC
+
+
+
+== Getting files from Remote and Encode them in CSV
+
+User datalab:
+
+Those files are taken from the remote server. Then they are parsed and
+encoded in CSV format in order to put them on S3 server.
+
+User nexthink:
+
+A single Virtual Machine is dedicated to anonymize the received data.
+
+
+
+
+
+
