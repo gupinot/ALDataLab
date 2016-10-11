@@ -44,7 +44,7 @@ export IDMFileList=$(ls $IDMFILES | sort -t_ -k2 -r | tr '\n' ' ')
 export I_ID_REF="${REPO}/I-ID.csv.gz"
 export I_ID="${OUTREPO}/I-ID"
 
-export DISTRIB_SHELL="${ROOTDIR}/bin/distribute.sh"
+export DISTRIB_SHELL="${ROOTDIR}/bin/distribute_new.sh"
 export NXPIPE_RSHELL="${ROOTDIR}/bin/R/NXPipeline.R"
 export ORAPIPE_RSHELL="${ROOTDIR}/bin/R/ORAPipeline.R"
 export ANONYMIZEIDM_RSHELL="${ROOTDIR}/bin/R/AnonymizeIDM.R"
