@@ -31,7 +31,7 @@ else
 fi
 
 CONF=$(egrep -l -r "^args --method ${DEFAULT_ACTION}" ${BASEDIR}/conf |head -1)
-JAR=$(find $BASEDIR/lib -name '*.jar' | tail -1)
+JAR=$(find $BASEDIR/lib -name '*assembly*.jar' | tail -1)
 BATCHFILESIZE=$(grep 'shell.batchfilesize' <${CONF} |awk '{print $2}')
 DRYRUN=0
 VERBOSE=0

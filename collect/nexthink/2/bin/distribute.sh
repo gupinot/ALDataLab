@@ -39,17 +39,25 @@ function waitServerIdle {
 		echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : checking ServerPID list"
 		for ((i=1; i<=${#ServerPID[@]}; i++))
 		do
+			echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : i=$i; ServerPID[$i]=${ServerPID[$i]}"
 			if [[ "${ServerPID[$i]}" == "" ]]
 			then
+				echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : empty ServerIdle=$i"
 				ServerIdle=$i
 				break
 			else
+				echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : cmd=ps -p ${ServerPID[$i]} | wc -l : $(ps -p ${ServerPID[$i]} | wc -l)"
 				tmp=$(ps -p ${ServerPID[$i]} | wc -l)
+				echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : cmd=ps -p ${ServerPID[$i]} | wc -l : $(ps -p ${ServerPID[$i]} | wc -l)"
+				echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : tmp//[[:blank:]]/ : ${tmp//[[:blank:]]/}"
 				if [[ "${tmp//[[:blank:]]/}" == "1" ]]
 				then
+					echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : ServerIdle=$i"
 					ServerIdle=$i
 					ServerPID[$i]=""
 					break
+				else
+					echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0/waitServerIdle() : tmp//[[:blank:]]/!=1"
 				fi
 			fi
 		done
