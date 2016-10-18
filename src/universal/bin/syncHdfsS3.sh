@@ -73,9 +73,13 @@ case $method in
         ret=0 &&\
         (for rep in $(ls_aws ${dirpipelines3} done) $(ls_aws ${dirpipelines3} in) meta metasockets $(ls_aws ${dirpipelines3} out/aggregated) $(ls_aws ${dirpipelines3} out/encoded) out/resolved out/resolved_execution out/resolved_serversockets $(ls_aws ${dirpipelines3} out/serverusage) repo
          do
-            [[ $((hdfs dfs -count ${dirpipelines3}/${rep}/ 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
-            CMD="hadoop distcp ${dirpipelines3}/${rep}/* ${dirpipelinesaves3}/$DATE/${rep}/" &&\
-            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
+            if [[ $((hdfs dfs -count ${dirpipelines3}/${rep}/ 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]]
+            then
+                CMD="hadoop distcp ${dirpipelines3}/${rep}/* ${dirpipelinesaves3}/$DATE/${rep}/" &&\
+                echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
+            else
+                continue
+            fi
          done
         ) || ret=1
         [[ $ret -eq 0 ]] &&\
@@ -86,12 +90,16 @@ case $method in
         do
             echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var : nb file to copy : $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}')"
 
-            [[ $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]] &&\
+            if [[ $((hdfs dfs -count ${dirins3}/${var} 2>/dev/null || echo '0 0') | awk '{print $2}') -gt 0 ]]
+            then
                 (hdfs dfs -test -d ${dirpipelines3}/in/${var}|| hdfs dfs -mkdir ${dirpipelines3}/in/${var}) &&\
                 (CMD1="aws s3 mv ${dirins3/s3n:/s3:}/${var}/ ${dirpipelines3/s3n:/s3:}/in/${var}/ --recursive" &&\
                 CMD2="aws s3 cp ${dirpipelines3/s3n:/s3:}/in/${var}/ ${dirinsaves3/s3n:/s3:}/${var}/ --recursive" &&\
                 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD1" && $CMD1 &&\
                 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : fromS3 : $var $CMD2" && $CMD2) || (false; exit)
+            else
+                continue
+            fi
         done
         ) || ret=1
         [[ $ret -eq 0 ]] &&\
@@ -125,8 +133,13 @@ case $method in
         ret=0 &&\
         (for rep in $(ls_hdfs ${dirpipelinehdfs} done) $(ls_hdfs ${dirpipelinehdfs} in) meta metasockets $(ls_hdfs ${dirpipelinehdfs} out/aggregated) $(ls_hdfs ${dirpipelinehdfs} out/encoded) out/resolved out/resolved_execution out/resolved_serversockets $(ls_hdfs ${dirpipelinehdfs} out/serverusage)  repo
          do
-            CMD="hadoop distcp ${dirpipelinehdfs}/${rep}/* ${dirpipelines3}/${rep}/"
-            echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
+	        if [[ $((hdfs dfs -count ${dirpipelinehdfs}/${rep}/ 2>/dev/null || echo '0 0') | tail -1 | awk '{print $2}') -gt 0 ]]
+	        then
+            	CMD="hadoop distcp ${dirpipelinehdfs}/${rep}/* ${dirpipelines3}/${rep}/" &&\
+            	echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD || false || exit
+	        else
+		        continue
+	        fi
          done
         ) || ret=1
         echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : toS3 exit with $ret"
