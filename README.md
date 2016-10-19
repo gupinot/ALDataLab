@@ -33,7 +33,7 @@
   [server usage](https://serverusage.gadatalab.com)  
     
   [circos web app](https://circos.gadatalab.com)  
-    Launch ami-e8be34ff, m3.xlarge, spot 0.1$, zone us-east-1a, security group SiteMapWebApp
+    Launch last ami version named SiteMap-*, m3.xlarge, spot 0.1$, zone us-east-1a, security group SiteMapWebApp
        Associate fixed IP 52.4.60.249 to new instance  </br>
     
   [Wiki](https://wiki.gadatalab.com)  
