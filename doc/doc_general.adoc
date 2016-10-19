@@ -1,234 +1,86 @@
+= DataLab
+
+include::doc_introduction.adoc[]
 
 
+== Oracle log files
+
+While other data sources collected or transferred regularly, Oracle log files are collected only once. 
+CSC provides us log files which are available. 
 
 
-== Source collect
+include::doc_nexthink.adoc[]
 
-* Who
-Who does collect these information ?
-* What
-What kind of information we collect ?
-What are the source of our collected information ?
-* Why
-What is the purpose of this collection ?
-What we want to achieve by collecting these information ?
-* When
-How often these information are collected ?
-How many times per day/week/month ?
-* Where
-From where we collect those information ?
-* How
-How we collect these information ?
-* How Much
-What is the quantity of the collected information ?
 
-What we collect as information to analyse ?
+include::doc_serversocket.adoc[]
 
-There are different kind of sources that we collect to analyse.
 
-Main sources are :
-
-* oracle database logs (demande is done as one shot)
-* nexthink
-* server sockets
-* server usages
+include::doc_serverusage.adoc[]
 
 
 == References
-
-References are
-
 * AIP
 * IDM
 * MDM-ITC
 * Storage Master Report (1/month)
 
-=== Oracle log files
-
-* Who
-* What
-* Why
-* When
-* Where
-* How
-* How Much
-
-This is done as one shot, asked one time and thats all.
-
-=== Nexthink
-
-* Who
-Who does do that ?
-* What
-What is nexthink ?
-* Why
-Why we do that ?
-Why we do it by this way ?
-* When
-How often we do this ? Per month ? Per year ? Per hour ?
-* Where
-Where do we store these information, before and later ?
-* How
-How we do all these ?
-* How Much
-What is the quantity of the information ? etc...
-
-This is the collection of the information related to devices such as PCs, Laptops, etc.. and servers.
-Nexthink is the editor of the application which collect information about any actions of the user.
-As this is only available for windows machines and servers, this kind of collect is only applied to windows based systems.
-
-
-In fact, there are two kind of ngex? server which are in version 5 and 6.
-And the collection of data is done separately on each servers.
-There are about 21 server in 4, and 3 server in 6.
-
-When we collect them as in level 0, they are not to clean to analyse.
-This is why we create 2 VM on exact version of these machines.
-They are VM5, VM6.
-
-Collected data is deployed to these VMs and then we extract information that we need in CSV format.
-Language used to extract information from collected data is NXQL.
-And then we store them under level 1.
-
-Later, we make device information, etc. anonymous on VM20.
-And then we store them under s3 server.
-(Precise location under s3 ? s3://collect/nexthink/in ?)
-
-
-
-
-==== Nexthink in the project
-Project source is under ALDatalab/collect/nexthink.
-
-
-=== Kind of information stored
-
-* Who
-* What
-* Why
-* When
-* Where
-* How
-* How Much
-
-* connection
-
-These are mainly requests done by the source devices.
-Any HTTP requests, either in TCP or UDP protocol, are collected and stored.
-
-
-* webrequest
-
-These are only information about the sever DNS requested. (google, any web-site, etc.)
-
-* execution
-
-These are information about the applications executed on the user's machine which do not probably use internet requests.
-
-=== Server sockets
-
-* Who
-* What
-* Why
-* When
-* Where
-* How
-* How Much
-
-This part is dedicated to collect 80% of the linux servers.
-Each 5 minutes we do netstat + ps to get information about what is accessed and what are the processes related to these usage.
-
-A pair public/private key generated and public keys are deployed to about on thousand linux servers.
-
-
-
-We have deployed a public key on all thousand linux server to realise connection via ssh protocol.
-Then we deployed our script which collect these information.
-
-Then we access to these servers to get collected data, then we merge multiple files and store them under ....?(NAS)
-
-==== Server socket in the project
-Project source is under ALDatalab/collect/serversocket
-
-
-
-=== Server usage
-
-* Who
-* What
-* Why
-* When
-* Where
-* How
-* How Much
-
-
-Server usage is mainly related to the information about the CPU, memory usage and storage usage.
-We do 1 collect every 30 minute / or 1 hour.
-
-
-
-
-== PIPELINE
-
-What is pipeline ?
-Why ?
-
-
-* Who
-Who do that ?
-* What
-What is pipeline ?
-* Why
-Why this pipeline ?
-* When
-When it is used and when it is done ?
-* Where
-Where are stored pipeline source code ? Where are stored information after each step ?
-The input data is stored on s3 under s3://gedatalab/
-* How
-How it is done ? By which way ?
-We take input data from the s3 server, and copy it to HDFS file system.
-As the quantity of the data is large, we prefer to work on it under HDFS file system.
-Clusters are created and data is deployed as in distributed file system.
-
-Once we finished data manipulation we store them again on the s3 server.
-* How Much
-What is the quantity of the information used ?
-How much can it cost us ? etc ?
-
-
-Pipeline actions are
-* encode data in CSV format
-* resolve
-* aggregate
- - Aggregate is to join tables with reference tables and if needed to groupby.
-
-[TIP]
-give a screenshot of what is in the cyberduck.
-
-pipeline/meta is dedicated to store meta information about _nexthink_.
-As the same way, server usage meta information is stored under pipeline/metasocket.
-
-pipeline/in folder will be used to keep default input data.
-pipeline/done folder is used to keep output data.
-
-
-Firstly, pipeline makes an archive of the last version of s3/gedatalab/pipeline.
-Then, whatever it is under /in folder is moved to /pipeline/in folder under s3.
-We copy all data files from s3 pipeline to local hdfs://data/ under file system.
-One all actions are done, output is stored back to s3://gedatalabe/pipeline.
-Previous version, of course, is erased.
-
-
-
-
-== References
 
 === AIP
+
+Data is syncronized daily by batches and they are stored under s3://gerepo/.
+
+
+Zeppelin notebook URL: https://devzeppelin.gadatalab.com/#/notebook/2BMCK757N
+and https://devzeppelin.gadatalab.com/#/notebook/2BXZ39CTF
+
+
+There are 3 main tables which are :
+
+* _server_: list of all servers
+* _application_: list of all business applications
+* _softInstance_: which application is deployed on which server
+
 
 
 === IDM
 
+IDM is the management of individual identities/users, their authentication, authorization, roles and privilieges within different sites, sectors, teams etc.
+
+
+
 
 === MDM-ITC
+
+This is the network topology which give us any information about network elements. 
+As an example, we know what are the _IP ranges_ for a given _site_.
+These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
+
+
+include::doc_storagemaster.adoc[]
+
+
+include::doc_pipeline.adoc[]
+
+
+It is important to know that there is
+Apart from +ing, ..... may also be required
+To know more about ....., look into/check out
+However, ......
+It goes beyond the bounds of all other forms of professional +ing..
+Like ....., ..... is one of the most .... ....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

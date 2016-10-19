@@ -1,0 +1,123 @@
+<<<
+== Nexthink
+
+Nexthink is the application which collects information about any actions done on a PC, Laptop or a server.
+
+
+There is a _Collector_ of Nexthink which is installed on users' machines.
+It captures network connections, program executions, web request, etc.. and sends data to the _Nexthink Engines_.
+Nexthink Engines stock collected data and make a backup of them daily and per server. 
+
+
+In fact, there are two kinds of Nexthink Engine servers which are in version V5 and V6.
+And the collection of data is done separately on each servers.
+There are about 21 servers in V5, and 3 servers in V6.
+
+
+Data collected from PC computers, laptops, etc.. are stored in a 21 servers.
+And whatever is collected from servers are saved under 3 nexthink servers. 
+
+
+There are 21 collection of servers which are dedicated to store data coming from user's machines.
+The version of Nexthink Engine installed on these servers is V6.
+
+
+There are also 3 servers which collect Nexthink data received from servers.
+The version of Nexthink Engine installed on these servers is V5.
+
+
+At first, collected data is stored under SAN server at level /0 folder. 
+These data need to be extracted on a nexthink environment.
+For this reason, we create 2VM (with Nexthink V5 and V6) on which we deploy collected data.
+
+
+Collected data is deployed to these VMs and then we extract information that we need in CSV format.
+Language used to extract information from collected data is NXQL.
+And then we store them at level /1 folder.
+
+
+Later, we make user information anonymous on VM20 and store them on s3://collect/nexthink/in.
+
+Source code path: ALDatalab/collect/nexthink.
+
+
+It is important to know that Nexthink is only available on windows OS, this kind of collect is only applied to windows based systems.
+
+
+
+
+== Data transfer from backup servers
+
+Every 3 days, collector server (SARMA10012) collect backup data from Nexthink Engine servers.
+Each backup data can contain log history of 5-20 days. 
+
+If there are more data in the backup servers, the old once are purged. 
+This is why we need to be sure to take more data possible and not to loose a part of them, 
+we copy them every 3 days to SAN server. 
+As a result, we will have overlaps.
+We will discuss about this problem in the Pipeline part. 
+
+There are 2 virtual machines on the collector server which are dedicated to extract information from "BackupData".
+One of them is VM5 with version 5 of Nexthink and it is used extract data from backup data. 
+Another one is VM6 with version 6 of Nexthink and this one is used to extract backup data coming from 21 Nexthink servers. 
+
+Pure data collected are saved under /0 folder on SAN server as they are.
+Every day, the action _extractbackup_ is executed.
+In other terms, the backup data saved under /0 folder is dispatched either on VM5 or on VM6 to be extracted. 
+
+
+This extraction is done daily and data are stored under /1 folder in CSV format. 
+As an information, NXQL is used as SQL language to extract data from Nexthink Engine database. 
+
+Once done, we have 3 kind of files under /1 folder. 
+
+* anything related to a "connection" (TCP, UDP, etc..)
+Information collected about any outgoing (and only outgoing) network requests, such as which user is connected, by which application, IP address requested, HTTP protocol used, server port number, request execution time, request content size. 
+These information are mainly related to the source machine of request, which can be a simple user machine but also a server. 
+
+* anything related to a "webrequest" (DNS information)
+This kind of data is captured while a web request (HTTP) is detected. 
+Any information about the target machine is collected.
+Full URL of a web request is not registered but only its DNS information.
+
+* anything related to an "execution"
+These are information about the execution of any application started by a user.
+And this information is collected even if a user doesn't login to the application executed. 
+Because there are some applications which don't need to ask any connection/login. 
+In other terms, this give us information about :
+
+* which user executed an application ?
+* which application is executed ?
+* at which time ?
+* what is the version of the executed application ?
+* how much does it take to be started
+* what is the path to the application
+* etc.
+
+
+As it is seen, there are 3 different kind of data collection which need to be kept seperately.
+This is why we create 3 folders ( _/connection_, /_webrequest_, /_execution_) under s3 server at any time we need to store them. 
+
+
+[TIP]
+give a picture from cyberdock with highlighted colors of these folders. 
+
+
+The next action after extracting backup data and storing them on /1 folder, is to anonymize them. 
+This process is also done on VM20. 
+Anonymized data is stored under /2 folder on the SAN server in CSV format. 
+Finally, it is also copied to s3://gedatalab/in. 
+
+
+
+
+== Kind of information
+
+* *connection*: These are mainly requests done by the source devices.
+Any HTTP requests, either in TCP or UDP protocol, are collected and stored.
+
+
+* *webrequest*: These are only information about the server DNS requested. (google, any web-site, etc.)
+
+* *execution*: These are information about the applications executed on the user's machine which do not probably use internet requests.
+
