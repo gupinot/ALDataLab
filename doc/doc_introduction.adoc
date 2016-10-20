@@ -20,3 +20,9 @@ These sources are :
 * nexthink
 * server-sockets
 * server-usages
+
+
+
+
+image::images/source_collect.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
+

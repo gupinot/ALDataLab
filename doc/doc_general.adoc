@@ -51,7 +51,7 @@ IDM is the management of individual identities/users, their authentication, auth
 
 === MDM-ITC
 
-This is the network topology which give us any information about network elements. 
+This is the network topology which gives us any information about network elements. 
 As an example, we know what are the _IP ranges_ for a given _site_.
 These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
 
@@ -62,12 +62,12 @@ include::doc_storagemaster.adoc[]
 include::doc_pipeline.adoc[]
 
 
-It is important to know that there is
-Apart from +ing, ..... may also be required
-To know more about ....., look into/check out
-However, ......
-It goes beyond the bounds of all other forms of professional +ing..
-Like ....., ..... is one of the most .... ....
+// It is important to know that there is
+// Apart from +ing, ..... may also be required
+// To know more about ....., look into/check out
+// However, ......
+// It goes beyond the bounds of all other forms of professional +ing..
+// Like ....., ..... is one of the most .... ....
 
 
 
