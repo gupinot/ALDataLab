@@ -3,32 +3,30 @@
 
 Nexthink is the application which collects information about any actions done on a PC, Laptop or a server.
 
+image::images/collector.png[title="Nexthink Engine which collects data from different devices", width="400", height="300"]
 
-image::images/collector.png[title="Nexthink Engines which collect data", width="400", height="300"]
 
-
-There is a _Collector_ of Nexthink which is installed on users' machines.
+There is a Nexthink _Collector_ which is installed on different devices.
 It captures network connections, program executions, web requests, etc.. and sends data to the _Nexthink Engines_.
 Nexthink Engines stock collected data and make a backup of them daily and per server. 
 
 
-In fact, there are two kinds of Nexthink Engine servers which are in version V5 and V6.
-And the collection of data is done separately on each servers.
-There are about 21 servers in V5, and 3 servers in V6.
+In fact, there are two groups of Nexthink Engine servers and collection of data is done separately on each of them.
+There are 21 servers on the first group which work with v5 of Nexthink.
+There are 3 servers in the second group.
+The version of Nexthink is v6 in these servers.
 
 
-Data collected from PC computers, laptops, etc.. are stored in 21 servers.
-And whatever is collected from servers are saved under 3 nexthink servers. 
-The version of Nexthink Engine installed on these servers is V6.
+Data collected from PC computers, laptops, etc.. are stored on the first group of servers.
+Whatever is collected from servers is saved on the second group of servers.
 
 
-There are also 3 servers which collect Nexthink data received from servers.
-The version of Nexthink Engine installed on these servers is V5.
+Collected data are provided and stored under SAN server at /0/ folder level.
+However, they need to be extracted and it must be done inside of a nexthink environment.
+We have 2 VMs (nexthink v5 and v6) on the collector server which are dedicated to extract data to CSV format. 
 
-
-At first, collected data is stored under SAN server at level /0 folder. 
-These data need to be extracted on a nexthink environment.
-For this reason, we create 2VM (with Nexthink V5 and V6) on which we deploy collected data.
+Once data are deployed correctly to these VMs and we use NXQL sql requests to extract information.
+Extracted data are then stored on /1/ folder level.
 
 
 Collected data is deployed to these VMs and then we extract information that we need in CSV format.
@@ -36,12 +34,10 @@ Language used to extract information from collected data is NXQL.
 And then we store them at level /1 folder.
 
 
-Later, we make user information anonymous on VM20 and store them on s3://collect/nexthink/in.
-
+Finally, extracted data is anonymized via VM20 and stored on s3://collect/nexthink/in.
 Source code path: ALDatalab/collect/nexthink.
 
-
-It is important to know that Nexthink is only available on windows OS, this kind of collect is only applied to windows based systems.
+image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
 
 
 image::images/nexthink_collector_engins.jpg[title="Nexthink Engines which collect and backup data", width="350", height="400"]
@@ -50,8 +46,9 @@ image::images/nexthink_collector_engins.jpg[title="Nexthink Engines which collec
 
 == Data transfer from backup servers
 
-Every 3 days, collector server (SARMA10012) collect backup data from Nexthink Engine servers.
-Each backup data can contain log history of 5-20 days. 
+Collector server (SARMA10012) collects backup data from Nexthink Collector servers every 3 days.
+Each backup data can contain log history of 5-20 days.
+
 
 If there are more data in the backup servers, the old once are purged. 
 This is why we need to be sure to take more data possible and not to loose a part of them, 
@@ -96,7 +93,6 @@ In other terms, this give us information about :
 * what is the path to the application
 * etc.
 
-image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
 
 
 As it is seen, there are 3 different kind of data collection which need to be kept seperately.
