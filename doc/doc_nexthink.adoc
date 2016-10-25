@@ -4,8 +4,11 @@
 Nexthink is the application which collects information about any actions done on a PC, Laptop or a server.
 
 
+image::images/collector.png[title="Nexthink Engines which collect data", width="400", height="300"]
+
+
 There is a _Collector_ of Nexthink which is installed on users' machines.
-It captures network connections, program executions, web request, etc.. and sends data to the _Nexthink Engines_.
+It captures network connections, program executions, web requests, etc.. and sends data to the _Nexthink Engines_.
 Nexthink Engines stock collected data and make a backup of them daily and per server. 
 
 
@@ -14,11 +17,8 @@ And the collection of data is done separately on each servers.
 There are about 21 servers in V5, and 3 servers in V6.
 
 
-Data collected from PC computers, laptops, etc.. are stored in a 21 servers.
+Data collected from PC computers, laptops, etc.. are stored in 21 servers.
 And whatever is collected from servers are saved under 3 nexthink servers. 
-
-
-There are 21 collection of servers which are dedicated to store data coming from user's machines.
 The version of Nexthink Engine installed on these servers is V6.
 
 
@@ -43,6 +43,8 @@ Source code path: ALDatalab/collect/nexthink.
 
 It is important to know that Nexthink is only available on windows OS, this kind of collect is only applied to windows based systems.
 
+
+image::images/nexthink_collector_engins.jpg[title="Nexthink Engines which collect and backup data", width="350", height="400"]
 
 
 
@@ -93,6 +95,8 @@ In other terms, this give us information about :
 * how much does it take to be started
 * what is the path to the application
 * etc.
+
+image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
 
 
 As it is seen, there are 3 different kind of data collection which need to be kept seperately.
