@@ -43,21 +43,19 @@ Final result data are stored in pipeline.
 
 
 
-Note: There is no meta-data information to keep under s3 because there is much risk of duplicate data on _server-usage_ compared to _nexthink_ and _server-socket_.
+NOTE: There is no meta-data information to keep under s3 because there is no much risk of duplicate data on _server-usage_ compared to _nexthink_ and _server-socket_.
 
 
 
 There are 3 main folders which are /_encoded_, /_resolved_, /_aggregated_.
-As such, we store data in these folders after each main steps.
-These folders contain a sub-folder for each kind of data (nexthink, server usage, server socket).
-
+We store data in these folders after each main steps.
+Each of these folders contains three sub-folders for different types of data (nexthink, server-usage, server-socket).
 
 
 
 Once we finished data manipulation we store them again on the s3 server.
-* How Much
-What is the quantity of the information used ?
-How much can it cost us ? etc ?
+// What is the quantity of the information used ?
+// How much can it cost us ? etc ?
 
 
 Pipeline actions are

@@ -1,12 +1,12 @@
 
-== Key points for this doc
+// == Key points for this doc
 
-* Put more information as we can to make the subject clear enough. 
-* Make it readable, visually clear. 
-* Use different colors to show how different kind of collect data sources are used in various cases. 
-* Where the data come from, from where they pass and where it stored. 
-* If it is red then it is used by Zeppelin, if it is blue then it is used by pipeline. 
-* for pipeline, represent how data is kept during different steps of the pipeline. 
+// * Put more information as we can to make the subject clear enough. 
+// * Make it readable, visually clear. 
+// * Use different colors to show how different kind of collect data sources are used in various cases. 
+// * Where the data come from, from where they pass and where it stored. 
+// * If it is red then it is used by Zeppelin, if it is blue then it is used by pipeline. 
+// * for pipeline, represent how data is kept during different steps of the pipeline. 
 
 
 
@@ -16,13 +16,10 @@
 There are different kind of sources that we collect to analyse.
 These sources are :
 
-* oracle logs
-* nexthink
-* server-sockets
-* server-usages
+* Oracle logs
+* Nexthink
+* Server-sockets
+* Server-usage
 
-
-
-
-image::images/source_collect.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
+image::images/source_collect0.jpg[title="Types of data sources to collect", width="800", height="230"]
 

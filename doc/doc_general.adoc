@@ -1,24 +1,23 @@
 = DataLab
 
+
+:linkcss: stylesheets
+
 include::doc_introduction.adoc[]
 
-
-== Oracle log files
-
-While other data sources collected or transferred regularly, Oracle log files are collected only once. 
-CSC provides us log files which are available. 
-
-
 include::doc_nexthink.adoc[]
-
-
 include::doc_serversocket.adoc[]
-
-
 include::doc_serverusage.adoc[]
 
 
+image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
+
+
 == References
+
+image::images/s3_references.jpg[title="Reference storage", width="450", height="250"]
+
+
 * AIP
 * IDM
 * MDM-ITC
@@ -56,6 +55,9 @@ As an example, we know what are the _IP ranges_ for a given _site_.
 These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
 
 
+image::images/collect_pipeline.jpg[title="Global view of the processes", width="650", height="350"]
+
+
 include::doc_storagemaster.adoc[]
 
 
@@ -69,6 +71,12 @@ include::doc_pipeline.adoc[]
 // It goes beyond the bounds of all other forms of professional +ing..
 // Like ....., ..... is one of the most .... ....
 
+
+
+// == Oracle log files
+
+// While other data sources collected or transferred regularly, Oracle log files are collected only once. 
+// CSC provides us log files which are available. 
 
 
 
