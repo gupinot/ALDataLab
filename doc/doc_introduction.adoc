@@ -23,3 +23,11 @@ These sources are :
 
 image::images/source_collect0.jpg[title="Types of data sources to collect", width="800", height="230"]
 
+
+Oracle logs are database access log files.
+Nexthink is the application which collects data about network connections, program executions, web requests, etc. from PCs, Laptops or servers. 
+While Nexthink is mainly applied on Microsoft Windows systems, "Server-sockets" is implemented for Linux based machines.
+Finally, "server-usage" is data collection of servers' CPU usage, memory and storage usage.
+
+
+
