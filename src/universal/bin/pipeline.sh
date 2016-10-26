@@ -48,6 +48,7 @@ $HOME/pipeline/bin/syncHdfsS3.sh fromS3 &&\
 $HOME/pipeline/bin/repo.sh &&\
 $HOME/pipeline/bin/genAIP.sh &&\
 $HOME/pipeline/bin/pipe2to3.sh &&\
+$HOME/pipeline/bin/pipe2to3_execution.sh &&\
 $HOME/pipeline/bin/pipe3to4.sh -d $begindate $enddate 10 &&\
 $HOME/pipeline/bin/pipe3to4Exec.sh -d $begindate $enddate 5 &&\
 $HOME/pipeline/bin/pipe4to5.sh -d $begindate $enddate 10 &&\
