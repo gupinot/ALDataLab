@@ -1,0 +1,11 @@
+FROM ubuntu:16.04
+MAINTAINER raphael.luta@aptiwan.com
+
+ADD VERSION /
+ADD deb /tmp/deb
+ADD bin /tmp/bin
+ADD templates /tmp/templates
+ADD scripts /tmp/scripts
+WORKDIR /tmp/scripts
+RUN bash default.sh
+RUN bash nginx.sh

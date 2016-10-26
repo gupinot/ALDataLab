@@ -14,8 +14,11 @@ server {
     }
 
     location / {
-        include includes/acl.conf;
-        include includes/fakeauth.conf;
+        include includes/jwt-config.conf;
+        include includes/jwt-acl.conf;
+        include includes/jwt-auth.conf;
+        include includes/proxy-fakeauth.conf;
+
         proxy_pass http://dev.zeppelin;
     }
 

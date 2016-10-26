@@ -9,7 +9,10 @@ dpkg -i /tmp/deb/nginx-full*.deb
 
 cp /etc/templates/sites-available/* /etc/nginx/sites-available/
 cp /etc/templates/conf.d/* /etc/nginx/conf.d/
-cp -rf /etc/templates/certs /etc/nginx/
+cp /etc/templates/users /etc/nginx/users
+cp -rf /etc/templates/certs /etc/templates/lua /etc/templates/includes /etc/nginx/
+mkdir -p /usr/local/lib/lua/5.1/
+mv /etc/nginx/lua/*.so /usr/local/lib/lua/5.1/
 
 cd /etc/nginx/sites-enabled/
 rm /etc/nginx/sites-enabled/*

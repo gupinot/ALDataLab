@@ -1,0 +1,24 @@
+== Server usage
+
+Another data sources that we collect to analyse is "server-usage".
+It involves the information about server CPU usage, memory and storage usage.
+
+
+An HTTP URL allows us to call and get these data for a single given server by specifying its hostname as a URL parameter.
+As response, it is an XLS file returned which will be then converted to CSV format and stored on s3.
+
+
+To know more about URL and other confirugations, look into conf/conf.sh file.
+
+
+There is a server.lst_ CSV file which contains hostname of all servers for which we want to collect their usage information.
+Server-usage data are synchronized 2 times in a week.
+
+
+There is nothing to make anonymous for these kind of data collection.
+
+
+Source code path : ALDataLab/collect/serverconsumption.
+URL to call : http://iww.dcs.itssc.alstom.com/nrtmd/streamsdump/server
+
+
