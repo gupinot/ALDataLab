@@ -139,7 +139,8 @@ function test() {
 
 	PFILES_RET=1
 	PFILES_ERR=""
-	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && [[ "$OSTYPE" != "linux" ]]  &&\    #test sudo pfiles /proc/* for unix os if lsof not working
+	#test sudo pfiles /proc/* for unix os if lsof not working 
+	[[ $SSH_RET -eq 0 ]] && [[ $LSOF_RET -ne 0 ]] && [[ "$OSTYPE" != "linux" ]]  &&\
 	(
 		rm -f $errlog
 		rm -f $stdoutlog

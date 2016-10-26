@@ -21,5 +21,5 @@ function compute() {
 
 export -f compute
 
-ls $dirserverxls/*.xls | xargs -n 30 bash -c 'compute "$@"' _
+ls $dirserverxls/*.xls | xargs -n 60 bash -c 'compute "$@"' _
 echo "$(date +"%Y/%m/%d-%H:%M:%S") : $0 : end"

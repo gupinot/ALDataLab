@@ -1,41 +1,26 @@
-### Rebuild AMI
+#General
 
-   Proxy:
-   ```
-   cd infra/proxy && packer build proxy.json   
-   ```
+##circos_web_app/
+code for [circos web app](https://circos.gadatalab.com)  
+See infra below to deploy VM infrastructure on AWS
 
-   ELK:
-   ```
-   cd infra/elk && packer build elk.json   
-   ```
+##collect/
 
-   Spark:
-   ```
-   cd infra/spark && packer build java.json   
-   ```
-   
-###Instantiate apps
-  [proxy](https://*.gadatalab.com)  </br>
-  
-  [zeppelin-dev](https://devzeppelin.gadatalab.com)  
-    **Create cluster** : ./spark-ec2 -k *KeyLezoomerUs* -i ~/.ssh/*KeyLezoomerUs*.pem --pipeline-version=1.3.2 --region=us-east-1 --zone=us-east-1a --instance-type m1.xlarge --deploy-env dev --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.1 --master-spot-price 0.1 --deploy-env dev --zeppelin-bucket gecustomers --es-security-group elasticsearch-discovery -s 15 launch zeppelin-dev  
-    **Import data** : ssh root@zeppelin-master "cd pipeline/bin; ./syncHdfsS3.sh fromS3Simple"  </br>
-    
-  [zeppelin-prod](https://zeppelin.gadatalab.com)  
-    **Create cluster** : ./spark-ec2 -k *KeyLezoomerUs* -i ~/.ssh/*KeyLezoomerUs*.pem --pipeline-version=1.3.2 --region=us-east-1 --zone=us-east-1a --instance-type m1.xlarge --deploy-profile customers --instance-profile-name customers --master-instance-type m3.xlarge --spot-price 0.1 --master-spot-price 0.1 --es-security-group elasticsearch-discovery -s 5 launch zeppelin-prod  
-    </br>
-    
-  [kibana/elastic search](https://kibana.gadatalab.com)
-    **Create cluster** : ./elk-ec2 -k *KeyLezoomerUs* -i ~/.ssh/*KeyLezoomerUs*.pem --instance-type m3.xlarge --spot-price 0.1 --master-spot-price 0.1 --es-security-group elasticsearch-discovery -s 5 launch zeppelin-prod
-    </br>
-    
-  [server usage](https://serverusage.gadatalab.com)  
-    
-  [circos web app](https://circos.gadatalab.com)  
-    Launch ami-e8be34ff, m3.xlarge, spot 0.1$, zone us-east-1a, security group SiteMapWebApp
-       Associate fixed IP 52.4.60.249 to new instance  </br>
-    
-  [Wiki](https://wiki.gadatalab.com)  
-    ssh -i ~/.ssh/*AlWikiKey*.pem ec2-user@ec2-54-164-93-140.compute-1.amazonaws.com
-    cd ALWiki; nohup forever ./node_modules/jingo/jingo -c config.yaml &
+##doc/
+
+##infra/
+To deploy infra on AWS :
+- circos
+- zeppelin : developpement and production environnement
+- elastic search/kibana
+- server usage
+- wiki
+
+##src/
+ Pipeline built 
+  - to compile project : sbt assembly universal:packageZipTarball  
+  - to publish package : aws s3 cp ./target/universal/aldatalab-1.3.3.tgz s3://gedatalab/binaries/aldatalab_2.11-1.3.3-1.6.2.tgz  
+
+
+
+

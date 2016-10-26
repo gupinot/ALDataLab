@@ -1,0 +1,99 @@
+= DataLab
+
+
+:linkcss: stylesheets
+
+include::doc_introduction.adoc[]
+
+include::doc_nexthink.adoc[]
+include::doc_serversocket.adoc[]
+include::doc_serverusage.adoc[]
+
+
+image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
+
+
+== References
+
+image::images/s3_references.jpg[title="Reference storage", width="450", height="250"]
+
+
+* AIP
+* IDM
+* MDM-ITC
+* Storage Master Report (1/month)
+
+
+=== AIP
+
+Data is syncronized daily by batches and they are stored under s3://gerepo/.
+
+
+Zeppelin notebook URL: https://devzeppelin.gadatalab.com/#/notebook/2BMCK757N
+and https://devzeppelin.gadatalab.com/#/notebook/2BXZ39CTF
+
+
+There are 3 main tables which are :
+
+* _server_: list of all servers
+* _application_: list of all business applications
+* _softInstance_: which application is deployed on which server
+
+
+
+=== IDM
+
+IDM is the management of individual identities/users, their authentication, authorization, roles and privilieges within different sites, sectors, teams etc.
+
+
+
+
+=== MDM-ITC
+
+This is the network topology which gives us any information about network elements. 
+As an example, we know what are the _IP ranges_ for a given _site_.
+These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
+
+
+image::images/collect_pipeline.jpg[title="Global view of the processes", width="650", height="350"]
+
+
+include::doc_storagemaster.adoc[]
+
+
+include::doc_pipeline.adoc[]
+
+
+// It is important to know that there is
+// Apart from +ing, ..... may also be required
+// To know more about ....., look into/check out
+// However, ......
+// It goes beyond the bounds of all other forms of professional +ing..
+// Like ....., ..... is one of the most .... ....
+
+
+
+// == Oracle log files
+
+// While other data sources collected or transferred regularly, Oracle log files are collected only once. 
+// CSC provides us log files which are available. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
