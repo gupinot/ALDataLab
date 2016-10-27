@@ -1,12 +1,16 @@
 = DataLab
 
 
-:linkcss: stylesheets
 
 include::doc_introduction.adoc[]
 
+
 include::doc_nexthink.adoc[]
+
+
 include::doc_serversocket.adoc[]
+
+
 include::doc_serverusage.adoc[]
 
 
