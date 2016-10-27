@@ -1,147 +1,120 @@
-
+<<<
 
 == Pipeline
 
-What is pipeline ?
-Why ?
+// What is pipeline ?
+// Why ?
+// Who do that ?, What is pipeline ?,
+// Why this pipeline ?,
+// When it is used and when it is done ?
+// Where are stored pipeline source code ?
+// Where are stored information after each step ?
+// The input data is stored on s3 under s3://gedatalab/
+// How it is done ? By which way ?
 
-
-* Who
-Who do that ?
-* What
-What is pipeline ?
-* Why
-Why this pipeline ?
-* When
-When it is used and when it is done ?
-* Where
-Where are stored pipeline source code ? Where are stored information after each step ?
-The input data is stored on s3 under s3://gedatalab/
-* How
-How it is done ? By which way ?
+There are 3 main processes that we need to apply.
+These are _encoding_ of collected data from CSV format into "parquet" format,
+_resolving_ them to get complete data, _aggregating_ to
+get some analysis results.
 
 
 
-Pipeline is executed on a cluster.
-In general, the input data is taken from s3://gedatalab/ and deployed to local server under HDFS file system. 
-Once all different actions are realized, these data is stored back on s3 server.
+* _Enconding_ :
 
+Collected data are in CSV file format and stored in s3://gedatalab/.
+We need to encode them in "parquet" format in HDFS file system.
+This will improve data manipulation performance compared to CSV format.
 
-[TIP]
-give a screenshot of what is in the cyberduck for s3://gedatalab
+* _Resolving_:
 
+This is the resolution of encoded data by combination with other referential information.
+As an example, we can re-define a user's sector, site or its team name.
 
-* /gedatalab/in - folder contains newly stored data which come from collector server.
-* /gedatalab/pipeline - is the main folder to keep all kind of data used during different steps of pipeline actions.
-Final result data are stored in pipeline. 
+* _Aggregation_:
 
-* pipeline/in folder will be used to keep default input data.
-* pipeline/done folder is used to keep output data.
-* pipeline/meta is dedicated to store meta information about _nexthink_.
-* pipeline/metasocket folder is used to store server socket meta information.
-* pipeline/repo folder is used to achieve to "resolve"
+The aggregation process is intended to find specific information from multiple tables.
+With aggregation we can find for example _the number of connections_, _the number of distinct users_, _the number of distinct devices_,
+_the network traffic volume_, etc..
+// - Aggregate is to join tables with reference tables and if needed to group by.
 
+The input data is stored in s3://gedatalab/.
+This is deployed to HDFS file system, encoded, resolved and aggregated.
+Final data is stored back on s3 server.
+Output data after each step are kept, so we can use any of them at any time.
 
-
-NOTE: There is no meta-data information to keep under s3 because there is no much risk of duplicate data on _server-usage_ compared to _nexthink_ and _server-socket_.
-
-
-
-There are 3 main folders which are /_encoded_, /_resolved_, /_aggregated_.
+There are 3 main folders which are /_encoded_, /_resolved_, and /_aggregated_.
 We store data in these folders after each main steps.
 Each of these folders contains three sub-folders for different types of data (nexthink, server-usage, server-socket).
+Once we finished data manipulation we store them again on the s3 server for future use.
+
+We execute these processes in a Pipeline.
+It is execution of various batches on a cluster.
+
+// (This "Resolve" process is also done for "oracle logs" but it is done on Notebook)
+// [TIP] give a screenshot of what is in the cyberduck for s3://gedatalab
+
+<<<
+=== Pipeline folder structure
+
+image::images/pipeline_folders.jpg[title="Pipeline folder structure under s3 server."]
+
+We organized folder structure of pipeline process as below:
+
+* _/gedatalab/in_ - contains newly stored data coming from collector server.
+* _/gedatalab/pipeline_ - is the main folder to keep all kind of data used during different steps of pipeline actions.
+* _/gedatalab/pipeline/in_ - will be used to keep default input data for pipeline.
+* _/gedatalab/pipeline/done_ - folder is used to keep output data.
+* _/gedatalab/pipeline/meta_ - is dedicated to store meta-information about _nexthink_ data.
+* _/gedatalab/pipeline/metasocket_ - folder is used to store server socket meta-data.
+* _/gedatalab/pipeline/repo_ - folder is used to achieve "resolve" processes. I-ID are stored under this folder.
 
 
 
-Once we finished data manipulation we store them again on the s3 server.
+
+
+// NOTE: There is no meta-data information for server-usage to keep under s3 because there is no much risk of duplicate data on _server-usage_ compared to _nexthink_ and _server-socket_.
+
+
+
 // What is the quantity of the information used ?
 // How much can it cost us ? etc ?
 
 
-Pipeline actions are
-* encode data in CSV format
-* resolve
-* aggregate
- - Aggregate is to join tables with reference tables and if needed to groupby.
-
-
-* ->
-Firstly, pipeline makes an archive of the last version of s3/gedatalab/pipeline.
-Then, whatever it is under /in folder is moved to /pipeline/in folder under s3.
-We copy all data files from s3 pipeline to local hdfs://data/ under file system.
-One all actions are done, output is stored back to s3://gedatalabe/pipeline.
-Previous version, of course, is erased.
 
 === Pipeline main actions
 
-* Make an archive of the s3://gedatalab/pipeline to s3://gedatalab/arch.
-* Move data from s3://gedatalab/in to s3://gedatalab/pipeline/in
-* Make a copy of data from s3://gedatalab/pipeline to hdfs://data/.
-* Data in HDFS is encoded, resolved and aggregated.
-* Replace (or erase) s3://gedatalab/pipeline with data in HDFS.
-
-
-By this way, pipeline data under s3://gedatalab/pipeline is updated with new contents.
-In order to be able to use these data on devZeppelin, we copy them to HDFS file system on the Zeppelin server.
-We can not use data on Zeppelin if it is under s3, because the quantity of the data is so much. 
-Execution of request could be slow. 
+. Make an archive of the s3://gedatalab/pipeline to s3://gedatalab/arch.
+. Move data from s3://gedatalab/in to s3://gedatalab/pipeline/in
+. Make a copy of data from s3://gedatalab/pipeline to hdfs://data/.
+. Data in HDFS is encoded, resolved and aggregated.
+. Replace (or erase) s3://gedatalab/pipeline with data in HDFS, hdfs://data/.
 
 
 
-I-ID is stored under s3://gedatalab/pipeline/repo.
+We need to deploy data on a distributed file system in cluster if we want to analyse them.
+This is why we use s3 to keep data, but hdfs://data (on Amazon EC2) to manipulate or do analysis on them.
+While working on Zeppelin notebooks, it is also possible that the data are already deployed on HDFS file system on a previous Zeppelin paragraph.
+In this case, we can directly use them.
+Otherwise, we need to deploy data from s3 to HDFS.
+
+
+image::images/pipeline_actions.jpg[title="Order of main actions taken place in Pipeline"]
 
 
 
+// Another goal is to get reduced size of Dataset in order to make them easily analysable with Zeppelin.
+
+Note that it is also possible to access on the output data of each state realised in the Pipeline.
+As an example, resolved data are stored on the _resolved_ folder which can be accessed and used at any time.
 
 
+Pipeline source code is under _/src/main/scala/_ folder in project.
 
 
+=== Compared to Oracle log file analysis
 
-Pipeline is the execution of various batch. 
-Pipeline is executed on cluster. 
-This cluster will take whatever is there under s3. 
-Files are encoded in "parquet" format. 
-
-"Encoded process" => CSV file formats are encoded in "parquet" format with more column of information. 
-"Resolved process" => Resolution of encoded data with different kind of referencial information. 
-As an example, for a given user with match it with its sector, site and team. 
-
-(This "Resolve" process is also done for "oracle logs" but it is done on Notebook)
-(It is done inside of Pipeline for these data.)
-
-(
-In Oracle-Pipeline notebook
-we parse all files and encode them on "parquet" format. 
-Then we do resolve.
-Finally on Oracle-Analyse notebook we apply "aggregation" process for oracle logs. 
-)
-
-Pipeline does these actions for those 3 data sources.
-With aggregation, 
-we will find 
-* the number of connections, 
-* the number of distinct users, 
-* the number of distinct devices,
-* the network traffic volume, 
-(apply group by on several columns)
-Another goal is to get reduced size of Dataset in order to make them easily analysable with Zeppelin. 
-
-However, we can start from each step to continue these processes as we want on Zeppelin. 
-It is possible to start and continue from any steps on Zeppelin. 
-Data generated by Pipeline is stored under s3 server. 
-
-
-"Oracle logs" are not concerned with this "Pipeline" process.
-But we do exactly the same processes for oracle log files.
-
-Whatever is prepared as data by Pipeline is stored on s3://gedatalab/in
-Each time that we start pipeline, it uses data which is under s3://gedatalab/in.
-
-
-
-Pipeline source code is under _/src/main/scala/_ folder in project. 
-
-
-
+While we analyse Oracle log files we don't use Pipeline processes.
+However, almost all of these processes are also applied to Oracle log file analysis.
+But all are done on Zeppelin notebooks.
 
 
