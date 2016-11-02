@@ -1,6 +1,8 @@
 === Storage Master Report
 
-Basically, this report is a single XLS file which needs to be converted to a CSV file and put under s3://gerepo/in/storage-master-report_version.
+Basically, this report is a single XLS file.
+For instance, it is manually extracted, updated and stored under s3.
+It needs to be converted to a CSV file and placed under s3://gerepo/in/storage-master-report_version.
 
 
 This is a billing file/report for CSC which gives information about server memory usages.
