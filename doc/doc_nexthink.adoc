@@ -17,7 +17,7 @@ There are 3 servers in the second group.
 The version of Nexthink is v6 in these servers.
 
 
-Data collected from PC computers, laptops, etc.. are stored on the first group of servers.
+Data collected from PCs, laptops, etc.. are stored on the first group of servers.
 Whatever is collected from servers is saved on the second group of servers.
 
 
@@ -95,7 +95,7 @@ These are information about the execution of any application used by users.
 This concern also applications which do not access to internet.
 (even if a user doesn't login to the application).
 
-In general, these kind of data give us information about which application is executed,
+These kind of data give us information about which application is executed,
 by which user, at what time, the version of the application,
 how much does it take to be started, the path to the application, etc.
 
@@ -108,7 +108,7 @@ for each of these types of data collections.
 
 == Anonymization
 
-The following process is to make anonymous some user information from extracted data.
+The next step in the process is to make anonymous some user information from extracted data.
 As usual, we use virtual machine VM20 for this purpose.
 Once done, we store them under /2/ folder on the SAN server in CSV format.
 

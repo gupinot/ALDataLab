@@ -9,7 +9,7 @@ Source code path: ALDatalab/collect/serversocket
 === Deployment
 
 A datalab user account is created on about one thousand linux servers. 
-A pair public/private key generated and public keys are deployed on about thousand linux servers.
+A pair public/private key generated and public keys are deployed on these servers.
 Then we connected to servers with ssh and deployed _monitor.sh_ script on them.
 This script executes linux commands such as "netstat, ps, lsof, etc." every 5 minutes and puts results into server-usage data files.
 This script is activated with a crontab every 5 minutes.

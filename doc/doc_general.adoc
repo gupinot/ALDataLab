@@ -14,9 +14,6 @@ include::doc_serversocket.adoc[]
 include::doc_serverusage.adoc[]
 
 
-image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
-
-
 == References
 
 image::images/s3_references.jpg[title="Reference storage", width="450", height="250"]
@@ -30,8 +27,7 @@ image::images/s3_references.jpg[title="Reference storage", width="450", height="
 
 === AIP
 
-Data is syncronized daily by batches and they are stored under s3://gerepo/.
-
+Data is synchronized daily by batches and they are stored under s3://gerepo/.
 
 Zeppelin notebook URL: https://devzeppelin.gadatalab.com/#/notebook/2BMCK757N
 and https://devzeppelin.gadatalab.com/#/notebook/2BXZ39CTF
