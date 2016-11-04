@@ -2,6 +2,47 @@
 
 
 
+
+
+== References
+
+In this project we have 3 main types of referenced data collection.
+These are _AIP_, _MDM-ITC_ and _Storage Master Report_ which are kept on s3.
+
+image::images/s3_references.jpg[title="Reference storage on s3", width="450", height="250"]
+
+=== AIP
+
+_AIP_ is data reference to list of servers and applications installed on them.
+
+There are 3 main tables which are :
+
+* _server_: list of all servers
+* _application_: list of all business applications
+* _softInstance_: which application is deployed on which server
+
+Data is synchronized daily by batches and they are stored under s3://gerepo/.
+
+Zeppelin notebook URLs are
+
+* https://devzeppelin.gadatalab.com/#/notebook/2BMCK757N
+* https://devzeppelin.gadatalab.com/#/notebook/2BXZ39CTF
+
+
+=== MDM-ITC
+
+This is the network topology which gives us any information about network elements. 
+As an example, we are able to know what are the _IP ranges_ for a given _site_ thanks to these information.
+These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
+
+
+include::doc_storagemaster.adoc[]
+
+
+NOTE: _IDM_ is the management of individual identities/users, their authentication, authorization,
+roles and privileges within different sites, sectors, teams etc.
+
+
 include::doc_introduction.adoc[]
 
 
@@ -14,51 +55,7 @@ include::doc_serversocket.adoc[]
 include::doc_serverusage.adoc[]
 
 
-== References
-
-image::images/s3_references.jpg[title="Reference storage", width="450", height="250"]
-
-
-* AIP
-* IDM
-* MDM-ITC
-* Storage Master Report (1/month)
-
-
-=== AIP
-
-Data is synchronized daily by batches and they are stored under s3://gerepo/.
-
-Zeppelin notebook URL: https://devzeppelin.gadatalab.com/#/notebook/2BMCK757N
-and https://devzeppelin.gadatalab.com/#/notebook/2BXZ39CTF
-
-
-There are 3 main tables which are :
-
-* _server_: list of all servers
-* _application_: list of all business applications
-* _softInstance_: which application is deployed on which server
-
-
-
-=== IDM
-
-IDM is the management of individual identities/users, their authentication, authorization, roles and privilieges within different sites, sectors, teams etc.
-
-
-
-
-=== MDM-ITC
-
-This is the network topology which gives us any information about network elements. 
-As an example, we know what are the _IP ranges_ for a given _site_.
-These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
-
-
 image::images/collect_pipeline.jpg[title="Global view of the processes", width="650", height="350"]
-
-
-include::doc_storagemaster.adoc[]
 
 
 include::doc_pipeline.adoc[]
@@ -86,7 +83,14 @@ include::doc_pipeline.adoc[]
 
 
 
+/// ou est-ce queles donnnes sont stockés.
+// quelles sont les inputs
+// que fait on ?
+// quel est le code
+// ou est stocké le sortie
+//
 
+// 
 
 
 

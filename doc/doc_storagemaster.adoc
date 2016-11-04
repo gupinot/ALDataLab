@@ -9,11 +9,14 @@ This is a billing file/report for CSC which gives information about server memor
 It is updated once per month. 
 
 
-It contains also some information about disk storage space used for each server and its instances, kind of storages, total amount of memory
+It contains also some information about disk storage space used for each server and its instances, kinds of storage, total amount of memory
 space allocated, used, etc.
 
 
-Zeppelin notebook URL: https://devzeppelin.gadatalab.com/#/notebook/2BJVRKXMT and https://devzeppelin.gadatalab.com/#/notebook/2BPKDDK7S
+Zeppelin notebook URLs are
+
+* https://devzeppelin.gadatalab.com/#/notebook/2BJVRKXMT
+* https://devzeppelin.gadatalab.com/#/notebook/2BPKDDK7S
 
 These are list of all kind of sources to collect as information. 
 
@@ -30,17 +33,14 @@ Finally it is sent to s3 server.
 Collector server have access to IDM data which must be anonymized before sending to s3. 
 
 
-Collector use IDM data to anonymize user information. 
+Collector uses IDM data to anonymize user information.
 It creates the anonymized IDM which is named as I-ID. 
-User secters, user teams, user sites are anonymized.
+User sectors, user teams, user sites are anonymized.
 This is because we could later be able to know what is the sector, team, site of an anonymized user. 
 
 
-A dictionnary file (dictionnary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
+A dictionary file (dictionary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
 The collector server is the one which can tell us which anonymized user matches with its real information. 
-
-
-
 
 
 Nexthink, server usage and server socket are then used inside of the process named "Pipeline". 
