@@ -1,3 +1,4 @@
+<<<
 == Server sockets
 
 This simple project is implemented to collect data from linux-based machines as nexthink works only on windows based machines.

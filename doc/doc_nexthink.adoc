@@ -5,7 +5,7 @@ Nexthink is the application which collects information about any actions done on
 See image below.
 footnote:[https://doc.nexthink.com/images/a/a3/Collector.png]
 
-image::images/collector.png[title="Nexthink Engine which collects data from different devices", width="400", height="300"]
+image::images/collector.png[title="Nexthink Engine which collects data from different devices", width="320", height="200"]
 
 
 There is a Nexthink _Collector_ which is installed on different devices.
@@ -111,5 +111,5 @@ As usual, we use virtual machine VM20 for this purpose.
 Once done, we store them under /2/ folder on the SAN server in CSV format.
 
 
-Finally, these data is copied to _s3://gedatalab/in._
+Finally, these data are copied to _s3://gedatalab/in._
 

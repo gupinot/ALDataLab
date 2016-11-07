@@ -1,3 +1,4 @@
+<<<
 === Storage Master Report
 
 Basically, this report is a single XLS file.
@@ -12,14 +13,7 @@ It is updated once per month.
 It contains also some information about disk storage space used for each server and its instances, kinds of storage, total amount of memory
 space allocated, used, etc.
 
-
-Zeppelin notebook URLs are
-
-* https://devzeppelin.gadatalab.com/#/notebook/2BJVRKXMT
-* https://devzeppelin.gadatalab.com/#/notebook/2BPKDDK7S
-
 These are list of all kind of sources to collect as information. 
-
 
 Collector server (which is named as SARMA10012) collects different kind of data sources which are _nexthink_, _server-usage_, _server-socket_, -oracle-log_. 
 While the way we collect them varies, commun actions are peformed and same environments are used to process and analyse them. 
@@ -44,3 +38,8 @@ The collector server is the one which can tell us which anonymized user matches 
 
 
 Nexthink, server usage and server socket are then used inside of the process named "Pipeline". 
+
+Zeppelin notebook URLs are
+
+* https://devzeppelin.gadatalab.com/#/notebook/2BJVRKXMT
+* https://devzeppelin.gadatalab.com/#/notebook/2BPKDDK7S

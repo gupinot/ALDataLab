@@ -1,5 +1,7 @@
 = DataLab
-
+Guillaume PINOT, Matin BAYRAMOV
+bayramov.matin-ext@power.alstom.com
+v1.0, 2016-10-10
 
 
 
@@ -13,7 +15,8 @@ image::images/s3_references.jpg[title="Reference storage on s3", width="450", he
 
 === AIP
 
-_AIP_ is data reference to list of servers and applications installed on them.
+// Referenciel de tous les assets (appli server)
+_AIP_ is data referential for all applications installed on different servers and used by different users.
 
 There are 3 main tables which are :
 
@@ -21,7 +24,7 @@ There are 3 main tables which are :
 * _application_: list of all business applications
 * _softInstance_: which application is deployed on which server
 
-Data is synchronized daily by batches and they are stored under s3://gerepo/.
+Data are synchronized daily by batches and they are stored under s3://gerepo/.
 
 Zeppelin notebook URLs are
 
@@ -33,7 +36,7 @@ Zeppelin notebook URLs are
 
 This is the network topology which gives us any information about network elements. 
 As an example, we are able to know what are the _IP ranges_ for a given _site_ thanks to these information.
-These data are intended to be manually transferred into s3://gerepo/in/mdm-itc.
+Today, these data are manually transferred into s3://gerepo/in/mdm-itc.
 
 
 include::doc_storagemaster.adoc[]
@@ -42,8 +45,31 @@ include::doc_storagemaster.adoc[]
 NOTE: _IDM_ is the management of individual identities/users, their authentication, authorization,
 roles and privileges within different sites, sectors, teams etc.
 
+=== IDM
+
+_IDM_ is used to resolve user information which are made anonymous before being stored on s3.
+However, we don't need IDM to anonymize data.
+
+// Une autre application qui gere tous les donnes des utilsateuur et leurs connnexion, etc.
 
 include::doc_introduction.adoc[]
+
+
+<<<
+== Global view of main processes
+
+Before presenting one by one of these collections and their usage analysis, here is an image
+which shows common processes which are applied during various steps.
+
+image::images/collect_pipeline.jpg[title="Global view of the common processes", width="650", height="350"]
+
+
+Generally, the input data arrive to SAN server.
+They are extracted into correct formats and made anonymous if necessary and stored on s3.
+When needed they are copied to HDFS and analysed on the pipeline processes.
+And IDM are used to resolve data if they are made anonymous.
+In the following chapters we'll give some more detailed information about all of these items and processes.
+
 
 
 include::doc_nexthink.adoc[]
@@ -53,9 +79,6 @@ include::doc_serversocket.adoc[]
 
 
 include::doc_serverusage.adoc[]
-
-
-image::images/collect_pipeline.jpg[title="Global view of the processes", width="650", height="350"]
 
 
 include::doc_pipeline.adoc[]
@@ -69,7 +92,6 @@ include::doc_pipeline.adoc[]
 // Like ....., ..... is one of the most .... ....
 
 
-
 // == Oracle log files
 
 // While other data sources collected or transferred regularly, Oracle log files are collected only once. 
@@ -77,20 +99,13 @@ include::doc_pipeline.adoc[]
 
 
 
+// where are stored data
+// what are input data at each chapter
+// what we are doing with these data
+// what are code parts ?
+// where are stored output data
 
 
-
-
-
-
-/// ou est-ce queles donnnes sont stockés.
-// quelles sont les inputs
-// que fait on ?
-// quel est le code
-// ou est stocké le sortie
-//
-
-// 
 
 
 
