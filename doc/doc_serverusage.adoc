@@ -1,3 +1,4 @@
+<<<
 == Server usage
 
 Another data sources that we collect to analyse is "server-usage".
@@ -18,7 +19,7 @@ Server-usage data are synchronized 2 times in a week.
 There is nothing to make anonymous for these kind of data collection.
 
 
-Source code path : ALDataLab/collect/serverconsumption.
-URL to call : http://iww.dcs.itssc.alstom.com/nrtmd/streamsdump/server
+* Source code path : ALDataLab/collect/serverconsumption.
+* URL to call : http://iww.dcs.itssc.alstom.com/nrtmd/streamsdump/server
 
 
