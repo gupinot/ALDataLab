@@ -15,13 +15,15 @@ image::images/s3_references.jpg[title="Reference storage on s3", width="450", he
 
 === AIP
 
-// Referenciel de tous les assets (appli server)
 _AIP_ is data referential for all applications installed on different servers and used by different users.
+In other words, AIP is a referential of the IT assets of Alstom and it covers mainly the list of applications,
+the list of servers where the applications are deployed, the product software used by these applications,
+the licenses used by the applications, etc.
 
 There are 3 main tables which are :
 
-* _server_: list of all servers
-* _application_: list of all business applications
+* _server_: list of servers
+* _application_: list of business applications
 * _softInstance_: which application is deployed on which server
 
 Data are synchronized daily by batches and they are stored under s3://gerepo/.
@@ -70,6 +72,30 @@ When needed they are copied to HDFS and analysed on the pipeline processes.
 And IDM are used to resolve data if they are made anonymous.
 In the following chapters we'll give some more detailed information about all of these items and processes.
 
+
+Collector server (which is named as SARMA10012) collects different kind of data sources
+which are _nexthink_, _server-usage_, _server-socket_, _oracle-log_.
+While the way we collect them varies, common actions are performed
+and same environments are used to process and analyse them.
+
+The main object is to collect all information and put them on the local SAN server.
+Later, we use VM20 to anonymize these information.
+And anonymous data are saved under SAN server.
+Finally it is sent to s3 server.
+
+
+Collector server have access to IDM data which must be anonymized before sending to s3.
+
+
+It creates the anonymized IDM which is named as I-ID.
+This is because we could later be able to know what is the sector, team, site of an anonymized user.
+
+
+A dictionary file (dictionary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
+The collector server is the one which can tell us which anonymized user matches with its real information.
+
+
+Nexthink, server usage and server socket are then used inside of the process named "Pipeline".
 
 
 include::doc_nexthink.adoc[]

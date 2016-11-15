@@ -13,31 +13,7 @@ It is updated once per month.
 It contains also some information about disk storage space used for each server and its instances, kinds of storage, total amount of memory
 space allocated, used, etc.
 
-These are list of all kind of sources to collect as information. 
-
-Collector server (which is named as SARMA10012) collects different kind of data sources which are _nexthink_, _server-usage_, _server-socket_, -oracle-log_. 
-While the way we collect them varies, commun actions are peformed and same environments are used to process and analyse them. 
-
-The main object is to collect all information and put them on the local SAN server.
-Later, we use VM20 to anonimize these information. 
-And anonymous data is saved under SAN server. 
-Finally it is sent to s3 server. 
-
-
-Collector server have access to IDM data which must be anonymized before sending to s3. 
-
-
-Collector uses IDM data to anonymize user information.
-It creates the anonymized IDM which is named as I-ID. 
-User sectors, user teams, user sites are anonymized.
-This is because we could later be able to know what is the sector, team, site of an anonymized user. 
-
-
-A dictionary file (dictionary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
-The collector server is the one which can tell us which anonymized user matches with its real information. 
-
-
-Nexthink, server usage and server socket are then used inside of the process named "Pipeline". 
+//These are list of all kind of sources to collect as information.
 
 Zeppelin notebook URLs are
 
