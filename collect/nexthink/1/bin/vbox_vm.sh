@@ -22,7 +22,7 @@ function start_vm {
 	do
 		vmlogin=$(awk -v versionnx=$versionnx -v vmid=$vmid -F';' '{if ($4 == versionnx && $3 == vmid) print $5}' $vboxvmfile)
 		IP=$(cat $vboxvmfile | grep $vmid | awk -F";" '{print $1}')
-		while ! ssh nexthink@$IP "echo OK" >/dev/null 2>/dev/null
+		while ! ssh $vmlogin@$IP "echo OK" >/dev/null 2>/dev/null
 		do
 			sleep 10
 		done

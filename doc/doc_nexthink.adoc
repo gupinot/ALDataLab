@@ -45,15 +45,17 @@ This is why the very first step is to extract these data into CSV format with th
 We have 2 virtual machines (named as VM5 and VM6) on the Collector server which are dedicated to this purpose.
 VM6 is used to extract data collected from servers and VM5 for the rest.
 
+image::images/extract_anonymize.jpg[title="Data extraction and anonymization", align="center", width="450", height="250"]
+
 ==== Extract-backup
 
 Input data are deployed either on VM5 or VM6 to be extracted.
 We use NXQL sql requests to extract information and we store them in CSV formats.
 This operation is executed daily and we call it as _extractbackup_.
 
-Extracted data are copied on */1/ folder* which will be anonymized later.
+Extracted data are copied on */1/ folder*.
+At this stage, they are ready to be anonymized.
 
-image::images/extract_anonymize.jpg[title="Data extraction and anonymization", align="center", width="450", height="250"]
 
 
 //Finally, extracted data is anonymized via VM20 and stored on s3://collect/nexthink/in.
