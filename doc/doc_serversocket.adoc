@@ -1,6 +1,7 @@
+<<<
 == Server sockets
 
-This is implemented to collect data from linux-based machines as nexthink works only on windows based machines.
+This simple project is implemented to collect data from linux-based machines as nexthink works only on windows based machines.
 We look for information about what is executed or accessed and what are processes invovled by these accesses.
 
 
@@ -9,22 +10,25 @@ Source code path: ALDatalab/collect/serversocket
 === Deployment
 
 A datalab user account is created on about one thousand linux servers. 
-A pair public/private key generated and public keys are deployed on about thousand linux servers.
-Then we connected to servers with ssh and deployed _monitor.sh_ script on them.
+A pair public/private key generated for each of them and public keys are deployed on these servers.
+Then we connect to the servers with ssh and deploy _monitor.sh_ script on them.
 This script executes linux commands such as "netstat, ps, lsof, etc." every 5 minutes and puts results into server-usage data files.
-This script is activated with a crontab every 5 minutes.
+It is activated with a crontab.
 
 
 
 === Collecting data
 
-Collector server gets files from servers and put them on NAS server. 
-As there are many files, we merge them before putting on s3://gedatalab/in/serverusage.
+Collector server gets files from servers and put them on the NAS server.
+As there are so many small files, we merge them into larger files before putting on s3://gedatalab/in/serverusage.
+
+
+image::images/server_sockets.jpg[title="Collecting and deployement of Server sockets data", width="400", height="300"]
 
 
 
 === Anonymization
-Like server-usage data, there is no anonymization process to do for server-sockets.
+Like _Server usage_ data there is no anonymization process for _Server sockets_.
 
 
 

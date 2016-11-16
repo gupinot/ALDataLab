@@ -21,7 +21,7 @@ function report_done() {
 	do
 		echo "fic : $fic"
 		tmpfl=$(mktemp)
-		PERLCMD="s/^ *(\d\d-...-\d{2,4}).*$/\1/"
+		PERLCMD="s/^.*(\d\d)-([^ |\.]+).*-(\d{2,4})\s(\d\d:\d\d:\d\d).*$/\1-\2-\3/"
 		unzip -c $fic | perl -ne "print if $PERLCMD" > $tmpfl 
 		firstDate=$(head -1  $tmpfl)
 		lastdate=$(tail -1  $tmpfl)
