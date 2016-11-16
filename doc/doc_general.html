@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
 <meta name="author" content="Guillaume PINOT, Matin BAYRAMOV">
-<title>DataLab</title>
+<title>DataLab - Enterprise IT Digital twin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -420,18 +420,124 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>DataLab</h1>
+<h1>DataLab - Enterprise IT Digital twin</h1>
 <div class="details">
 <span id="author" class="author">Guillaume PINOT, Matin BAYRAMOV</span><br>
 <span id="revdate">bayramov.matin-ext@power.alstom.com</span>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_presentation_of_datalab">Presentation of DataLab</a></li>
+<li><a href="#_global_view">Global View</a></li>
+<li><a href="#_references">References</a>
+<ul class="sectlevel2">
+<li><a href="#_aip">AIP</a></li>
+<li><a href="#_mdm_itc">MDM-ITC</a></li>
+<li><a href="#_storage_master_report">Storage Master Report</a></li>
+<li><a href="#_idm">IDM</a></li>
+</ul>
+</li>
+<li><a href="#_types_of_data_sources_to_collect">Types of data sources to collect</a></li>
+<li><a href="#_nexthink">Nexthink</a>
+<ul class="sectlevel2">
+<li><a href="#_what_is_nexthink">What is Nexthink ?</a></li>
+<li><a href="#_where_are_data_collection_on_nexthink_side">Where are data collection on Nexthink side ?</a></li>
+<li><a href="#_how_we_get_and_store_input_data_on_our_side">How we get and store input data on our side ?</a></li>
+<li><a href="#_anonymization">Anonymization</a></li>
+</ul>
+</li>
+<li><a href="#_server_sockets">Server sockets</a>
+<ul class="sectlevel2">
+<li><a href="#_deployment">Deployment</a></li>
+<li><a href="#_collecting_data">Collecting data</a></li>
+<li><a href="#_anonymization_2">Anonymization</a></li>
+</ul>
+</li>
+<li><a href="#_server_usage">Server usage</a></li>
+<li><a href="#_pipeline">Pipeline</a>
+<ul class="sectlevel2">
+<li><a href="#_pipeline_folder_structure">Pipeline folder structure</a></li>
+<li><a href="#_pipeline_main_actions">Pipeline main actions</a></li>
+<li><a href="#_compared_to_oracle_log_file_analysis">Compared to Oracle log file analysis</a></li>
+</ul>
+</li>
+<li><a href="#_oracle_logs">Oracle Logs</a>
+<ul class="sectlevel2">
+<li><a href="#_db_access_log_files">DB access log files</a></li>
+<li><a href="#_project_general_file_organization">Project general file organization</a></li>
+<li><a href="#_server_sarma10012">Server SARMA10012</a></li>
+<li><a href="#_data_manipulation_oracle_pipeline">Data manipulation - Oracle pipeline</a></li>
+<li><a href="#_date_time_format_correction">Date time format correction</a></li>
+<li><a href="#_resolves_ip_mdm_itc">Resolves (IP, Mdm-Itc)</a></li>
+<li><a href="#_date_time_interval_precision">Date time interval precision</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph">
-<p>v1.0, 2016-10-10</p>
+<div style="page-break-after: always;"></div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_presentation_of_datalab">Presentation of DataLab</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The main purpose of this project is &#8230;&#8203;.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_global_view">Global View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before presenting one by one of these collections and their usage analysis, here is an image
+which shows common processes which are applied during various steps.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/collect_pipeline.jpg" alt="collect pipeline" width="650" height="350">
+</div>
+<div class="title">Figure 1. Global view of the common processes</div>
+</div>
+<div class="paragraph">
+<p>Generally, the input data arrive to SAN server.
+They are extracted into correct formats and made anonymous if necessary and stored on s3.
+When needed they are copied to HDFS and analysed on the pipeline processes.
+And IDM are used to resolve data if they are made anonymous.
+In the following chapters we&#8217;ll give some more detailed information about all of these items and processes.</p>
+</div>
+<div class="paragraph">
+<p>Collector server (which is named as SARMA10012) collects different kind of data sources
+which are <em>nexthink</em>, <em>server-usage</em>, <em>server-socket</em>, <em>oracle-log</em>.
+While the way we collect them varies, common actions are performed
+and same environments are used to process and analyse them.</p>
+</div>
+<div class="paragraph">
+<p>The main object is to collect all information and put them on the local SAN server.
+Later, we use VM20 to anonymize these information.
+And anonymous data are saved under SAN server.
+Finally it is sent to s3 server.</p>
+</div>
+<div class="paragraph">
+<p>Collector server have access to IDM data which must be anonymized before sending to s3.</p>
+</div>
+<div class="paragraph">
+<p>It creates the anonymized IDM which is named as I-ID.
+This is because we could later be able to know what is the sector, team, site of an anonymized user.</p>
+</div>
+<div class="paragraph">
+<p>A dictionary file (dictionary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
+The collector server is the one which can tell us which anonymized user matches with its real information.</p>
+</div>
+<div class="paragraph">
+<p>Nexthink, server usage and server socket are then used inside of the process named "Pipeline".</p>
+</div>
+<div style="page-break-after: always;"></div>
 </div>
 </div>
 <div class="sect1">
@@ -443,9 +549,9 @@ These are <em>AIP</em>, <em>MDM-ITC</em> and <em>Storage Master Report</em> whic
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/s3_references.jpg" alt="s3 references" width="450" height="250">
+<img src="./images/s3_references.jpg" alt="s3 references" width="450" height="250">
 </div>
-<div class="title">Figure 1. Reference storage on s3</div>
+<div class="title">Figure 2. Reference storage on s3</div>
 </div>
 <div class="sect2">
 <h3 id="_aip">AIP</h3>
@@ -529,7 +635,7 @@ space allocated, used, etc.</p>
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 <em>IDM</em> is the management of individual identities/users, their authentication, authorization,
@@ -574,64 +680,15 @@ These sources are :</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/source_collect0.jpg" alt="source collect0" width="800" height="230">
+<img src="./images/source_collect0.jpg" alt="source collect0" width="800" height="230">
 </div>
-<div class="title">Figure 2. Types of data sources to collect</div>
+<div class="title">Figure 3. Types of data sources to collect</div>
 </div>
 <div class="paragraph">
 <p><em>Oracle logs</em> are database access log files.
 <em>Nexthink</em> is the application which collects data about network connections, program executions, web requests, etc. from PCs, laptops or servers.
 While Nexthink is mainly applied on Microsoft Windows systems, <em>Server sockets</em> is implemented for Linux based machines.
 Finally, <em>Server usage</em> is data collection from servers, including their CPU, memory, storage usages, etc.</p>
-</div>
-<div style="page-break-after: always;"></div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_global_view_of_main_processes">Global view of main processes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Before presenting one by one of these collections and their usage analysis, here is an image
-which shows common processes which are applied during various steps.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="images/collect_pipeline.jpg" alt="collect pipeline" width="650" height="350">
-</div>
-<div class="title">Figure 3. Global view of the common processes</div>
-</div>
-<div class="paragraph">
-<p>Generally, the input data arrive to SAN server.
-They are extracted into correct formats and made anonymous if necessary and stored on s3.
-When needed they are copied to HDFS and analysed on the pipeline processes.
-And IDM are used to resolve data if they are made anonymous.
-In the following chapters we&#8217;ll give some more detailed information about all of these items and processes.</p>
-</div>
-<div class="paragraph">
-<p>Collector server (which is named as SARMA10012) collects different kind of data sources
-which are <em>nexthink</em>, <em>server-usage</em>, <em>server-socket</em>, <em>oracle-log</em>.
-While the way we collect them varies, common actions are performed
-and same environments are used to process and analyse them.</p>
-</div>
-<div class="paragraph">
-<p>The main object is to collect all information and put them on the local SAN server.
-Later, we use VM20 to anonymize these information.
-And anonymous data are saved under SAN server.
-Finally it is sent to s3 server.</p>
-</div>
-<div class="paragraph">
-<p>Collector server have access to IDM data which must be anonymized before sending to s3.</p>
-</div>
-<div class="paragraph">
-<p>It creates the anonymized IDM which is named as I-ID.
-This is because we could later be able to know what is the sector, team, site of an anonymized user.</p>
-</div>
-<div class="paragraph">
-<p>A dictionary file (dictionary.csv) is created under SAN server to keep information about which user data correspond to which I-ID.
-The collector server is the one which can tell us which anonymized user matches with its real information.</p>
-</div>
-<div class="paragraph">
-<p>Nexthink, server usage and server socket are then used inside of the process named "Pipeline".</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -648,7 +705,7 @@ See image below.
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/collector.png" alt="collector" width="320" height="200">
+<img src="./images/collector.png" alt="collector" width="320" height="200">
 </div>
 <div class="title">Figure 4. Nexthink Engine which collects data from different devices</div>
 </div>
@@ -661,7 +718,7 @@ Nexthink <em>Engines</em> stock received data and make daily backups.</p>
 <h3 id="_where_are_data_collection_on_nexthink_side">Where are data collection on Nexthink side ?</h3>
 <div class="imageblock" style="float: right">
 <div class="content">
-<img src="images/nexthink_collector_engins.jpg" alt="nexthink collector engins" width="300" height="350">
+<img src="./images/nexthink_collector_engins.jpg" alt="nexthink collector engins" width="300" height="350">
 </div>
 <div class="title">Figure 5. Nexthink Engines with backup servers</div>
 </div>
@@ -681,22 +738,31 @@ Nexthink <em>Engines</em> stock received data and make daily backups.</p>
 <div class="paragraph">
 <p>As a result, data storing and backup processes are different on both kind of engines/servers.</p>
 </div>
-<div class="paragraph">
-<p>Furthermore, archived data aren&#8217;t kept for a life on backup servers.
-As soon as more data are coming, the very old once are erased.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Furthermore, archived data aren&#8217;t kept for a life on backup servers.
+As soon as more data are coming, the very old once are erased.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_how_we_get_and_store_input_data_on_our_side">How we get and store input data on our side ?</h3>
 <div class="paragraph">
-<p>Our Collector server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
+<p><em>Collector</em> server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
 Each received file can contain log history of 5 to 20 days.</p>
 </div>
 <div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 As we try to collect these data every 3 days in order to not loose any part of them, this causes us some overlaps.
@@ -716,7 +782,7 @@ VM6 is used to extract data collected from servers and VM5 for the rest.</p>
 </div>
 <div class="imageblock" style="text-align: center">
 <div class="content">
-<img src="images/extract_anonymize.jpg" alt="extract anonymize" width="450" height="250">
+<img src="./images/extract_anonymize.jpg" alt="extract anonymize" width="450" height="250">
 </div>
 <div class="title">Figure 6. Data extraction and anonymization</div>
 </div>
@@ -830,7 +896,7 @@ As there are so many small files, we merge them into larger files before putting
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/server_sockets.jpg" alt="server sockets" width="400" height="300">
+<img src="./images/server_sockets.jpg" alt="server sockets" width="400" height="300">
 </div>
 <div class="title">Figure 7. Collecting and deployement of Server sockets data</div>
 </div>
@@ -943,7 +1009,7 @@ It is execution of various batches on a cluster.</p>
 <h3 id="_pipeline_folder_structure">Pipeline folder structure</h3>
 <div class="imageblock">
 <div class="content">
-<img src="images/pipeline_folders.jpg" alt="pipeline folders">
+<img src="./images/pipeline_folders.jpg" alt="pipeline folders">
 </div>
 <div class="title">Figure 8. Pipeline folder structure under s3 server.</div>
 </div>
@@ -1006,7 +1072,7 @@ Otherwise, we need to deploy data from s3 to HDFS.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/pipeline_actions.jpg" alt="pipeline actions">
+<img src="./images/pipeline_actions.jpg" alt="pipeline actions">
 </div>
 <div class="title">Figure 9. Order of main actions taken place in Pipeline</div>
 </div>
@@ -1028,6 +1094,197 @@ But all are done on Zeppelin notebooks.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_oracle_logs">Oracle Logs</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="./images/dl_oracle_global.jpg" alt="dl oracle global" width="800" height="340">
+</div>
+<div class="title">Figure 1: Global view of the processes</div>
+</div>
+<div class="sect2">
+<h3 id="_db_access_log_files">DB access log files</h3>
+<div class="paragraph">
+<p>Our goal is to analyse accesses to the specific servers or server instances.
+This is why we ask to CSC to provide us Oracle DB log files by giving them list of server names, instance names in CSV format.
+This is a link to one of these files which are available under s3 server.</p>
+</div>
+<div class="paragraph">
+<p><span class="small">s3://gecustomers/document/GPI/oracle_log/Datalab_master_file_Oracle_Log_Request_with_SID_20160907_V2.6.csv</span></p>
+</div>
+<div class="paragraph">
+<p>The provided log files (which are recorded by different listeners) are stored under NAS3 server. (sfpld19901.ad.sys)</p>
+</div>
+<div class="paragraph">
+<p>Log file of each server instances named with its server name and instance name.
+Here are some examples of log files provided. Ex: listener1_sabad19305_IM1.zip, listener_acch15624_MW2.zip.</p>
+</div>
+<div class="paragraph">
+<p>These log files give us many information about the source of Data Base requests, the kind of source devices such as
+physical user machine, proxy server, etc.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_project_general_file_organization">Project general file organization</h3>
+<div class="paragraph">
+<p>We organised files by respecting to the following folder structure.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"in" folder is mainly used to keep source files.</p>
+</li>
+<li>
+<p>"out" folder is used to save output data</p>
+</li>
+<li>
+<p>"done" folder is intended to save data once all processes are finished.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This convention is respected on all over the project.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/dl_oracle_sarma.jpg" alt="dl oracle sarma" width="650" height="300">
+</div>
+<div class="title">Figure 2: Processus on the SARMA10012 server</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_server_sarma10012">Server SARMA10012</h3>
+<div class="sect3">
+<h4 id="_transferring_files_from_remote_server">Transferring files from remote server</h4>
+<div class="paragraph">
+<p>In order to process log files we need to copy them to SARMA10012 server.</p>
+</div>
+<div class="paragraph">
+<p>The function <em>get_from_remote()</em> in <em>collect/oracle/bin/main.sh</em> file is written for this purpose.
+Archived .zip files are securely transferred from NAS3 server to the local collector server.</p>
+</div>
+<div class="listingblock">
+<div class="title">collect/oracle/bin/main.sh</div>
+<div class="content">
+<pre>############################################################
+function get_from_remote() {
+	#move remote files to local
+	for fic in $(ssh $REMOTE_ORACLE_LOG_USER@$REMOTE_ORACLE_LOG_SERVER "cd $REMOTE_ORACLE_LOG_DIR_IN; ls *.zip 2&gt;/dev/null")
+	do
+		echo "fic : $fic"
+		scp -p $REMOTE_ORACLE_LOG_USER@$REMOTE_ORACLE_LOG_SERVER:$REMOTE_ORACLE_LOG_DIR_IN/$fic $LOCAL_ORACLE_LOG_DIR_IN &amp;&amp;\
+		ssh $REMOTE_ORACLE_LOG_USER@$REMOTE_ORACLE_LOG_SERVER "mv $REMOTE_ORACLE_LOG_DIR_IN/$fic $REMOTE_ORACLE_LOG_DIR_DONE/$fic"
+	done</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Later, these archived (.zip) log files will be parsed via parse_in() method.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_encode_log_files_in_csv_format">Encode log files in CSV format</h4>
+<div class="paragraph">
+<p>As it is known, log files are not in columnar format.
+Therefore, we need to transform them into columnar format, like CSV.</p>
+</div>
+<div class="paragraph">
+<p>This process is done inside of the <em>parse_in()</em> function in <em>collect/oracle/bin/main.sh</em> file.
+Lines are read one by one and stored inside of a .csv.gz file.
+And these archive files are sent to S3 server.</p>
+</div>
+<div class="paragraph">
+<p>TODO : user datalab:</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_anonymization_3">Anonymization</h4>
+<div class="paragraph">
+<p>Log files contain user access information and host name of the source devices.
+In order to preserve anonymity we need to anonymize these information before storing them in S3 server.
+This process is done in VM ubuntu with IP 192.167.17.20.
+Fields source.user and source.host.name anonymized into I_ID_U and I_ID_D.</p>
+</div>
+<div class="paragraph">
+<p>Results are exported in .csv.gz format and sent to the S3 server under s3://gerepo/in/oracle repository.</p>
+</div>
+<div class="paragraph">
+<p>TODO : (User nexthink:)</p>
+</div>
+<div class="paragraph">
+<p>A single Virtual Machine is dedicated to anonymize the received data.
+Any user information, device IDs, machine IPs are anonymized.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_virtual_machine_192_167_17_20">Virtual Machine - 192.167.17.20</h4>
+<div class="paragraph">
+<p>TODO : VM20</p>
+</div>
+<div class="paragraph">
+<p>Access to the virtual machine which realise this operation is permitted by ssh connection.
+{ssh datalab@192.167.17.20}</p>
+</div>
+<div class="paragraph">
+<p>We have implemented <em>start_vm()</em> and <em>poweroff_vm()</em> functions in <em>vbox_vm.sh</em> script to start and stop the VM.
+Any information about this VM is in <em>vbox_vm.csv</em> file.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_manipulation_oracle_pipeline">Data manipulation - Oracle pipeline</h3>
+<div class="paragraph">
+<p>We use a zeppelin notebook to analyse prepared data.
+URL to the zeppelin notebook <strong>/in/40 - Oracle pipeline</strong> is <a href="https://devzeppelin.gadatalab.com/#/notebook/2BWM6SWE5" class="bare">https://devzeppelin.gadatalab.com/#/notebook/2BWM6SWE5</a></p>
+</div>
+<div class="paragraph">
+<p>This notebook contains multiple paragraphs and each of them dedicated to a specific action.</p>
+</div>
+<div class="paragraph">
+<p>We parse log files which are stored in CSV format in s3://gerepo/in/oracle and encode them in <em>parquet</em> columnar format to s3://gerepo/out/oracle.
+The goal is to run various actions, such as search, filter, join, etc. much more rapidly than it is possible in CSV format.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_date_time_format_correction">Date time format correction</h3>
+<div class="paragraph">
+<p>As experience, we noticed that some columns' information in these log files don&#8217;t have the same format.
+As the requests are received from different time zones, log files contain various date time formats.
+This is an issue because this will not give us correct search or filter results.
+In order to resolve this problem, we try either to convert or exclude them.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resolves_ip_mdm_itc">Resolves (IP, Mdm-Itc)</h3>
+<div class="paragraph">
+<p>In this part, we try to resolve source IP address of the registered flux.
+Because we anonymized some important information before analysis.
+As an example, it is important now to find out the source mdm-itc "site" of the requests.</p>
+</div>
+<div class="paragraph">
+<p>However, some site, sector and teranga information is not always correctly reached as
+the requests are not only done from physical users machines but also from servers.</p>
+</div>
+<div class="paragraph">
+<p>We also defined a resolve function to find a site name from an IP address.</p>
+</div>
+<div class="paragraph">
+<p>Finally, results are written to HDFS file system under hdfs://data/temp/oa_oracle_join</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_date_time_interval_precision">Date time interval precision</h3>
+<div class="paragraph">
+<p>Our goal is to analyze line of access logs which are recorded during a specific date interval.
+This is why we ask to provider units to give us log files for those intervals.
+However, we notice that archived log files contain logs which are out of the date interval.
+Corrupted data will not perform a good analysis results.
+This is why we should ensure the percentage of the lines which contain corrupted date time formats.
+And then we need to either correct them or exclude from the analysis.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footnotes">
 <hr>
@@ -1037,7 +1294,7 @@ But all are done on Zeppelin notebooks.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-11-08 15:24:20 CET
+Last updated 2016-11-16 17:52:23 CET
 </div>
 </div>
 </body>
