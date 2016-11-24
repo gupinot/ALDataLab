@@ -25,13 +25,13 @@ There are two groups of Nexthink servers on which collected data are stored.
 
 As a result, data storing and backup processes are different on both kind of engines/servers.
 
-Furthermore, archived data aren't kept for a life on backup servers.
+WARNING: Furthermore, archived data aren't kept for a life on backup servers.
 As soon as more data are coming, the very old once are erased.
 
 
 === How we get and store input data on our side ?
 
-Our Collector server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
+_Collector_ server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
 Each received file can contain log history of 5 to 20 days.
 
 NOTE: As we try to collect these data every 3 days in order to not loose any part of them, this causes us some overlaps.

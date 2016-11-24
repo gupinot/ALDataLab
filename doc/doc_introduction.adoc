@@ -8,24 +8,23 @@
 // * If it is red then it is used by Zeppelin, if it is blue then it is used by pipeline. 
 // * for pipeline, represent how data is kept during different steps of the pipeline. 
 
+== Presentation of DataLab
 
-== Types of data sources to collect
+The main purpose of this project is ....
 
-
-There are different kind of sources that we collect to analyse.
-These sources are :
-
-* Oracle logs
-* Nexthink
-* Server sockets
-* Server usage
+// Let's talk about what are different kind of data that we analyse.
 
 
-image::images/source_collect0.jpg[title="Types of data sources to collect", width="800", height="230"]
+// Let's talk about data sources to collect
 
 
-_Oracle logs_ are database access log files.
-_Nexthink_ is the application which collects data about network connections, program executions, web requests, etc. from PCs, laptops or servers.
-While Nexthink is mainly applied on Microsoft Windows systems, _Server sockets_ is implemented for Linux based machines.
-Finally, _Server usage_ is data collection from servers, including their CPU, memory, storage usages, etc.
+// Let's talk about, what we are going to speak in this project.
+
+
+// etc..
+
+
+
+
+
 
