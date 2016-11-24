@@ -14,7 +14,7 @@
 
 There are 3 main processes that we need to apply.
 These are _encoding_ of collected data from CSV format into "parquet" format,
-_resolving_ them to get complete data, _aggregating_ to
+_resolving_ them to get complete data and _aggregating_ to
 get some analysis results.
 
 
@@ -28,22 +28,22 @@ This will improve data manipulation performance compared to CSV format.
 * _Resolving_:
 
 This is the resolution of encoded data by combination with other referential information.
-As an example, we can re-define a user's sector, site or its team name.
+As an example, we can re-define a user's sector, site or its team name with the help of resolve methods.
+This process is intended to find specific information from multiple tables.
+We can find for example _the number of connections_, _the number of distinct users_, _the number of distinct devices_,
+_the network traffic volume_, etc..
 
 * _Aggregation_:
 
-The aggregation process is intended to find specific information from multiple tables.
-With aggregation we can find for example _the number of connections_, _the number of distinct users_, _the number of distinct devices_,
-_the network traffic volume_, etc..
+This is simply aggregation of data, which may be done daily, monthly, etc.
 // - Aggregate is to join tables with reference tables and if needed to group by.
 
-The input data is stored in s3://gedatalab/.
-This is deployed to HDFS file system, encoded, resolved and aggregated.
-Final data is stored back on s3 server.
-Output data after each step are kept, so we can use any of them at any time.
+The input data are stored in s3://gedatalab/.
+They are then deployed to HDFS file system, encoded, resolved and aggregated.
+Data output from each of these steps are kept and stored on s3, so we can use any of them at any time.
 
 There are 3 main folders which are /_encoded_, /_resolved_, and /_aggregated_.
-We store data in these folders after each main steps.
+We store data in these folders after each main step.
 Each of these folders contains three sub-folders for different types of data (nexthink, server-usage, server-socket).
 Once we finished data manipulation we store them again on the s3 server for future use.
 

@@ -22,7 +22,7 @@ done < /dev/stdin
 }
 
 SUBMIT=$HOME/pipeline/bin/submit.sh
-CONF=$HOME/pipeline/conf/pipe2to3.conf
+CONF=$HOME/pipeline/conf/pipe2to3_execution.conf
 dirin=$(cat $CONF | egrep '^shell\.dirin' | awk '{print $2}')
 dirdone=$(cat $CONF | egrep '^shell\.dirdone' | awk '{print $2}')
 submitArg=""
@@ -63,10 +63,8 @@ done
 
 tempfile=$(mktemp)
 echo "tempfile=$tempfile"
-for var in connection webrequest
-do
-    hdfs dfs -ls ${dirin}/${var}/ | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
-	sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
-done
+var=execution
+hdfs dfs -ls ${dirin}/${var}/ | egrep -o "[^ ]+\.gz$" | egrep "$FILEPATTERN" >$tempfile
+sort -t_ -k3 $tempfile | $SUBMIT -c $CONF $DRYRUN $submitArg 2>>$LOGERR | mvfiledone "${dirdone}/${var}"
 rm $tempfile
 

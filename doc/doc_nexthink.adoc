@@ -1,75 +1,68 @@
 <<<
 == Nexthink
 
+=== What is Nexthink ?
+
 Nexthink is the application which collects information about any actions done on a PC, Laptop or a server.
+See image below.
+footnote:[https://doc.nexthink.com/images/a/a3/Collector.png]
 
-image::images/collector.png[title="Nexthink Engine which collects data from different devices", width="400", height="300"]
-
-
-There is a Nexthink _Collector_ which is installed on different devices.
-It captures network connections, program executions, web requests, etc.. and sends data to the _Nexthink Engines_.
-Nexthink Engines stock collected data and make a backup of them daily and per server. 
+image::images/collector.png[title="Nexthink Engine which collects data from different devices", width="320", height="200"]
 
 
-In fact, there are two groups of Nexthink Engine servers and collection of data is done separately on each of them.
-There are 21 servers on the first group which work with v5 of Nexthink.
-There are 3 servers in the second group.
-The version of Nexthink is v6 in these servers.
+A Nexthink _Collector_ program installed on different devices captures network connections, program executions, web requests, etc.. and sends data to Nexthink _Engines_.
+Nexthink _Engines_ stock received data and make daily backups.
+
+=== Where are data collection on Nexthink side ?
+
+image::images/nexthink_collector_engins.jpg[title="Nexthink Engines with backup servers", float="right", width="300", height="350"]
+
+There are two groups of Nexthink servers on which collected data are stored.
+
+* _Data collected from PCs, laptops, etc._ There are 21 servers and the version of Nexthink installed is V5.
+
+* _Data collected from Servers_. There are 3 servers in this group. The version of Nexthink is V6.
+
+As a result, data storing and backup processes are different on both kind of engines/servers.
+
+WARNING: Furthermore, archived data aren't kept for a life on backup servers.
+As soon as more data are coming, the very old once are erased.
 
 
-Data collected from PC computers, laptops, etc.. are stored on the first group of servers.
-Whatever is collected from servers is saved on the second group of servers.
+=== How we get and store input data on our side ?
+
+_Collector_ server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
+Each received file can contain log history of 5 to 20 days.
+
+NOTE: As we try to collect these data every 3 days in order to not loose any part of them, this causes us some overlaps.
+This is why we should make attention to filter duplicated data during analysis processes.
+
+==== How input data are used ?
+
+Provided data stored under SAN server in */0/ folder* are considered as _input data_.
+As they are collected by Nexthink way, they are not in any columnar format (CSV, parquet, etc.).
+This is why the very first step is to extract these data into CSV format with the help of a Nexthink environment.
+We have 2 virtual machines (named as VM5 and VM6) on the Collector server which are dedicated to this purpose.
+VM6 is used to extract data collected from servers and VM5 for the rest.
+
+image::images/extract_anonymize.jpg[title="Data extraction and anonymization", align="center", width="450", height="250"]
+
+==== Extract-backup
+
+Input data are deployed either on VM5 or VM6 to be extracted.
+We use NXQL sql requests to extract information and we store them in CSV formats.
+This operation is executed daily and we call it as _extractbackup_.
+
+Extracted data are copied on */1/ folder*.
+At this stage, they are ready to be anonymized.
 
 
-Collected data are provided and stored under SAN server at /0/ folder level.
-However, they need to be extracted and it must be done inside of a nexthink environment.
-We have 2 VMs (nexthink v5 and v6) on the collector server which are dedicated to extract data to CSV format. 
 
-Once data are deployed correctly to these VMs and we use NXQL sql requests to extract information.
-Extracted data are then stored on /1/ folder level.
-
-
-Collected data is deployed to these VMs and then we extract information that we need in CSV format.
-Language used to extract information from collected data is NXQL.
-And then we store them at level /1 folder.
-
-
-Finally, extracted data is anonymized via VM20 and stored on s3://collect/nexthink/in.
-Source code path: ALDatalab/collect/nexthink.
-
-image::images/extract_anonymize.jpg[title="Nexthink backup extraction and data anonymization", width="450", height="250"]
-
-
-image::images/nexthink_collector_engins.jpg[title="Nexthink Engines which collect and backup data", width="350", height="400"]
+//Finally, extracted data is anonymized via VM20 and stored on s3://collect/nexthink/in.
 
 
 
-== Data transfer from backup servers
 
-Collector server (SARMA10012) collects backup data from Nexthink Collector servers every 3 days.
-Each backup data can contain log history from 5 to 20 days.
-
-
-Not all archived data is kept for a life.
-The very old data are erased by the new once.
-This is why we copy them every 3 days to SAN server in order to not loose a part of them.
-At the same time, this causes us some overlaps that we will discuss about it later.
-
-
-Data collection recovered from Nexthink environments are not in CSV format.
-We need to read and extract them into CSV format and we need to realise this in a Nexthink environment.
-
-
-There are 2 virtual machines on the collector server which are dedicated to extract information from "BackupData" to CSV format.
-The first one is VM5 which is intended to extract data which is collected by first group of servers.
-The second one, VM6, is used to extract backup data collected by second group of servers.
-
-
-Data provided by Nexthink are kept on /0/ folder on SAN server.
-They are dispatched either on VM5 or VM6 to be extracted in CSV format and then stored under /1/ folder on SAN server.
-We call this operation _extractbackup_ which is executed daily.
-
-NOTE: As an information, NXQL is used as SQL language to extract data from Nexthink Engine database.
 
 After extracting, we separate 3 data types under /1/ folder.
 
@@ -95,7 +88,7 @@ These are information about the execution of any application used by users.
 This concern also applications which do not access to internet.
 (even if a user doesn't login to the application).
 
-In general, these kind of data give us information about which application is executed,
+These kind of data give us information about which application is executed,
 by which user, at what time, the version of the application,
 how much does it take to be started, the path to the application, etc.
 
@@ -106,12 +99,13 @@ for each of these types of data collections.
 
 //[TIP]give a picture from cyberdock with highlighted colors of these folders.
 
-== Anonymization
+=== Anonymization
 
-The following process is to make anonymous some user information from extracted data.
+The next step in the process is to make anonymous some user information from extracted data.
 As usual, we use virtual machine VM20 for this purpose.
 Once done, we store them under /2/ folder on the SAN server in CSV format.
 
 
-Finally, these data is copied to _s3://gedatalab/in._
+Finally, these data are copied to _s3://gedatalab/in._
 
+Source code path: ALDatalab/collect/nexthink.

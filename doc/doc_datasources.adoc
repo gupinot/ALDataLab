@@ -1,0 +1,21 @@
+<<<
+== Types of data sources to collect
+
+
+There are different kind of sources that we collect to analyse.
+These sources are :
+
+* Oracle logs
+* Nexthink
+* Server sockets
+* Server usage
+
+
+image::images/source_collect0.jpg[title="Types of data sources to collect", width="800", height="230"]
+
+
+_Oracle logs_ are database access log files.
+_Nexthink_ is the application which collects data about network connections, program executions, web requests, etc. from PCs, laptops or servers.
+While Nexthink is mainly applied on Microsoft Windows systems, _Server sockets_ is implemented for Linux based machines.
+Finally, _Server usage_ is data collection from servers, including their CPU, memory, storage usages, etc.
+
