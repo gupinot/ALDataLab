@@ -1,16 +1,17 @@
 <<<
 == References
 
-In this project we have 3 main types of referenced data collection.
-These are _AIP_, _MDM-ITC_ and _Storage Master Report_ which are kept on s3.
+We are mainly focused on 4 types of referential data collection which
+are _AIP_, _MDM-ITC_, _Storage Master Report_ and _IDM_.
+They are listed in the following figure with their paths on *s3://gerepo*.
 
-image::images/s3_references.jpg[title="Reference storage on s3", width="450", height="250"]
+image::images/references3.jpg[title="Types of referential data collections"]
 
 === AIP
 
-_AIP_ is data referential for all applications installed on different servers and used by different users.
-In other words, AIP is a referential of the IT assets of Alstom and it covers mainly the list of applications,
-the list of servers where the applications are deployed, the product software used by these applications,
+_AIP_ (Application Inventory Portal) is data referential for all applications installed on different servers and used by different users.
+In other words, AIP is a referential of the IT assets of Ge-Alstom and it covers mainly the list of applications,
+the list of servers on which these applications are deployed, the product software used by these applications,
 the licenses used by the applications, etc.
 
 There are 3 main tables which are :
@@ -37,12 +38,13 @@ Today, these data are manually transferred into s3://gerepo/in/mdm-itc.
 include::doc_storagemaster.adoc[]
 
 
-NOTE: _IDM_ is the management of individual identities/users, their authentication, authorization,
+=== IDM
+
+_IDM_ is the management of individual identities/users, their authentication, authorization,
 roles and privileges within different sites, sectors, teams etc.
 
-=== IDM
+In short, _IDM_ is the list of users with their corresponding sectors, sites, teams etc.
 
 _IDM_ is used to resolve user information which are made anonymous before being stored on s3.
 However, we don't need IDM to anonymize data.
-
 // Une autre application qui gere tous les donnes des utilsateuur et leurs connnexion, etc.

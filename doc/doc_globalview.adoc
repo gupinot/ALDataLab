@@ -1,11 +1,21 @@
 <<<
 == Global View
 
+As it is mentioned in the previous chapter, there are different kinds of data which are collected from multiple sources by different ways.
+We realize some actions to prepare data before being able to do analysis.
+Therefore, these data manipulations such as extraction from log files, anonymization, etc. are not all applied on all of them.
+As an example, while sensitive user information data are needed to be anonymized, others are not.
+
+In the next chapters, we will explain one by one how each kind of data are collected, stored and prepared to be analysed.
+
 Before presenting one by one of these collections and their usage analysis, here is an image
 which shows common processes which are applied during various steps.
 
 image::images/collect_pipeline.jpg[title="Global view of the common processes", width="650", height="350"]
 
+
+Collected logs are stored in SAN server.
+They are extracted into CSV format, user information are made anonymous and finally stored on s3.
 
 Generally, the input data arrive to SAN server.
 They are extracted into correct formats and made anonymous if necessary and stored on s3.
@@ -37,3 +47,17 @@ The collector server is the one which can tell us which anonymized user matches 
 
 
 Nexthink, server usage and server socket are then used inside of the process named "Pipeline".
+
+
+=== File/Folder structure organization
+//We organised files by respecting to the following folder structure.
+Common folder structure strategies are applied on all over the project.
+
+* _/in_ folder is reserved to keep input data (logs in CSV format, etc.)
+* _/out_ folder is used to store output data after different manipulation such as resolving, aggregating, etc..
+* _/done_ folder is intended to keep data which are already processed. (files already moved/merged, etc.)
+
+As the same way, folder name convention is also common on the source code of the project.
+
+* _/bin_ folder contains main script files (ex: collect.sh, main.sh, distribute.sh, etc.)
+* _/conf_ folder contains configuration files such as _env.sh_ to setup or initialize common variables.

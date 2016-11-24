@@ -13,7 +13,7 @@ image::images/collector.png[title="Nexthink Engine which collects data from diff
 A Nexthink _Collector_ program installed on different devices captures network connections, program executions, web requests, etc.. and sends data to Nexthink _Engines_.
 Nexthink _Engines_ stock received data and make daily backups.
 
-=== Where are data collection on Nexthink side ?
+=== Where are data collected on Nexthink side ?
 
 image::images/nexthink_collector_engins.jpg[title="Nexthink Engines with backup servers", float="right", width="300", height="350"]
 

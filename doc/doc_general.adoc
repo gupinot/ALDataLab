@@ -1,12 +1,14 @@
 = DataLab - Enterprise IT Digital twin
 Guillaume PINOT, Matin BAYRAMOV
 bayramov.matin-ext@power.alstom.com
+:sectnums:
+:source-highlighter: highlight.js
 :pdf-page-size: A4
 :toc:
-
 :imagesdir: .
 :icons: font
-:sourcedir: ../collect/oracle/bin
+:autofit-option:
+:sourcedir: ../
 
 include::doc_introduction.adoc[]
 

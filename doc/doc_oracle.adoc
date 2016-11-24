@@ -1,9 +1,4 @@
-
-
-
-
-
-
+<<<
 == Oracle Logs
 
 image::{imagesdir}/images/dl_oracle_global.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
@@ -25,14 +20,6 @@ These log files give us many information about the source of Data Base requests,
 physical user machine, proxy server, etc.
 
 
-=== Project general file organization
-We organised files by respecting to the following folder structure.
-
-* "in" folder is mainly used to keep source files.
-* "out" folder is used to save output data
-* "done" folder is intended to save data once all processes are finished.
-
-This convention is respected on all over the project.
 
 
 image::{imagesdir}/images/dl_oracle_sarma.jpg[caption="Figure 2: ", title="Processus on the SARMA10012 server", width="650", height="300"]
@@ -47,9 +34,9 @@ Archived .zip files are securely transferred from NAS3 server to the local colle
 
 .collect/oracle/bin/main.sh
 [source,bash,numbered]
-[%autofit]
+//[%autofit]
 ----
-include::{sourcedir}/main.sh[lines=9..17]
+include::{sourcedir}/collect/oracle/bin/main.sh[lines=9..20]
 ----
 
 Later, these archived (.zip) log files will be parsed via parse_in() method.
