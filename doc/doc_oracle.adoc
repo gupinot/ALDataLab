@@ -1,7 +1,7 @@
 <<<
 == Oracle Logs
 
-image::{imagesdir}/images/dl_oracle_global.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
+image::images/dl_oracle_global.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
 
 
 === DB access log files
@@ -22,7 +22,7 @@ physical user machine, proxy server, etc.
 
 
 
-image::{imagesdir}/images/dl_oracle_sarma.jpg[caption="Figure 2: ", title="Processus on the SARMA10012 server", width="650", height="300"]
+image::images/dl_oracle_sarma.jpg[caption="Figure 2: ", title="Processus on the SARMA10012 server", width="650", height="300"]
 
 === Server SARMA10012
 
@@ -33,7 +33,7 @@ The function _get_from_remote()_ in _collect/oracle/bin/main.sh_ file is written
 Archived .zip files are securely transferred from NAS3 server to the local collector server.
 
 .collect/oracle/bin/main.sh
-[source,bash,numbered]
+[source,bash]
 //[%autofit]
 ----
 include::{sourcedir}/collect/oracle/bin/main.sh[lines=9..20]
@@ -52,8 +52,7 @@ This process is done inside of the _parse_in()_ function in _collect/oracle/bin/
 Lines are read one by one and stored inside of a .csv.gz file.
 And these archive files are sent to S3 server.
 
-TODO : user datalab:
-
+//TODO : user datalab:
 
 ==== Anonymization
 
@@ -64,7 +63,7 @@ Fields source.user and source.host.name anonymized into I_ID_U and I_ID_D.
 
 Results are exported in .csv.gz format and sent to the S3 server under s3://gerepo/in/oracle repository.
 
-TODO : (User nexthink:)
+// TODO : (User nexthink:)
 
 A single Virtual Machine is dedicated to anonymize the received data.
 Any user information, device IDs, machine IPs are anonymized.
@@ -72,7 +71,7 @@ Any user information, device IDs, machine IPs are anonymized.
 
 ==== Virtual Machine - 192.167.17.20
 
-TODO : VM20
+// TODO : VM20
 
 Access to the virtual machine which realise this operation is permitted by ssh connection.
 {ssh datalab@192.167.17.20}
@@ -111,8 +110,6 @@ We also defined a resolve function to find a site name from an IP address.
 
 
 Finally, results are written to HDFS file system under hdfs://data/temp/oa_oracle_join
-
-
 
 === Date time interval precision
 Our goal is to analyze line of access logs which are recorded during a specific date interval.
