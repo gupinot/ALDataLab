@@ -1,0 +1,4 @@
+#minute hour    mday    month   wday    who     command
+30 12 * * 2,5 cd /datalab2/home/datalab/ALDataLab/collect/serverconsumption/bin;  ./collect.sh 
+
+

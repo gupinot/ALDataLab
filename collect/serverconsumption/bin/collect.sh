@@ -3,6 +3,7 @@
 CONF=$(dirname $0)/../conf/conf.sh
 . $CONF
 
+exec &> >(tee -a "${LOG}/collect.log")
 
 if [[ $# -ne 0 ]]
 then
