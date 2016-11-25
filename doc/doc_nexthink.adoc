@@ -13,7 +13,7 @@ image::images/collector.png[title="Nexthink Engine which collects data from diff
 A Nexthink _Collector_ program installed on different devices captures network connections, program executions, web requests, etc.. and sends data to Nexthink _Engines_.
 Nexthink _Engines_ stock received data and make daily backups.
 
-=== Where are data collection on Nexthink side ?
+=== Where are data collected on Nexthink side ?
 
 image::images/nexthink_collector_engins.jpg[title="Nexthink Engines with backup servers", float="right", width="300", height="350"]
 
@@ -25,13 +25,13 @@ There are two groups of Nexthink servers on which collected data are stored.
 
 As a result, data storing and backup processes are different on both kind of engines/servers.
 
-Furthermore, archived data aren't kept for a life on backup servers.
+WARNING: Furthermore, archived data aren't kept for a life on backup servers.
 As soon as more data are coming, the very old once are erased.
 
 
 === How we get and store input data on our side ?
 
-Our Collector server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
+_Collector_ server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
 Each received file can contain log history of 5 to 20 days.
 
 NOTE: As we try to collect these data every 3 days in order to not loose any part of them, this causes us some overlaps.
@@ -45,15 +45,17 @@ This is why the very first step is to extract these data into CSV format with th
 We have 2 virtual machines (named as VM5 and VM6) on the Collector server which are dedicated to this purpose.
 VM6 is used to extract data collected from servers and VM5 for the rest.
 
+image::images/extract_anonymize.jpg[title="Data extraction and anonymization", align="center", width="450", height="250"]
+
 ==== Extract-backup
 
 Input data are deployed either on VM5 or VM6 to be extracted.
 We use NXQL sql requests to extract information and we store them in CSV formats.
 This operation is executed daily and we call it as _extractbackup_.
 
-Extracted data are copied on */1/ folder* which will be anonymized later.
+Extracted data are copied on */1/ folder*.
+At this stage, they are ready to be anonymized.
 
-image::images/extract_anonymize.jpg[title="Data extraction and anonymization", align="center", width="450", height="250"]
 
 
 //Finally, extracted data is anonymized via VM20 and stored on s3://collect/nexthink/in.

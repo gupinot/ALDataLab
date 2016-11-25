@@ -1,23 +1,10 @@
-= Enterprise IT Digital twin
-Guillaume PINOT, Matin BAYRAMOV
-bayramov.matin-ext@power.alstom.com
-v1.0, 2016-10-10
-
-:pdf-page-size: A4
-:imagesdir: .
-:icons: font
-:sourcedir: ../../collect/oracle/bin
-
-
-
-
-== Project
-The main purpose of this project is ....
+<<<
+== Oracle Logs
 
 image::{imagesdir}/images/dl_oracle_global.jpg[caption="Figure 1: ", title="Global view of the processes", width="800", height="340"]
 
 
-== DB access log files
+=== DB access log files
 Our goal is to analyse accesses to the specific servers or server instances.
 This is why we ask to CSC to provide us Oracle DB log files by giving them list of server names, instance names in CSV format.
 This is a link to one of these files which are available under s3 server.
@@ -33,21 +20,13 @@ These log files give us many information about the source of Data Base requests,
 physical user machine, proxy server, etc.
 
 
-== Project general file organization
-We organised files by respecting to the following folder structure.
-
-* "in" folder is mainly used to keep source files.
-* "out" folder is used to save output data
-* "done" folder is intended to save data once all processes are finished.
-
-This convention is respected on all over the project.
 
 
 image::{imagesdir}/images/dl_oracle_sarma.jpg[caption="Figure 2: ", title="Processus on the SARMA10012 server", width="650", height="300"]
 
-== Server SARMA10012
+=== Server SARMA10012
 
-=== Transferring files from remote server
+==== Transferring files from remote server
 In order to process log files we need to copy them to SARMA10012 server.
 
 The function _get_from_remote()_ in _collect/oracle/bin/main.sh_ file is written for this purpose.
@@ -55,16 +34,16 @@ Archived .zip files are securely transferred from NAS3 server to the local colle
 
 .collect/oracle/bin/main.sh
 [source,bash,numbered]
-[%autofit]
+//[%autofit]
 ----
-include::{sourcedir}/main.sh[lines=9..17]
+include::{sourcedir}/collect/oracle/bin/main.sh[lines=9..20]
 ----
 
 Later, these archived (.zip) log files will be parsed via parse_in() method.
 
 
 
-=== Encode log files in CSV format
+==== Encode log files in CSV format
 
 As it is known, log files are not in columnar format.
 Therefore, we need to transform them into columnar format, like CSV.
@@ -76,7 +55,7 @@ And these archive files are sent to S3 server.
 TODO : user datalab:
 
 
-=== Anonymization
+==== Anonymization
 
 Log files contain user access information and host name of the source devices.
 In order to preserve anonymity we need to anonymize these information before storing them in S3 server.
@@ -91,7 +70,7 @@ A single Virtual Machine is dedicated to anonymize the received data.
 Any user information, device IDs, machine IPs are anonymized.
 
 
-=== Virtual Machine - 192.167.17.20
+==== Virtual Machine - 192.167.17.20
 
 TODO : VM20
 
@@ -102,7 +81,7 @@ We have implemented _start_vm()_ and _poweroff_vm()_ functions in _vbox_vm.sh_ s
 Any information about this VM is in _vbox_vm.csv_ file.
 
 
-== Data manipulation - Oracle pipeline
+=== Data manipulation - Oracle pipeline
 
 We use a zeppelin notebook to analyse prepared data.
 URL to the zeppelin notebook */in/40 - Oracle pipeline* is https://devzeppelin.gadatalab.com/#/notebook/2BWM6SWE5
@@ -113,14 +92,14 @@ We parse log files which are stored in CSV format in s3://gerepo/in/oracle and e
 The goal is to run various actions, such as search, filter, join, etc. much more rapidly than it is possible in CSV format.
 
 
-== Date time format correction
+=== Date time format correction
 As experience, we noticed that some columns' information in these log files don't have the same format.
 As the requests are received from different time zones, log files contain various date time formats.
 This is an issue because this will not give us correct search or filter results.
 In order to resolve this problem, we try either to convert or exclude them.
 
 
-== Resolves (IP, Mdm-Itc)
+=== Resolves (IP, Mdm-Itc)
 In this part, we try to resolve source IP address of the registered flux.
 Because we anonymized some important information before analysis.
 As an example, it is important now to find out the source mdm-itc "site" of the requests.
@@ -135,7 +114,7 @@ Finally, results are written to HDFS file system under hdfs://data/temp/oa_oracl
 
 
 
-== Date time interval precision
+=== Date time interval precision
 Our goal is to analyze line of access logs which are recorded during a specific date interval.
 This is why we ask to provider units to give us log files for those intervals.
 However, we notice that archived log files contain logs which are out of the date interval.
@@ -145,10 +124,10 @@ And then we need to either correct them or exclude from the analysis.
 
 
 
-== TODO
-* URLs to zeppelin notebooks, paragraphs
-* How to access to s3 server. (URL, secret key, cyberduck)
-* Zeppelin (why zeppelin ? what we do in zeppelin ? how to access to zeppelin ?)
+// TODO
+// URLs to zeppelin notebooks, paragraphs
+// How to access to s3 server. (URL, secret key, cyberduck)
+// Zeppelin (why zeppelin ? what we do in zeppelin ? how to access to zeppelin ?)
 
 
 
