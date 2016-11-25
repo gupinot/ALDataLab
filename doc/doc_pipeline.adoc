@@ -79,17 +79,20 @@ We organized folder structure of pipeline process as below:
 // What is the quantity of the information used ?
 // How much can it cost us ? etc ?
 
-
-
 === Pipeline main actions
+
+[source,bash]
+//[%autofit]
+.collect/oracle/bin/main.sh
+----
+include::{sourcedir}/src/universal/bin/pipeline.sh[lines=46..62]
+----
 
 . Make an archive of the s3://gedatalab/pipeline to s3://gedatalab/arch.
 . Move data from s3://gedatalab/in to s3://gedatalab/pipeline/in
 . Make a copy of data from s3://gedatalab/pipeline to hdfs://data/.
 . Data in HDFS is encoded, resolved and aggregated.
 . Replace (or erase) s3://gedatalab/pipeline with data in HDFS, hdfs://data/.
-
-
 
 We need to deploy data on a distributed file system in cluster if we want to analyse them.
 This is why we use s3 to keep data, but hdfs://data (on Amazon EC2) to manipulate or do analysis on them.

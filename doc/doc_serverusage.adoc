@@ -1,25 +1,64 @@
 <<<
 == Server usage
 
-Another data sources that we collect to analyse is "server-usage".
+Another data sources that we collect to analyse is _Server Usage_.
 It involves the information about server CPU usage, memory and storage usage.
 
-
-An HTTP URL allows us to call and get these data for a single given server by specifying its hostname as a URL parameter.
-As response, it is an XLS file returned which will be then converted to CSV format and stored on s3.
-
-
-To know more about URL and other configurations, look into conf/conf.sh file.
-
-
-There is a _server.lst_ CSV file which contains hostname of all servers for which we want to collect their usage information.
-Server-usage data are synchronized 2 times in a week.
-
-
-There is nothing to make anonymous for these kind of data collection.
-
-
 * Source code path : ALDataLab/collect/serverconsumption.
-* URL to call : http://iww.dcs.itssc.alstom.com/nrtmd/streamsdump/server
+
+
+=== Method
+
+In order to collect a server's usage information we need to request
+an HTTP URL by specifying its hostname as a parameter.
+This URL and other configuration parameters are defined in conf.sh file as below.
+
+[source,bash]
+.collect/serverconsumption/conf/conf.sh
+----
+include::{sourcedir}/collect/serverconsumption/conf/conf.sh[lines=4..5]
+----
+
+
+=== List of servers
+List of servers are defined in _server.lst_ file.
+Each line represents a hostname of a server.
+They are used by collect script.
+
+[source,markdown]
+.collect/serverconsumption/conf/server.lst
+----
+include::{sourcedir}/collect/serverconsumption/conf/server.lst[lines=1..5]
+...
+----
+
+=== Collect
+
+As we know how to fetch _Server usage_ for a single one, we can handle this for all others too.
+Request answer for each server is a XLS file.
+Later, we will convert these files into CSV formats.
+
+[source,bash]
+.collect/serverconsumption/bin/collect.sh
+----
+include::{sourcedir}/collect/serverconsumption/bin/collect.sh[lines=16..21]
+----
+
+=== Convert XLS to CSV
+
+Once we collected all XLS files we convert them to CSV format one by one.
+
+[source,bash]
+.collect/serverconsumption/bin/convert-send.sh
+----
+include::{sourcedir}/collect/serverconsumption/bin/convert-send.sh[lines=10..20]
+----
+
+
+
+
+IMPORTANT: There is nothing to make anonymous for these kind of data collection.
+
+NOTE: Server-usage data are synchronized 2 times in a week.
 
 

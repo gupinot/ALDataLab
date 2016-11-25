@@ -10,16 +10,32 @@
 
 == Presentation of DataLab
 
-The main purpose of this project is ....
+The main purpose is to build coherent repositories and map them with logs to simulate IT in a digital way.
+While these repositories are _theoretical view_ of the IT, asset's logs are real _usage view_.
 
 // Let's talk about what are different kind of data that we analyse.
+As result, _Referential data_ (AIP, MDM-ITC, Storage Master Reports, IDM) and
+usage logs (Nexthink, Server-sockets, Server usage, Oracle logs) are collected data on which we are mainly focused to do analysis.
 
+image::images/global_view42a.jpg[title="Presentation of two main kinds of data", width="500", height="250"]
+
+
+image::images/global_view0.png[title="Global view of the project", width="800", height="500", align="center"]
+
+
+This figure represents global view of the project.
+Data collection is shown on the left side.
+Referential data and logs are collected and anonymized on the Collector server before storing them under s3.
+
+
+On the right side, we see what are technologies used to store, combine, analyse, aggregate data and
+how we finally visualize analysis reports via various programs, such az Zeppelin, Circos, etc...
 
 // Let's talk about data sources to collect
-
-
+// === Referential
+// image::images/global_view1.png[title="Global view of the project", width="450", height="100", align="center"]
+// === Log files
 // Let's talk about, what we are going to speak in this project.
-
 
 // etc..
 
