@@ -1,6 +1,8 @@
 Dir=$(dirname $0)
 lst_engine=$Dir/$1
 
+exec &> >(tee -a "$Dir/logs/dump_all.log")
+
 DATE=$(date +"%Y%m%d")
 HEUR=$(date +"%H%M%S")
 
