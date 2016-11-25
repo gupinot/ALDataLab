@@ -1,0 +1,4 @@
+#minute hour    mday    month   wday    who     command
+0 */2 * * * /datalab2/home/datalab/ALDataLab/collect/serversocket/bin/collect.sh "1 2 3 4 5 6 7 8 9 10" 1>>/datalab2/home/datalab/ALDataLab/collect/serversocket/log/collect.log 2>&1
+
+
