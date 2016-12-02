@@ -28,14 +28,55 @@ As a result, data storing and backup processes are different on both kind of eng
 WARNING: Furthermore, archived data aren't kept for a life on backup servers.
 As soon as more data are coming, the very old once are erased.
 
+=== List of servers
 
-=== How we get and store input data on our side ?
+The following CSV files contain the list of hostnames of the nexthink backup servers:
+_engine_amer.csv_, _engine_asie.csv_, _engine_eur1.csv_, _engine_eur2.csv_, _engine_server.csv_.
+They are located under _/collect/nexthink/0/bin/_ folder.
 
-_Collector_ server (SARMA10012) copies these data from Nexthink backup servers to our SAN server every 3 days.
-Each received file can contain log history of 5 to 20 days.
+[source,csv]
+.collect/nexthink/0/bin/engine_eur1.csv
+----
+include::../collect/nexthink/0/bin/engine_eur1.csv[lines=1..5]
+----
+
+=== How collected data are transferred on our side ?
+
+There is a single archive file per nexthink backup server.
+Each file can contain log history of 5 to 20 days.
+Here is a picture of list of archived files copied from nexthink backup servers.
+
+image::images/nexthink_archives.jpg[title="Archive files on the collecter server copied from nexthink backup servers"]
+
+
+We use _scp_engine.sh_ script to copy archived data from a nexthink backup server to the collector (SARMA10012) server.
+This can be done manually per hostname by : _./scp_engine "hostname"_
+
+[source,bash]
+.collect/nexthink/0/bin/scp_engine.sh
+----
+include::../collect/nexthink/0/bin/scp_engine.sh[lines=1..15]
+----
+
+However, _dump_all_engine.sh_ script is written to execute copy process for a all of servers in a CSV file.
+
+[source,bash]
+.collect/nexthink/0/bin/dump_all_engine.sh
+----
+include::../collect/nexthink/0/bin/dump_all_engine.sh[lines=14..19]
+----
+
+Finally, a cron table definition is implemented in order to run data copy in about every 3 days.
+
+[source,markdown]
+.collect/nexthink/0/crontab/my_cron
+----
+include::../collect/nexthink/0/crontab/my_cron[]
+----
 
 NOTE: As we try to collect these data every 3 days in order to not loose any part of them, this causes us some overlaps.
 This is why we should make attention to filter duplicated data during analysis processes.
+
 
 ==== How input data are used ?
 

@@ -46,7 +46,8 @@ include::../collect/serverconsumption/bin/collect.sh[lines=16..21]
 
 === Convert XLS to CSV
 
-Once we collected all XLS files we convert them to CSV format one by one.
+Once we collected all XLS files we convert them to CSV format.
+Finally, we compress them into .gz zip format.
 
 [source,bash]
 .collect/serverconsumption/bin/convert-send.sh
