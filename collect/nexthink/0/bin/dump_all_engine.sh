@@ -1,3 +1,5 @@
+#!/bin/bash
+
 Dir=$(dirname $0)
 lst_engine=$Dir/$1
 

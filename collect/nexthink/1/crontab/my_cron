@@ -1,3 +1,3 @@
-30 22 * * * cd /datalab2/home/nexthink/extract_backup; ./main.sh
-30 18 * * * cd /datalab2/home/nexthink/extract_backup; ./mainAnonymize.sh
+30 22 * * * /datalab2/home/nexthink/extract_backup/main.sh
+30 18 * * * /datalab2/home/nexthink/extract_backup/mainAnonymize.sh
 00 22 * * * find /datalab3/DATA/0-NXProdBackups/Archives -mtime +3 -print | xargs rm

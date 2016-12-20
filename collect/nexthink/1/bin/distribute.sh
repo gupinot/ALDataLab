@@ -78,4 +78,27 @@ do
 	cd $Dir
 	runscript $fichier
 done
+
+#wait all process terminate
+echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : nothing more to do. Waiting all process terminate..."
+for ((i=1; i<=${#ServerPID[@]}; i++))
+do
+  while true;do
+        if [[ "${ServerPID[$i]}" != "" ]]
+        then
+                tmp=$(ps -p ${ServerPID[$i]} | wc -l)
+                if [[ "${tmp//[[:blank:]]/}" == "1" ]]
+                then
+                        ServerPID[$i]=""
+                        break
+                else
+                  echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : nothing more to do. Waiting all process terminate : ${ServerPID[$i]} still running"
+                  sleep 100
+                fi
+        else
+          break
+        fi
+  done
+done
+
 echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 $* : End"
