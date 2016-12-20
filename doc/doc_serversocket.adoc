@@ -7,14 +7,75 @@ We look for information about what is executed or accessed and what are processe
 
 Source code path: ALDatalab/collect/serversocket
 
-=== Deployment
+=== About
 
-A datalab user account is created on about one thousand linux servers. 
+A datalab user account is created on about one thousand linux servers.
 A pair public/private key generated for each of them and public keys are deployed on these servers.
 Then we connect to the servers with ssh and deploy _monitor.sh_ script on them.
 This script executes linux commands such as "netstat, ps, lsof, etc." every 5 minutes and puts results into server-usage data files.
 It is activated with a crontab.
 
+
+image::images/server_sockets.jpg[title="Collecting and deployement of Server sockets data", width="400", height="300"]
+
+==== Config parameters
+
+Configuration parameters, paths to the files, directories are defined in the conf file.
+
+[source,bash]
+.collect/serversocket/conf/conf.sh
+----
+include::../collect/serversocket/conf/conf.sh[lines=1..5]
+----
+
+
+==== Script actions
+
+We are able to test server connections, user roles, etc.
+We can deploy/undeploy the script, execute collect function to collect server usage data.
+
+[source,bash]
+.collect/serversocket/bin/submit.sh
+----
+include::../collect/serversocket/bin/submit.sh[lines=210..235]
+----
+
+
+==== Deploy
+
+[source,bash]
+.collect/serversocket/bin/submit.sh
+----
+include::../collect/serversocket/bin/submit.sh[lines=16..33]
+----
+
+==== List of servers
+
+[source,markdown]
+.collect/serversocket/conf/ServerListToCollect.csv
+----
+include::../collect/serversocket/conf/ServerListToCollect.csv[lines=1..5]
+...
+----
+
+
+==== Monitor
+
+[source,bash]
+.collect/serversocket/bin/monitor.sh
+----
+include::../collect/serversocket/bin/monitor.sh[lines=31..54]
+----
+
+
+
+==== Collect
+
+[source,bash]
+.collect/serversocket/bin/submit.sh
+----
+include::../collect/serversocket/bin/submit.sh[lines=60..74]
+----
 
 
 === Collecting data
@@ -23,7 +84,6 @@ Collector server gets files from servers and put them on the NAS server.
 As there are so many small files, we merge them into larger files before putting on s3://gedatalab/in/serverusage.
 
 
-image::images/server_sockets.jpg[title="Collecting and deployement of Server sockets data", width="400", height="300"]
 
 
 

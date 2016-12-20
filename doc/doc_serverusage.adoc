@@ -16,7 +16,7 @@ This URL and other configuration parameters are defined in conf.sh file as below
 [source,bash]
 .collect/serverconsumption/conf/conf.sh
 ----
-include::{sourcedir}/collect/serverconsumption/conf/conf.sh[lines=4..5]
+include::../collect/serverconsumption/conf/conf.sh[lines=4..5]
 ----
 
 
@@ -28,7 +28,7 @@ They are used by collect script.
 [source,markdown]
 .collect/serverconsumption/conf/server.lst
 ----
-include::{sourcedir}/collect/serverconsumption/conf/server.lst[lines=1..5]
+include::../collect/serverconsumption/conf/server.lst[lines=1..5]
 ...
 ----
 
@@ -41,20 +41,19 @@ Later, we will convert these files into CSV formats.
 [source,bash]
 .collect/serverconsumption/bin/collect.sh
 ----
-include::{sourcedir}/collect/serverconsumption/bin/collect.sh[lines=16..21]
+include::../collect/serverconsumption/bin/collect.sh[lines=16..21]
 ----
 
 === Convert XLS to CSV
 
-Once we collected all XLS files we convert them to CSV format one by one.
+Once we collected all XLS files we convert them to CSV format.
+Finally, we compress them into .gz zip format.
 
 [source,bash]
 .collect/serverconsumption/bin/convert-send.sh
 ----
-include::{sourcedir}/collect/serverconsumption/bin/convert-send.sh[lines=10..20]
+include::../collect/serverconsumption/bin/convert-send.sh[lines=10..20]
 ----
-
-
 
 
 IMPORTANT: There is nothing to make anonymous for these kind of data collection.
