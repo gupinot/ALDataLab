@@ -22,7 +22,7 @@ function terminate_exec(){
 	rm -f $LCKFILE
 	./vbox_vm.sh stop $VersionNx
 }
-trap "terminate_exec" SIGINT SIGTERM
+trap "terminate_exec" SIGINT SIGTERM SIGKILL
 
 ListIPVM=""
 for vm in $(awk -v VersionNx=$VersionNx -F';' '{if ($4 == VersionNx) print $1}' ./vbox_vm.csv)
@@ -39,7 +39,7 @@ if [[ "$VersionNx" == "5" ]]
 then
 	./distribute.sh "$ListIPVM" "/datalab3/DATA/0-NXProdBackups" "ls -tr | egrep \".*tgz$\" | awk '$patternv5'" ./install_extract.sh "./nxql_private_notsystem.csv /datalab3/DATA/1-NXQLProdBackups"
 else
-	./distribute.sh "$ListIPVM" "/datalab3/DATA/0-NXProdBackups" "ls -tr | egrep \".*tgz$\" | awk '$patternv6'" ./install_extract.sh "./nxql_private_notsystem.csv /datalab3/DATA/1-NXQLProdBackups" 
+	./distribute.sh "$ListIPVM" "/datalab3/DATA/0-NXProdBackups" "ls -tr | egrep \".*tgz$\" | awk '$patternv6'" ./install_extract.sh "./nxql_connection_webrequest.csv /datalab3/DATA/1-NXQLProdBackups" 
 fi
 
 terminate_exec

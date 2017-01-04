@@ -83,11 +83,19 @@ do
 	ret=$?
 	if [[ $ret -ne 0 ]]
 	then
-		echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : error on nxqlquery.pl. Exiting"
+		echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : error on nxqlquery.pl. delete previous generated files..."
+		#suppression de tous les précédents fichiers générés
+		for ((k=0; k<j; k++))
+		do
+			nxSQLReqName=${NomReq[$k]}
+			ouputFileName="${nxSQLReqName}_$(basename ${DumpFile}).csv.gz"
+			CMD="rm -f ${ResDir}/${ouputFileName}" && echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : $CMD" && $CMD
+		done
+		echo "$(date +"%Y/%m/%d-%H:%M:%S") - $0 : error on nxqlquery.pl. Exit"
 		exit 1
 	fi
 	#gzip file
-	gzip ${ResDir}/${ouputFileName}
+	gzip -f ${ResDir}/${ouputFileName}
 done
 
 #Déplacement du Dump dans le repertoire Archives

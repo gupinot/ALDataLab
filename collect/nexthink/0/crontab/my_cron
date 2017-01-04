@@ -1,0 +1,5 @@
+30 16 * * 0,3 /datalab2/home/nexthink/cp_engine/dump_all_engine.sh engine_eur1.csv
+30 18 * * 0,3 /datalab2/home/nexthink/cp_engine/dump_all_engine.sh engine_eur2.csv
+30 14 * * 0,3 /datalab2/home/nexthink/cp_engine/dump_all_engine.sh engine_asie.csv
+30 20 * * 0,3 /datalab2/home/nexthink/cp_engine/dump_all_engine.sh engine_amer.csv
+30 16 * * * /datalab2/home/nexthink/cp_engine/dump_all_engine.sh engine_server.csv
