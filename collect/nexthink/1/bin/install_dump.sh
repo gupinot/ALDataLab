@@ -26,7 +26,8 @@ nxengineDB=$rootNexthinkDir/data/nxengine.db
 sudo cp $nxengineXML.sav $nxengineXML
 
 echo "$(date +"%Y/%m/%d-%H:%M:%S") |$HOSTNAME|$0| stop engine"
-nxinfo launch -s
+sudo  systemctl stop nxengine@1
+sudo /var/nexthink/portal/nodes/run/init.sh stop
 
 function detarAndCopyDB {
 	ret_detarAndCopyDB=1
@@ -39,7 +40,7 @@ function detarAndCopyDB {
         cd data &&\
         gunzip nxengine-db.gz &&\
         sudo cp nxengine* $nxengineDB &&\
-        sudo chown root:root $nxengineDB &&\
+        sudo chown nxengine:nxengine $nxengineDB &&\
         sudo chmod 644 $nxengineDB &&\
 	ret_detarAndCopyDB=0
 	return $ret_detarAndCopyDB
@@ -66,7 +67,7 @@ then
 fi
 sed "s/$OldEngineName/$NewEngineName/g" $nxengineXML > $tmpFile
 sudo mv $tmpFile $nxengineXML
-sudo chown root:root $nxengineXML
+sudo chown nxengine:nxengine $nxengineXML
 sudo chmod 644 $nxengineXML
 
 cd $HOME/temp/data
@@ -77,20 +78,24 @@ if [[ "$staticNow" != "" ]]
 then
         sed "s/$staticNow/$lastValue/g" $nxengineXML > $tmpFile
         sudo mv $tmpFile $nxengineXML
-	sudo chown root:root $nxengineXML
+	sudo chown nxengine:nxengine $nxengineXML
 	sudo chmod 644 $nxengineXML
 fi
 
+rm -fr $HOME/temp/*
+
 #start engine
 echo "$(date +"%Y/%m/%d-%H:%M:%S") |$HOSTNAME|$0| start engine..."
-sudo /etc/init.d/nxlaunch start
+sudo nxinfo config -s tweak.watchdog_timeout=2000
+sudo /var/nexthink/portal/database/reset-admin-pw.sh
+sudo  systemctl restart nxengine@1
 
 function wait_running {
         trouve=0
         while [ $trouve -ne 1 ]
         do
                 sleep 10
-                trouve=$(nxinfo launch -l | grep running | wc -l)
+                trouve=$(nxinfo info | grep -i running | wc -l)
         done
         trouve=0
         while [ $trouve -lt 10 ]
@@ -102,6 +107,9 @@ function wait_running {
 echo "$(date +"%Y/%m/%d-%H:%M:%S") |$HOSTNAME|$0| wait running..."
 wait_running
 echo "$(date +"%Y/%m/%d-%H:%M:%S") |$HOSTNAME|$0| running ok"
+sudo /var/nexthink/portal/database/reset-admin-pw.sh
+sudo nohup /var/nexthink/portal/nodes/run/init.sh start&
+sleep 60
 
 echo "$(date +"%Y/%m/%d-%H:%M:%S") |$HOSTNAME|$0| reset admin passwd"
 nxinfo shell -e "update login.password=\"admin\" where login.name=\"admin\""
