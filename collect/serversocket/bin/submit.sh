@@ -8,8 +8,8 @@ function synchro() {
 	SERVERIP=$1
 	RET_SYNCHRO=1
 	TIMEDELTA=""
-	TIMEDELTA=$((($(perl -e 'print time, "\n"') - $(ssh -o ConnectTimeout=10 datalab@$SERVERIP "perl -e 'print time, \"\n\"'"))/60))
-	ssh -o ConnectTimeout=10 datalab@$SERVERIP "echo TIMEDELTA=\\\"$TIMEDELTA\\\" > timedelta.sh" &&\
+	TIMEDELTA=$((($(perl -e 'print time, "\n"') - $(ssh -o ConnectTimeout=10 -o "BatchMode=yes" datalab@$SERVERIP "perl -e 'print time, \"\n\"'"))/60))
+	ssh -o ConnectTimeout=10 -o "BatchMode=yes" datalab@$SERVERIP "echo TIMEDELTA=\\\"$TIMEDELTA\\\" > timedelta.sh" &&\
 	RET_SYNCHRO=0
 	return $RET_SYNCHRO
 }
