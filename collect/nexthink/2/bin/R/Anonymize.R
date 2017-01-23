@@ -91,6 +91,7 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
                             wr_destination_port, wr_destination_ip, wr_application_name)]
     
     print("AnonymizeFile() : anonymize wr_device_name")
+    NXData[, wr_device_name:=tolower(wr_device_name)]
     Res <- Anonymize(unique(NXData$wr_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
@@ -151,6 +152,7 @@ AnonymizeFile <- function(FileIn, FileOut, FileType = "connection") {
     setnames(NXData, c("I_ID", "name"), c("I_ID_U", "ex_user_name"))
 
     print("AnonymizeFile() : anonymize ex_device_name")
+    NXData[, ex_device_name:=tolower(ex_device_name)]
     Res <- Anonymize(unique(NXData$ex_device_name))
     if (is.null(Res)) return(NULL)
     setkey(Res, name)
