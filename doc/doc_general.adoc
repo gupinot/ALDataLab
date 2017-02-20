@@ -28,6 +28,17 @@ include::doc_pipeline.adoc[]
 
 include::doc_oracle.adoc[]
 
+include::doc_applications.adoc[]
+
+include::doc_architecture.adoc[]
+
+// TODO
+// /gerepo/out/aip_version/ ?
+// /gerepo/out/aip_version/aip ?
+// /gerepo/out/aip_version/aip_explode ?
+
+
+
 // It is important to know that there is
 // Apart from +ing, ..... may also be required
 // To know more about ....., look into/check out

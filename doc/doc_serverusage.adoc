@@ -1,10 +1,12 @@
 <<<
+
 == Server usage
 
 Another data sources that we collect to analyse is _Server Usage_.
 It involves the information about server CPU usage, memory and storage usage.
 
 * Source code path : ALDataLab/collect/serverconsumption.
+
 
 
 === Method
@@ -21,6 +23,7 @@ include::../collect/serverconsumption/conf/conf.sh[lines=4..5]
 
 
 === List of servers
+
 List of servers are defined in _server.lst_ file.
 Each line represents a hostname of a server.
 They are used by collect script.
@@ -32,6 +35,7 @@ include::../collect/serverconsumption/conf/server.lst[lines=1..5]
 ...
 ----
 
+
 === Collect
 
 As we know how to fetch _Server usage_ for a single one, we can handle this for all others too.
@@ -41,8 +45,9 @@ Later, we will convert these files into CSV formats.
 [source,bash]
 .collect/serverconsumption/bin/collect.sh
 ----
-include::../collect/serverconsumption/bin/collect.sh[lines=16..21]
+include::../collect/serverconsumption/bin/collect.sh[lines=16..22]
 ----
+
 
 === Convert XLS to CSV
 

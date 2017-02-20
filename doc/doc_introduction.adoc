@@ -15,7 +15,7 @@ While these repositories are _theoretical view_ of the IT, asset's logs are real
 
 // Let's talk about what are different kind of data that we analyse.
 As result, _Referential data_ (AIP, MDM-ITC, Storage Master Reports, IDM) and
-usage logs (Nexthink, Server-sockets, Server usage, Oracle logs) are collected data on which we are mainly focused to do analysis.
+_Usage logs_ (Nexthink, Server-sockets, Server usage, Oracle logs) are collected data on which we are mainly focused to do analysis.
 
 image::images/global_view42a.jpg[title="Presentation of two main kinds of data", width="500", height="250"]
 
