@@ -62,9 +62,6 @@ Notebooks on Zeppelin-dev are stored on a private Github repository.
 It allows to store each notebook in JSON format and be able to track the changes done on them.
 
 
-//image::images/zeppelin_github.png[title="Datalab Circos application", width="800"]
-
-
 image::images/zeppelin_github1.png[title="View of a Zeppelin notebook on Github repository", width="800"]
 
 
@@ -87,7 +84,6 @@ image::images/zeppelin_github1.png[title="View of a Zeppelin notebook on Github 
 * zeppelin-prod-slave-i-7fa5c9e1 - m1.xlarge - ec2-54-234-192-94.compute-1.amazonaws.com
 
 
-// === Deployment on AWS
 
 === Create cluster on AWS
 
@@ -109,10 +105,7 @@ You need then associate this IP with _dev.zeppelin_ or _zeppelin_ so that these 
 include::../infra/README.md[lines=26..26]
 ----
 
-
-
-=== Connection
-
+// === Connection
 // ssh root@ec2-174-129-93-119.compute-1.amazonaws.com
 
 

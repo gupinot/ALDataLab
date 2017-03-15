@@ -1,6 +1,5 @@
-= DataLab - Enterprise IT Digital twin
-Guillaume PINOT, Matin BAYRAMOV
-bayramov.matin-ext@power.alstom.com
+= DataLab - Enterprise IT Digital Twin
+Hamza BENGUERRAH, Guillaume PINOT, Matin BAYRAMOV
 :sectnums:
 :source-highlighter: highlight.js
 :pdf-page-size: A4
