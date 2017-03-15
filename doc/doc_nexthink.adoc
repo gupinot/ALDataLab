@@ -109,6 +109,9 @@ After extracting, we separate 3 data types under /1/ folder.
 
 * _connection_ - anything related to users' "connection" (TCP, UDP, etc..)
 
+NOTE: A connection is a link between a device and a destination through the use of network resources. There are two types of connections depending on the transport protocol used for communication:
+_TCP_: The connection has a status. _UDP_: The connection is stateless.
+
 Information collected about any outgoing (and only outgoing) network requests,
 such as which user is connected, by which application,
 IP address requested, HTTP protocol used, server port number,
@@ -118,12 +121,17 @@ It can be a simple user machine but also a server.
 
 * _webrequest_ - anything related to a "webrequest" (DNS information)
 
+NOTE: A web request is a message sent from a client application to a server using the standard web protocol HTTP or its secure version over TLS.
+Nexthink is able to record not only the web requests of web browsers, but of any application that runs on the device of the end-user.
+
 This kind of data are captured while a web request (HTTP) is detected.
 Some information about the target device is collected, such as request's DNS address (google, etc.), etc.
 However, full URL of web requests are not registered at all.
 
 
 * _execution_ - anything related to an application "execution"
+
+NOTE: An _execution_ is an activity that indicates the loading of a binary into the memory of a computer to run it as a separate process.
 
 These are information about the execution of any application used by users.
 This concern also applications which do not access to internet.
