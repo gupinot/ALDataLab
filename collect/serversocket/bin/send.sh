@@ -34,7 +34,7 @@ DATECUR=$(date --utc --date "now" +"%Y%m%d-%H%M%S")
 curdir=$(pwd)
 cd $DIR_COLLECT
 
-//version init
+#version init
 type="linux"
 for col in lsof ps netstat
 do
@@ -51,7 +51,7 @@ do
 	done
 done
 
-//version v2
+#version v2
 version="v2"
 for type in linux aix hp-ux
 do

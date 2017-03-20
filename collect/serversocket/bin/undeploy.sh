@@ -10,7 +10,7 @@ for host in $(cat $SERVERSTATUS | awk -F';' '{if ($3 == "2") print $1}')
 do 
 	status=2
 	ip=$(grep -i "^$host;" $SERVERLIST | awk -F';' '{print $5}')
-	$ROOTDIR/bin/submit.sh undeploy $ip && status=1
+	$ROOTDIR/bin/submit.sh undeploy $ip $host linux && status=1
 	tmpfile=$(mktemp)
 	grep -v "^$host;" $SERVERSTATUS > $tmpfile
 	echo "$host;$ip;$status;$DATECUR" >> $tmpfile

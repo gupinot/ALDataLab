@@ -52,7 +52,7 @@ function undeploy() {
 	SERVERIP=$1
 	RET_DEPLOY=1
 	test $SERVERIP &&\
-	 ssh -o ConnectTimeout=10  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "crontab -r; rm -fr monitor collect monitor.sh monitor.out monitor.err timedelta.sh" &&\
+	 ssh -o ConnectTimeout=10  -o "BatchMode=yes" -o StrictHostKeyChecking=no datalab@$SERVERIP "crontab -r; rm -fr monitor collect monitor.sh monitor.out monitor.err timedelta.sh crontab_save" &&\
 	 RET_DEPLOY=0
 	return $RET_DEPLOY
 }
